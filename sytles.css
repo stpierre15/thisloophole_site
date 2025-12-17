@@ -1,0 +1,152 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif;
+    color: #111;
+    background: #fafafa;
+    line-height: 1.6;
+  }
+  
+  a {
+    color: #111;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+  
+  /* Header */
+  
+  .site-header {
+    border-bottom: 1px solid #ddd;
+    background: #fafafa;
+  }
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  
+  .nav a {
+    margin-left: 24px;
+    font-size: 14px;
+  }
+  
+  /* Intro */
+  
+  .intro {
+    margin-top: 40px;
+  }
+  
+  .intro h1 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  
+  .intro p {
+    font-size: 17px;
+    color: #333;
+  }
+  
+  /* Tools */
+  
+  .tools {
+    margin-top: 60px;
+  }
+  
+  .tools h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .tool-row {
+    display: block;
+    padding: 16px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+  }
+  
+  .tool-row strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+  
+  .tool-row span {
+    font-size: 14px;
+    color: #444;
+  }
+  
+  /* About */
+  
+  .about {
+    margin-top: 60px;
+  }
+  
+  .about h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .about p {
+    margin: 6px 0;
+  }
+  
+  /* Topics */
+  
+  .topics {
+    margin-top: 60px;
+  }
+  
+  .topics h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  
+  .topic-grid a {
+    padding: 14px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  /* Footer */
+  
+  .site-footer {
+    border-top: 1px solid #ddd;
+    margin-top: 80px;
+  }
+  
+  .site-footer p {
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  
+  .footer-links a {
+    margin-right: 16px;
+    font-size: 13px;
+  }
+  

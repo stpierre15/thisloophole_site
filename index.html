@@ -1,178 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Loophole — Drops</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #F9F8F4;
-      color: #111;
-      margin: 0;
-      padding: 0;
-      line-height: 1.5;
-      font-size: 16px;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 40px 24px;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 60px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #ddd;
-    }
-    .logo {
-      font-weight: 700;
-      font-size: 24px;
-      color: #111;
-      text-decoration: none;
-    }
-    nav {
-      display: flex;
-      gap: 32px;
-    }
-    nav a {
-      text-decoration: none;
-      color: #111;
-      font-size: 16px;
-    }
-    h1 {
-      font-weight: 700;
-      font-size: 36px;
-      margin: 0 0 16px;
-    }
-    p.subtitle {
-      margin: 0 0 40px;
-      color: #666;
-    }
-    a {
-      text-decoration: none;
-      color: #111;
-    }
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 48px;
-    }
-    .section-title {
-      font-weight: 600;
-      margin: 40px 0 12px;  
-    }
-    section {
-      margin-bottom: 40px;
-    }
-    footer {
-      font-size: 14px;
-      color: #666;
-      margin-top: 60px;
-      padding-top: 24px;
-      border-top: 1px solid #ddd;
-    }
-  </style>
+  <title>Loophole</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <header>
-      <a href="/" class="logo">Loophole</a>
-      <nav>
-        <a href="/">Home</a>
-        <a href="/tools">Tools</a>
-        <a href="/playbook">Playbook</a>
+
+  <header class="site-header">
+    <div class="container header-row">
+      <div class="logo">LOOPHOLE</div>
+      <nav class="nav">
+        <a href="#">Tools</a>
+        <a href="#">Library</a>
+        <a href="#">About</a>
       </nav>
-    </header>
+    </div>
+  </header>
 
-    <section class="hero">
-      <h1>loophole: outsmart the system</h1>
-      <p class="subtitle">Retailers exploit your psychology. Loophole gives you the intel to beat them at their own game. Only buy what’s truly worth your money.</p>
+  <main class="container">
 
-      <div class="list">
-        <div>
-          <h2>Cut Through the Tricks</h2>
-          <p>See the tactics brands use to push you toward impulse buys and avoid the traps.</p>
-        </div>
-        <div>
-          <h2>Buy What Actually Pays Off</h2>
-          <p>Get durability, resale, warranty, and ROI comparisons that reveal true long-term value.</p>
-        </div>
-        <div>
-          <h2>Save More With Less Effort</h2>
-          <p>Let the tools do the math, the research, and the skepticism for you.</p>
-        </div>
+    <section class="intro">
+      <h1>
+        Tools to help you buy what you actually need —
+        <br />
+        and avoid what you don’t.
+      </h1>
+      <p>
+        Loophole exposes common sales tactics, pricing tricks, and psychological nudges
+        used in modern commerce — and gives you simple tools to neutralize them.
+      </p>
+    </section>
+
+    <section class="tools">
+      <h2>Start here</h2>
+
+      <a class="tool-row" href="#">
+        <strong>Time for Money</strong>
+        <span>See the real cost of a purchase in hours of your life.</span>
+      </a>
+
+      <a class="tool-row" href="#">
+        <strong>Deal Reality Check</strong>
+        <span>Compare a price against historical data and realistic alternatives.</span>
+      </a>
+
+      <a class="tool-row" href="#">
+        <strong>Warranty Sniper</strong>
+        <span>Instantly surface warranty and return policies while shopping.</span>
+      </a>
+
+      <a class="tool-row" href="#">
+        <strong>Sales Tactics Library</strong>
+        <span>Learn how common persuasion techniques actually work — and how to ignore them.</span>
+      </a>
+    </section>
+
+    <section class="about">
+      <h2>What Loophole is (and isn’t)</h2>
+      <p>Loophole is not a store.</p>
+      <p>It does not sell products.</p>
+      <p>It does not take affiliate commissions.</p>
+      <p>It exists to make modern shopping slower, clearer, and less manipulative.</p>
+    </section>
+
+    <section class="topics">
+      <h2>Explore by topic</h2>
+
+      <div class="topic-grid">
+        <a href="#">Pricing Psychology</a>
+        <a href="#">Scarcity & Urgency</a>
+        <a href="#">Subscriptions & Dark Patterns</a>
+        <a href="#">Bundles & Upsells</a>
+        <a href="#">Warranties & Protection Plans</a>
+        <a href="#">“Free” Offers</a>
+        <a href="#">Returns & Friction</a>
+        <a href="#">Used vs New Economics</a>
       </div>
     </section>
 
-    <section class="what-loophole-does">
-      <h2>What Loophole does</h2>
-      <p>Retailers exploit your psychology. Loophole gives you the intel to beat them at their own game. Only buy what’s truly worth your money.</p>
-    </section>
+  </main>
 
-    <section class="featured-tools">
-      <h2>Featured tools</h2>
-
-      <div class="list">
-        <div>
-          <h3>Amazon Pause</h3>
-          <p>Interrupts impulse buying by showing the truth: reviews, warranty details, and smarter alternatives before you click “Buy.”</p>
-        </div>
-        <div>
-          <h3>Time-for-Money Translator</h3>
-          <p>Turns prices into hours of your life. See the real cost instantly—and decide if it’s worth your time.</p>
-        </div>
-        <div>
-          <h3>Warranty Sniper</h3>
-          <p>Highlights return policies, coverage terms, and fine print so you aren’t blindsided by defective products or missing protection.</p>
-        </div>
-        <div>
-          <h3>Review Re-Sorter</h3>
-          <p>Surfaces the worst reviews first. Spot deal-breakers in seconds instead of digging through hundreds of glowing (and manipulated) reviews.</p>
-        </div>
-        <div>
-          <h3>Pre-Owned Price Tracker</h3>
-          <p>Shows the 5-year depreciation curve and resale value so you understand what buying new truly costs.</p>
-        </div>
+  <footer class="site-footer">
+    <div class="container">
+      <p>Built as a public utility for people who want to think clearly before buying.</p>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Methodology</a>
+        <a href="#">Privacy</a>
+        <a href="#">GitHub</a>
       </div>
-    </section>
+    </div>
+  </footer>
 
-    <section class="playbook-teaser">
-      <h2>From the playbook</h2>
-
-      <div class="list">
-        <div>
-          <h3>The Cost-Per-Use Rule</h3>
-          <p>A simple framework to calculate whether something is actually a good buy based on longevity, not marketing.</p>
-        </div>
-        <div>
-          <h3>The Anti-Addiction Shopping Method</h3>
-          <p>How to slow down purchases, override dopamine loops, and avoid buying stuff that won’t matter next month.</p>
-        </div>
-        <div>
-          <h3>The Resale Advantage</h3>
-          <p>Why buying used beats buying new 80% of the time—and how to spot items that hold value like assets, not trash.</p>
-        </div>
-        <div>
-          <h3>The Warranty Hierarchy</h3>
-          <p>A breakdown of which types of warranty actually matter, which are scams, and how to use them strategically.</p>
-        </div>
-        <div>
-          <h3>The Zero-Regret List</h3>
-          <p>A curated guide to “buy it once, keep it forever” products that maximize ROI and minimize garbage.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="email-signup">
-    </section>
-  </div>
 </body>
 </html>
