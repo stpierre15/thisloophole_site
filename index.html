@@ -34,7 +34,6 @@
     flex-direction: column;
   }
 
-  /* NAV */
   nav {
     padding: 1.5rem 2rem;
     display: flex;
@@ -60,7 +59,6 @@
     color: var(--gray);
   }
 
-  /* HERO */
   .hero {
     flex: 1;
     display: flex;
@@ -111,10 +109,7 @@
     animation: fadeUp 0.6s ease 0.1s forwards;
   }
 
-  h1 em {
-    font-style: italic;
-    color: var(--green);
-  }
+  h1 em { font-style: italic; color: var(--green); }
 
   .subtitle {
     font-size: 1.05rem;
@@ -127,7 +122,6 @@
     animation: fadeUp 0.6s ease 0.2s forwards;
   }
 
-  /* CHAT INTERFACE */
   .chat-wrap {
     width: 100%;
     opacity: 0;
@@ -148,9 +142,7 @@
     border-color: rgba(26,122,82,0.3);
   }
 
-  .chat-input-area {
-    padding: 1.25rem 1.25rem 0.75rem;
-  }
+  .chat-input-area { padding: 1.25rem 1.25rem 0.75rem; }
 
   textarea {
     width: 100%;
@@ -167,10 +159,7 @@
     caret-color: var(--green);
   }
 
-  textarea::placeholder {
-    color: #b0aea8;
-    font-weight: 300;
-  }
+  textarea::placeholder { color: #b0aea8; font-weight: 300; }
 
   .chat-footer {
     display: flex;
@@ -181,16 +170,8 @@
     background: #fafaf8;
   }
 
-  .free-badge {
-    font-size: 0.75rem;
-    color: var(--gray);
-    font-weight: 400;
-  }
-
-  .free-badge strong {
-    color: var(--green);
-    font-weight: 500;
-  }
+  .free-badge { font-size: 0.75rem; color: var(--gray); font-weight: 400; }
+  .free-badge strong { color: var(--green); font-weight: 500; }
 
   .submit-btn {
     display: flex;
@@ -211,21 +192,10 @@
 
   .submit-btn:hover { background: var(--green); }
   .submit-btn:active { transform: scale(0.98); }
-
-  .submit-btn svg {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.15s ease;
-  }
-
+  .submit-btn svg { width: 14px; height: 14px; transition: transform 0.15s ease; }
   .submit-btn:hover svg { transform: translateX(2px); }
 
-  /* RESPONSE */
-  .response-area {
-    display: none;
-    border-top: 1px solid var(--border);
-  }
-
+  .response-area { display: none; border-top: 1px solid var(--border); }
   .response-area.visible { display: block; }
 
   .response-header {
@@ -235,12 +205,7 @@
     padding: 1rem 1.25rem 0.5rem;
   }
 
-  .response-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-  }
+  .response-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
 
   .response-label {
     font-size: 0.72rem;
@@ -260,7 +225,6 @@
 
   .response-content strong { font-weight: 500; }
 
-  /* LOADING */
   .loading-area {
     display: none;
     border-top: 1px solid var(--border);
@@ -271,10 +235,7 @@
 
   .loading-area.visible { display: flex; }
 
-  .loading-dots {
-    display: flex;
-    gap: 4px;
-  }
+  .loading-dots { display: flex; gap: 4px; }
 
   .loading-dots span {
     width: 5px;
@@ -287,13 +248,8 @@
   .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
   .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-  .loading-text {
-    font-size: 0.875rem;
-    color: var(--gray);
-    font-weight: 300;
-  }
+  .loading-text { font-size: 0.875rem; color: var(--gray); font-weight: 300; }
 
-  /* EXAMPLES */
   .examples {
     margin-top: 1.5rem;
     display: flex;
@@ -318,13 +274,8 @@
     white-space: nowrap;
   }
 
-  .example-pill:hover {
-    border-color: var(--green);
-    color: var(--green);
-    background: var(--green-light);
-  }
+  .example-pill:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
 
-  /* FOOTER */
   footer {
     text-align: center;
     padding: 2rem;
@@ -337,7 +288,6 @@
 
   footer a { color: #b0aea8; text-decoration: underline; }
 
-  /* ANIMATIONS */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -348,7 +298,6 @@
     50% { opacity: 1; transform: scale(1); }
   }
 
-  /* MOBILE */
   @media (max-width: 600px) {
     nav { padding: 1.25rem 1rem; }
     .hero { padding: 3rem 1rem 2rem; }
@@ -388,9 +337,7 @@
       </div>
 
       <div class="loading-area" id="loading">
-        <div class="loading-dots">
-          <span></span><span></span><span></span>
-        </div>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
         <span class="loading-text">Finding your loophole...</span>
       </div>
 
@@ -434,6 +381,9 @@ Rules:
 - Keep it scannable — people are often reading this in a store or right after a stressful situation
 - End with one sentence of encouragement`;
 
+  // ⬇️ REPLACE THIS with your Cloudflare Worker URL
+  const PROXY_URL = 'thisloophole.stpierre15.workers.dev';
+
   function fill(text) {
     document.getElementById('userInput').value = text;
     document.getElementById('userInput').focus();
@@ -460,9 +410,9 @@ Rules:
     loading.classList.add('visible');
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch(PROXY_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': atob('c2stYW50LWFwaTAzLVVOdW1oMVhXaXlnaDlYVDlDQ1AtMnNMS255Vk5NRWdCRXhRflpRWmt2cXFidWFyNDRqNXZxTEpfbjZScHllemZkTDJHTjNHQmoxa0ZqSVNBeERaNE9RLXFYbEt2d0FB'), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
