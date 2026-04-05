@@ -8,6 +8,7 @@ const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json',
 };
 
 const MODEL = (process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514').trim();
@@ -23,21 +24,30 @@ const RATE_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || String(15 * 
 const RATE_MAX = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10', 10);
 const RATE_DAY_MAX = parseInt(process.env.RATE_LIMIT_DAILY_MAX || '40', 10);
 
-function corsJson(status, body) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...cors, 'Content-Type': 'application/json' },
-  });
+function headerGet(headers, name) {
+  if (!headers) return '';
+  const lower = name.toLowerCase();
+  const keys = Object.keys(headers);
+  const k = keys.find((h) => h.toLowerCase() === lower);
+  return k ? String(headers[k] || '') : '';
 }
 
-function clientIp(request) {
-  const forwarded = request.headers.get('x-forwarded-for');
+function corsJson(status, body) {
+  return {
+    statusCode: status,
+    headers: { ...cors },
+    body: JSON.stringify(body),
+  };
+}
+
+function clientIp(event) {
+  const forwarded = headerGet(event.headers, 'x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
-  return (
-    request.headers.get('x-nf-client-connection-ip') ||
-    request.headers.get('client-ip') ||
-    'unknown'
-  );
+  const nf = headerGet(event.headers, 'x-nf-client-connection-ip');
+  if (nf) return nf.trim();
+  const cip = headerGet(event.headers, 'client-ip');
+  if (cip) return cip.trim();
+  return 'unknown';
 }
 
 async function verifyTurnstile(secret, token, ip) {
@@ -102,16 +112,16 @@ function totalUserChars(messages) {
   return n;
 }
 
-export default async function handler(request) {
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: cors });
+export const handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: cors, body: '' };
   }
 
-  if (request.method !== 'POST') {
+  if (event.httpMethod !== 'POST') {
     return corsJson(405, { error: { message: 'Method not allowed' } });
   }
 
-  const ip = clientIp(request);
+  const ip = clientIp(event);
   const rl = await checkRateLimit(ip);
   if (!rl.ok) {
     return corsJson(429, { error: { message: rl.reason } });
@@ -129,7 +139,7 @@ export default async function handler(request) {
 
   let body;
   try {
-    body = await request.json();
+    body = JSON.parse(event.body || '{}');
   } catch {
     return corsJson(400, { error: { message: 'Invalid JSON body' } });
   }
@@ -182,8 +192,9 @@ export default async function handler(request) {
   });
 
   const text = await upstream.text();
-  return new Response(text, {
-    status: upstream.status,
-    headers: { ...cors, 'Content-Type': 'application/json' },
-  });
-}
+  return {
+    statusCode: upstream.status,
+    headers: { ...cors },
+    body: text,
+  };
+};
