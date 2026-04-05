@@ -1,26 +1,49 @@
-Loophole on Netlify — simplest path
-===================================
+Loophole on Netlify — deploy checklist
+=======================================
 
-1) Push this folder to GitHub (or drag-and-drop the project folder in Netlify).
+1) Connect the repo (or drag-and-drop this folder).
 
-2) In Netlify: Add new site → Import from Git (or deploy manually).
+2) Build: Netlify runs `npm install` (see netlify.toml) so the API function can use @netlify/blobs for rate limits.
 
-3) Build settings (usually auto-detected):
-   - Base directory: (leave empty)
-   - Build command: (leave empty)
-   - Publish directory: .   (dot = site root; already in netlify.toml)
+3) Environment variables (Netlify → Site configuration → Environment variables).
+   Use scope that includes Functions for all secrets.
 
-4) Environment variables (required):
-   Site settings → Environment variables → Add variable
-   Name:  ANTHROPIC_API_KEY
-   Value: your key from https://console.anthropic.com/ (starts with sk-ant-)
+   Required:
+   - ANTHROPIC_API_KEY — from https://console.anthropic.com/
 
-5) Deploy. Open the site and try "Find the loophole."
+   Strongly recommended (stops bots / scripted abuse):
+   - TURNSTILE_SECRET_KEY — from https://dash.cloudflare.com → Turnstile → your widget → Secret key
+
+   In index.html, set the matching public site key (same Turnstile widget):
+   - const TURNSTILE_SITE_KEY = '0x...';   // line near the top of the second <script> block
+
+   Cloudflare “always passes” test keys (local / staging only):
+   - Site key: 1x00000000000000000000AA
+   - Secret:    1x0000000000000000000000000000000AA
+   https://developers.cloudflare.com/turnstile/troubleshooting/testing-keys/
+
+   Optional tuning (all optional):
+   - ANTHROPIC_MODEL — default claude-sonnet-4-20250514
+   - ANTHROPIC_MAX_OUTPUT_TOKENS — cap model output (default 768, max 1200)
+   - LOOPHOLE_MAX_QUESTION_CHARS — max question length (default 6000)
+   - RATE_LIMIT_WINDOW_MS — sliding window in ms (default 900000 = 15 min)
+   - RATE_LIMIT_MAX_REQUESTS — max requests per IP per window (default 10)
+   - RATE_LIMIT_DAILY_MAX — max requests per IP per calendar day (default 40)
+
+4) Redeploy after changing variables.
+
+Guardrails in place
+-------------------
+- System prompt lives only on the server (clients cannot swap model/prompt to burn credits).
+- Output tokens and question length are capped.
+- Per-IP rate limits (Netlify Blobs).
+- Optional Cloudflare Turnstile before each API call.
+
+Also set spending / usage alerts in the Anthropic console so you get notified if something spikes.
 
 Local test
 ----------
-  npm i -g netlify-cli
-  netlify login
-  cd /path/to/this/project
-  netlify dev
-Opens a local URL; set ANTHROPIC_API_KEY in a .env file in the project root for netlify dev, or export it in your shell.
+  npm install
+  npx netlify-cli login
+  npx netlify-cli dev
+Use a root `.env` with ANTHROPIC_API_KEY (and Turnstile test keys if you enable the widget).

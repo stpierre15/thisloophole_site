@@ -2,6 +2,7 @@
 .env
 .env.*
 .netlify/
+node_modules/
 
 # Removed Cloudflare worker; ignore if anything left locally
 worker/node_modules/

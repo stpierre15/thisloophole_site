@@ -144,6 +144,15 @@
 
   .chat-input-area { padding: 1.25rem 1.25rem 0.75rem; }
 
+  .turnstile-mount {
+    padding: 0 1.25rem 0.75rem;
+    min-height: 1px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .turnstile-mount:empty { display: none; }
+
   textarea {
     width: 100%;
     border: none;
@@ -328,6 +337,7 @@
       <div class="chat-input-area">
         <textarea id="userInput" placeholder="e.g. My dentist said I need a deep clean instead of a regular cleaning and quoted me $800 extra. Or: I'm about to buy an Apple HomePod, how do I not overpay?" rows="4"></textarea>
       </div>
+      <div id="turnstile-mount" class="turnstile-mount" aria-label="Verification"></div>
       <div class="chat-footer">
         <span class="free-badge"><strong>Free forever.</strong> No signup required.</span>
         <button type="button" class="submit-btn" id="submitBtn" onclick="submitQuery()">
@@ -367,24 +377,25 @@
   Loophole provides general information, not legal advice. &nbsp;&middot;&nbsp; <a href="#">thisloophole.com</a>
 </footer>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=loopholeTurnstileReady" async defer></script>
 <script>
-  const SYSTEM_PROMPT = `You are Loophole — a sharp, no-nonsense consumer protection and smart shopping AI. You help people in two situations:
-
-1. BEFORE THEY BUY: If someone is about to purchase something, you tell them every legitimate way to pay less — refurbished options, open box deals, education or employee discounts, cashback portals, price history tools, Facebook Marketplace, coupon codes, waiting for sales, lesser-known alternatives, and anything else relevant. Always check if there are circular/secondhand options first (refurbished, open box, marketplace). Be specific and actionable.
-
-2. AFTER THEY GET RIPPED OFF: If someone was overcharged, upsold, misled, or treated unfairly, you tell them exactly how to fight back. Validate what happened in one sentence. Tell them their rights in plain English. Give a step-by-step plan. Include exact scripts or language to use when helpful.
-
-Rules:
-- Be direct, practical, and 100% on the consumer's side
-- No hedging, no excessive disclaimers, no sugarcoating
-- Give specific steps, not vague advice
-- If relevant, mention that refurbished or secondhand is often identical quality
-- Format your response with clear sections using bold headers when there are multiple steps
-- Keep it scannable — people are often reading this in a store or right after a stressful situation
-- End with one sentence of encouragement`;
+  // Public Turnstile site key (safe in page source). Create at https://dash.cloudflare.com → Turnstile → Add site.
+  // Must pair with TURNSTILE_SECRET_KEY in Netlify (Functions scope). Leave '' to skip widget (dev only).
+  const TURNSTILE_SITE_KEY = '';
 
   // Netlify: /api/loophole → serverless function (see netlify.toml). Local: use `netlify dev`.
   const PROXY_URL = '/api/loophole';
+
+  var loopholeTurnstileWidgetId = null;
+
+  window.loopholeTurnstileReady = function () {
+    if (!TURNSTILE_SITE_KEY || typeof turnstile === 'undefined') return;
+    loopholeTurnstileWidgetId = turnstile.render('#turnstile-mount', {
+      sitekey: TURNSTILE_SITE_KEY,
+      theme: 'light',
+      size: 'flexible',
+    });
+  };
 
   function fill(text) {
     document.getElementById('userInput').value = text;
@@ -439,15 +450,28 @@ Rules:
     submitBtn.disabled = true;
 
     try {
+      var turnstileToken = null;
+      if (TURNSTILE_SITE_KEY) {
+        if (loopholeTurnstileWidgetId === null) {
+          showError('Verification is still loading. Wait a few seconds and try again.', true);
+          return;
+        }
+        turnstileToken = turnstile.getResponse(loopholeTurnstileWidgetId);
+        if (!turnstileToken) {
+          showError('Complete the verification check above the button, then try again.', true);
+          return;
+        }
+      }
+
+      const payload = {
+        messages: [{ role: 'user', content: input }],
+      };
+      if (turnstileToken) payload.turnstileToken = turnstileToken;
+
       const res = await fetch(PROXY_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: input }]
-        })
+        body: JSON.stringify(payload),
       });
 
       const raw = await res.text();
@@ -475,6 +499,9 @@ Rules:
             'Anthropic rejected the API key (401). In Netlify: Site configuration → Environment variables → set ANTHROPIC_API_KEY to a key from console.anthropic.com, then trigger Redeploy. Details: ' +
             (apiMsg || 'unauthorized');
         }
+        if (res.status === 429) {
+          msg = apiMsg || 'Too many requests. Please wait before trying again.';
+        }
         showError(msg, true);
         return;
       }
@@ -493,6 +520,10 @@ Rules:
       responseContent.innerHTML = formatResponse(extracted);
       responseArea.classList.add('visible');
       responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      if (TURNSTILE_SITE_KEY && loopholeTurnstileWidgetId !== null && typeof turnstile !== 'undefined') {
+        turnstile.reset(loopholeTurnstileWidgetId);
+      }
     } catch (err) {
       loading.classList.remove('visible');
       showError(
