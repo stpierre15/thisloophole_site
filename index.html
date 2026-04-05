@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loophole — Consumer Protection on the Spot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0f0f0f;
+    --white: #fafaf8;
+    --green: #1a7a52;
+    --green-light: #e8f5ee;
+    --green-mid: #2d9e6b;
+    --gray: #6b6b6b;
+    --gray-light: #f0efec;
+    --border: #e2e0db;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav {
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--black);
+    letter-spacing: -0.01em;
+  }
+
+  .nav-logo span { color: var(--green); font-style: italic; }
+
+  .nav-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 1.5rem 3rem;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+    background: var(--green-light);
+    padding: 5px 12px;
+    border-radius: 99px;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 7vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--black);
+    margin-bottom: 1.25rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.1s forwards;
+  }
+
+  h1 em { font-style: italic; color: var(--green); }
+
+  .subtitle {
+    font-size: 1.05rem;
+    font-weight: 300;
+    color: var(--gray);
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.2s forwards;
+  }
+
+  .chat-wrap {
+    width: 100%;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .chat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .chat-card:focus-within {
+    box-shadow: 0 4px 32px rgba(26,122,82,0.12);
+    border-color: rgba(26,122,82,0.3);
+  }
+
+  .chat-input-area { padding: 1.25rem 1.25rem 0.75rem; }
+
+  textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--black);
+    resize: none;
+    min-height: 90px;
+    line-height: 1.65;
+    caret-color: var(--green);
+  }
+
+  textarea::placeholder { color: #b0aea8; font-weight: 300; }
+
+  .chat-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: #fafaf8;
+  }
+
+  .free-badge { font-size: 0.75rem; color: var(--gray); font-weight: 400; }
+  .free-badge strong { color: var(--green); font-weight: 500; }
+
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--black);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.1rem;
+    font-family: var(--sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .submit-btn:hover { background: var(--green); }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .submit-btn svg { width: 14px; height: 14px; transition: transform 0.15s ease; }
+  .submit-btn:hover:not(:disabled) svg { transform: translateX(2px); }
+
+  .response-area { display: none; border-top: 1px solid var(--border); }
+  .response-area.visible { display: block; }
+
+  .response-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 1rem 1.25rem 0.5rem;
+  }
+
+  .response-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+  .response-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .response-content {
+    padding: 0.5rem 1.25rem 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--black);
+    font-weight: 300;
+  }
+
+  .response-content strong { font-weight: 500; }
+  .response-content.error { color: #8b2942; font-weight: 400; }
+
+  .loading-area {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 1rem 1.25rem;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .loading-area.visible { display: flex; }
+
+  .loading-dots { display: flex; gap: 4px; }
+
+  .loading-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.2s ease infinite;
+  }
+
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  .loading-text { font-size: 0.875rem; color: var(--gray); font-weight: 300; }
+
+  .examples {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+  }
+
+  .example-pill {
+    font-size: 0.8rem;
+    color: var(--gray);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 400;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .example-pill:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.75rem;
+    color: #b0aea8;
+    font-weight: 300;
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+  }
+
+  footer a { color: #b0aea8; text-decoration: underline; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 1.25rem 1rem; }
+    .hero { padding: 3rem 1rem 2rem; }
+    h1 { font-size: 2.4rem; }
+    .example-pill { font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">loop<span>hole</span></div>
+  <div class="nav-tag">Free &middot; No account needed</div>
+</nav>
+
+<main class="hero">
+
+  <div class="eyebrow">Consumer protection on the spot</div>
+
+  <h1>The system is rigged.<br><em>Here's how to beat it.</em></h1>
+
+  <p class="subtitle">About to buy something? Just got ripped off? Describe your situation and Loophole tells you exactly what to do.</p>
+
+  <div class="chat-wrap">
+    <div class="chat-card">
+      <div class="chat-input-area">
+        <textarea id="userInput" placeholder="e.g. My dentist said I need a deep clean instead of a regular cleaning and quoted me $800 extra. Or: I'm about to buy an Apple HomePod, how do I not overpay?" rows="4"></textarea>
+      </div>
+      <div class="chat-footer">
+        <span class="free-badge"><strong>Free forever.</strong> No signup required.</span>
+        <button type="button" class="submit-btn" id="submitBtn" onclick="submitQuery()">
+          Find the loophole
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="loading-area" id="loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        <span class="loading-text">Finding your loophole...</span>
+      </div>
+
+      <div class="response-area" id="responseArea">
+        <div class="response-header">
+          <div class="response-dot"></div>
+          <div class="response-label">Your loophole</div>
+        </div>
+        <div class="response-content" id="responseContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="examples">
+    <button type="button" class="example-pill" onclick="fill('My dentist says I need a deep clean instead of a regular cleaning and quoted me $800 extra.')">Dentist upsell</button>
+    <button type="button" class="example-pill" onclick="fill('My county raised my home tax assessment by 20% but my neighborhood values went down.')">Tax assessment hike</button>
+    <button type="button" class="example-pill" onclick="fill('I was charged a $45 resort fee that wasn\'t shown when I booked.')">Hidden hotel fee</button>
+    <button type="button" class="example-pill" onclick="fill('I\'m about to buy an Apple HomePod. How do I find the best price?')">Before you buy</button>
+    <button type="button" class="example-pill" onclick="fill('A subscription kept charging me for 3 months after I cancelled.')">Subscription trap</button>
+  </div>
+
+</main>
+
+<footer>
+  Loophole provides general information, not legal advice. &nbsp;&middot;&nbsp; <a href="#">thisloophole.com</a>
+</footer>
+
+<script>
+  const SYSTEM_PROMPT = `You are Loophole — a sharp, no-nonsense consumer protection and smart shopping AI. You help people in two situations:
+
+1. BEFORE THEY BUY: If someone is about to purchase something, you tell them every legitimate way to pay less — refurbished options, open box deals, education or employee discounts, cashback portals, price history tools, Facebook Marketplace, coupon codes, waiting for sales, lesser-known alternatives, and anything else relevant. Always check if there are circular/secondhand options first (refurbished, open box, marketplace). Be specific and actionable.
+
+2. AFTER THEY GET RIPPED OFF: If someone was overcharged, upsold, misled, or treated unfairly, you tell them exactly how to fight back. Validate what happened in one sentence. Tell them their rights in plain English. Give a step-by-step plan. Include exact scripts or language to use when helpful.
+
+Rules:
+- Be direct, practical, and 100% on the consumer's side
+- No hedging, no excessive disclaimers, no sugarcoating
+- Give specific steps, not vague advice
+- If relevant, mention that refurbished or secondhand is often identical quality
+- Format your response with clear sections using bold headers when there are multiple steps
+- Keep it scannable — people are often reading this in a store or right after a stressful situation
+- End with one sentence of encouragement`;
+
+  // Must include https://. Set to your deployed Worker URL (see worker/README.txt).
+  const PROXY_URL = 'https://thisloophole-proxy.stpierre15.workers.dev';
+
+  function fill(text) {
+    document.getElementById('userInput').value = text;
+    document.getElementById('userInput').focus();
+  }
+
+  function formatResponse(text) {
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return escaped
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^/, '<p>')
+      .replace(/$/, '</p>');
+  }
+
+  function extractAssistantText(data) {
+    if (!data || typeof data !== 'object' || !Array.isArray(data.content)) return null;
+    const text = data.content
+      .map(function (block) {
+        return block && typeof block.text === 'string' ? block.text : '';
+      })
+      .join('\n')
+      .trim();
+    return text || null;
+  }
+
+  function showError(message, isErrorClass) {
+    const responseArea = document.getElementById('responseArea');
+    const responseContent = document.getElementById('responseContent');
+    responseContent.className = 'response-content' + (isErrorClass ? ' error' : '');
+    responseContent.innerHTML = '<p>' + message.replace(/</g, '&lt;') + '</p>';
+    responseArea.classList.add('visible');
+    responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function submitQuery() {
+    const input = document.getElementById('userInput').value.trim();
+    if (!input) return;
+
+    const loading = document.getElementById('loading');
+    const responseArea = document.getElementById('responseArea');
+    const responseContent = document.getElementById('responseContent');
+    const submitBtn = document.getElementById('submitBtn');
+
+    responseArea.classList.remove('visible');
+    responseContent.className = 'response-content';
+    loading.classList.add('visible');
+    submitBtn.disabled = true;
+
+    try {
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: input }]
+        })
+      });
+
+      const raw = await res.text();
+      let data;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        showError(
+          'The server returned something that is not JSON. Redeploy the Cloudflare Worker from the worker/ folder in this project (your Worker may still be the default "Hello World").',
+          true
+        );
+        return;
+      }
+
+      if (!res.ok) {
+        const apiMsg =
+          (data && data.error && data.error.message) ||
+          (data && typeof data.error === 'string' ? data.error : null);
+        let msg =
+          apiMsg ||
+          raw.slice(0, 280) ||
+          'Request failed (' + res.status + ')';
+        if (res.status === 401 || (apiMsg && /api-key|authentication/i.test(apiMsg))) {
+          msg =
+            'Anthropic rejected the API key (401). Open Cloudflare → Workers & Pages → thisloophole-proxy → Settings → Variables and secrets. Add or edit secret ANTHROPIC_API_KEY with a key from console.anthropic.com (starts with sk-ant-). Then run: cd worker && npx wrangler deploy. Details: ' +
+            (apiMsg || 'unauthorized');
+        }
+        showError(msg, true);
+        return;
+      }
+
+      const extracted = extractAssistantText(data);
+      if (!extracted) {
+        showError(
+          'Unexpected API response. If you just deployed the Worker, confirm ANTHROPIC_API_KEY is set in the Worker environment.',
+          true
+        );
+        return;
+      }
+
+      loading.classList.remove('visible');
+      responseContent.className = 'response-content';
+      responseContent.innerHTML = formatResponse(extracted);
+      responseArea.classList.add('visible');
+      responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (err) {
+      loading.classList.remove('visible');
+      showError(
+        'Network error: ' + (err && err.message ? err.message : 'Could not reach the server.') + ' Check the URL and your connection.',
+        true
+      );
+    } finally {
+      submitBtn.disabled = false;
+      loading.classList.remove('visible');
+    }
+  }
+
+  document.getElementById('userInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitQuery();
+  });
+</script>
+
+</body>
+</html>
