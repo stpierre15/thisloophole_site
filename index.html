@@ -383,8 +383,8 @@ Rules:
 - Keep it scannable — people are often reading this in a store or right after a stressful situation
 - End with one sentence of encouragement`;
 
-  // Must include https://. Set to your deployed Worker URL (see worker/README.txt).
-  const PROXY_URL = 'https://thisloophole-proxy.stpierre15.workers.dev';
+  // Netlify: /api/loophole → serverless function (see netlify.toml). Local: use `netlify dev`.
+  const PROXY_URL = '/api/loophole';
 
   function fill(text) {
     document.getElementById('userInput').value = text;
@@ -456,7 +456,7 @@ Rules:
         data = raw ? JSON.parse(raw) : null;
       } catch {
         showError(
-          'The server returned something that is not JSON. Redeploy the Cloudflare Worker from the worker/ folder in this project (your Worker may still be the default "Hello World").',
+          'The server returned non-JSON. Confirm the site is deployed on Netlify with functions enabled, or run `netlify dev` locally.',
           true
         );
         return;
@@ -472,7 +472,7 @@ Rules:
           'Request failed (' + res.status + ')';
         if (res.status === 401 || (apiMsg && /api-key|authentication/i.test(apiMsg))) {
           msg =
-            'Anthropic rejected the API key (401). Open Cloudflare → Workers & Pages → thisloophole-proxy → Settings → Variables and secrets. Add or edit secret ANTHROPIC_API_KEY with a key from console.anthropic.com (starts with sk-ant-). Then run: cd worker && npx wrangler deploy. Details: ' +
+            'Anthropic rejected the API key (401). In Netlify: Site configuration → Environment variables → set ANTHROPIC_API_KEY to a key from console.anthropic.com, then trigger Redeploy. Details: ' +
             (apiMsg || 'unauthorized');
         }
         showError(msg, true);
@@ -482,7 +482,7 @@ Rules:
       const extracted = extractAssistantText(data);
       if (!extracted) {
         showError(
-          'Unexpected API response. If you just deployed the Worker, confirm ANTHROPIC_API_KEY is set in the Worker environment.',
+          'Unexpected API response. Confirm ANTHROPIC_API_KEY is set in Netlify and redeploy.',
           true
         );
         return;

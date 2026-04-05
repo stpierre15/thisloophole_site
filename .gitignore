@@ -1,5 +1,8 @@
 .DS_Store
 .env
 .env.*
+.netlify/
+
+# Removed Cloudflare worker; ignore if anything left locally
 worker/node_modules/
 worker/.wrangler/

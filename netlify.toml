@@ -1,0 +1,13 @@
+[build]
+  publish = "."
+
+# Pretty URL for the function (same-origin fetch from index.html)
+[[redirects]]
+  from = "/api/loophole"
+  to = "/.netlify/functions/anthropic-proxy"
+  status = 200
+  force = true
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

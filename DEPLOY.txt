@@ -1,0 +1,26 @@
+Loophole on Netlify — simplest path
+===================================
+
+1) Push this folder to GitHub (or drag-and-drop the project folder in Netlify).
+
+2) In Netlify: Add new site → Import from Git (or deploy manually).
+
+3) Build settings (usually auto-detected):
+   - Base directory: (leave empty)
+   - Build command: (leave empty)
+   - Publish directory: .   (dot = site root; already in netlify.toml)
+
+4) Environment variables (required):
+   Site settings → Environment variables → Add variable
+   Name:  ANTHROPIC_API_KEY
+   Value: your key from https://console.anthropic.com/ (starts with sk-ant-)
+
+5) Deploy. Open the site and try "Find the loophole."
+
+Local test
+----------
+  npm i -g netlify-cli
+  netlify login
+  cd /path/to/this/project
+  netlify dev
+Opens a local URL; set ANTHROPIC_API_KEY in a .env file in the project root for netlify dev, or export it in your shell.
