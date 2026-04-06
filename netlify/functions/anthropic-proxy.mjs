@@ -8,6 +8,7 @@ const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Expose-Headers': 'X-Loophole-Stream, Content-Type',
 };
 
 const MODEL = (process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514').trim();
@@ -102,9 +103,9 @@ function totalUserChars(messages) {
   return n;
 }
 
-/** Parse Anthropic SSE: split on blank lines, read data: JSON lines */
+/** Parse Anthropic SSE: blank-line separated events; tolerate CRLF */
 function extractSseEvents(chunk, carry) {
-  const buf = carry + chunk;
+  const buf = (carry + chunk).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const events = [];
   let rest = buf;
   while (true) {
@@ -113,13 +114,14 @@ function extractSseEvents(chunk, carry) {
     const block = rest.slice(0, idx);
     rest = rest.slice(idx + 2);
     let dataLine = null;
-    for (const line of block.split('\n')) {
+    for (const rawLine of block.split('\n')) {
+      const line = rawLine.trimEnd();
       if (line.startsWith('data:')) {
         dataLine = line.slice(5).trim();
         break;
       }
     }
-    if (dataLine) {
+    if (dataLine && dataLine !== '[DONE]') {
       try {
         events.push(JSON.parse(dataLine));
       } catch {
@@ -128,6 +130,13 @@ function extractSseEvents(chunk, carry) {
     }
   }
   return { events, rest };
+}
+
+function textFromDelta(delta) {
+  if (!delta || typeof delta !== 'object') return '';
+  if (delta.type === 'text_delta' && typeof delta.text === 'string') return delta.text;
+  if (typeof delta.text === 'string') return delta.text;
+  return '';
 }
 
 /**
@@ -244,8 +253,9 @@ export default async function (request) {
           const { events, rest } = extractSseEvents(dec.decode(value, { stream: true }), sseCarry);
           sseCarry = rest;
           for (const evt of events) {
-            if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta' && evt.delta.text) {
-              line({ t: evt.delta.text });
+            if (evt.type === 'content_block_delta') {
+              const piece = textFromDelta(evt.delta);
+              if (piece) line({ t: piece });
             }
             if (evt.type === 'error' && evt.error) {
               const em =
@@ -253,6 +263,16 @@ export default async function (request) {
                   ? evt.error
                   : evt.error.message || JSON.stringify(evt.error);
               line({ e: em });
+            }
+          }
+        }
+
+        if (sseCarry.trim()) {
+          const { events } = extractSseEvents('\n\n', sseCarry);
+          for (const evt of events) {
+            if (evt.type === 'content_block_delta') {
+              const piece = textFromDelta(evt.delta);
+              if (piece) line({ t: piece });
             }
           }
         }
@@ -273,8 +293,10 @@ export default async function (request) {
     headers: {
       ...cors,
       'Content-Type': 'application/x-ndjson; charset=utf-8',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-transform',
       'X-Accel-Buffering': 'no',
+      // Netlify/CDN often omits or changes Content-Type; client uses this to open a stream reader
+      'X-Loophole-Stream': '1',
     },
   });
 }
