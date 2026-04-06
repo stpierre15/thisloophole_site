@@ -235,6 +235,10 @@
 
   .response-content strong { font-weight: 500; }
   .response-content.error { color: #8b2942; font-weight: 400; }
+  .response-content .stream-live {
+    white-space: pre-wrap;
+    font-weight: 300;
+  }
 
   .loading-area {
     display: none;
@@ -415,17 +419,6 @@
       .replace(/$/, '</p>');
   }
 
-  function extractAssistantText(data) {
-    if (!data || typeof data !== 'object' || !Array.isArray(data.content)) return null;
-    const text = data.content
-      .map(function (block) {
-        return block && typeof block.text === 'string' ? block.text : '';
-      })
-      .join('\n')
-      .trim();
-    return text || null;
-  }
-
   function showError(message, isErrorClass) {
     const responseArea = document.getElementById('responseArea');
     const responseContent = document.getElementById('responseContent');
@@ -474,19 +467,22 @@
         body: JSON.stringify(payload),
       });
 
-      const raw = await res.text();
-      let data;
-      try {
-        data = raw ? JSON.parse(raw) : null;
-      } catch {
-        showError(
-          'The server returned non-JSON. Confirm the site is deployed on Netlify with functions enabled, or run `netlify dev` locally.',
-          true
-        );
-        return;
-      }
+      const ct = (res.headers.get('content-type') || '').toLowerCase();
+      const isNdjson = ct.indexOf('ndjson') !== -1;
 
-      if (!res.ok) {
+      if (!res.ok || !isNdjson) {
+        const raw = await res.text();
+        let data;
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch {
+          showError(
+            'The server returned an unexpected response. Confirm Netlify deployed the latest functions, or run `netlify dev` locally.',
+            true
+          );
+          return;
+        }
+
         const apiMsg =
           (data && data.error && data.error.message) ||
           (data && typeof data.error === 'string' ? data.error : null);
@@ -506,19 +502,59 @@
         return;
       }
 
-      const extracted = extractAssistantText(data);
-      if (!extracted) {
-        showError(
-          'Unexpected API response. Confirm ANTHROPIC_API_KEY is set in Netlify and redeploy.',
-          true
-        );
+      loading.classList.remove('visible');
+      responseArea.classList.add('visible');
+      responseContent.className = 'response-content';
+      responseContent.innerHTML = '<p class="stream-live"></p>';
+      var liveEl = responseContent.querySelector('.stream-live');
+
+      var accum = '';
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var lineBuf = '';
+      var streamDone = false;
+
+      while (!streamDone) {
+        var readResult = await reader.read();
+        if (readResult.done) break;
+        lineBuf += decoder.decode(readResult.value, { stream: true });
+        var parts = lineBuf.split('\n');
+        lineBuf = parts.pop() || '';
+
+        for (var li = 0; li < parts.length; li++) {
+          var line = parts[li];
+          if (!line.trim()) continue;
+          var o;
+          try {
+            o = JSON.parse(line);
+          } catch (parseErr) {
+            continue;
+          }
+          if (o.t) {
+            accum += o.t;
+            liveEl.textContent = accum;
+            responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          if (o.e) {
+            showError(o.e, true);
+            if (TURNSTILE_SITE_KEY && loopholeTurnstileWidgetId !== null && typeof turnstile !== 'undefined') {
+              turnstile.reset(loopholeTurnstileWidgetId);
+            }
+            return;
+          }
+          if (o.d) {
+            streamDone = true;
+            break;
+          }
+        }
+      }
+
+      if (!accum.trim()) {
+        showError('No answer was returned. Try again or shorten your question.', true);
         return;
       }
 
-      loading.classList.remove('visible');
-      responseContent.className = 'response-content';
-      responseContent.innerHTML = formatResponse(extracted);
-      responseArea.classList.add('visible');
+      responseContent.innerHTML = formatResponse(accum);
       responseArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       if (TURNSTILE_SITE_KEY && loopholeTurnstileWidgetId !== null && typeof turnstile !== 'undefined') {

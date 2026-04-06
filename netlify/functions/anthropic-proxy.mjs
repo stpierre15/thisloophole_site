@@ -8,7 +8,6 @@ const cors = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Content-Type': 'application/json',
 };
 
 const MODEL = (process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514').trim();
@@ -24,30 +23,21 @@ const RATE_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || String(15 * 
 const RATE_MAX = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10', 10);
 const RATE_DAY_MAX = parseInt(process.env.RATE_LIMIT_DAILY_MAX || '40', 10);
 
-function headerGet(headers, name) {
-  if (!headers) return '';
-  const lower = name.toLowerCase();
-  const keys = Object.keys(headers);
-  const k = keys.find((h) => h.toLowerCase() === lower);
-  return k ? String(headers[k] || '') : '';
+function jsonResponse(status, obj) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { ...cors, 'Content-Type': 'application/json' },
+  });
 }
 
-function corsJson(status, body) {
-  return {
-    statusCode: status,
-    headers: { ...cors },
-    body: JSON.stringify(body),
-  };
-}
-
-function clientIp(event) {
-  const forwarded = headerGet(event.headers, 'x-forwarded-for');
+function clientIp(request) {
+  const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
-  const nf = headerGet(event.headers, 'x-nf-client-connection-ip');
-  if (nf) return nf.trim();
-  const cip = headerGet(event.headers, 'client-ip');
-  if (cip) return cip.trim();
-  return 'unknown';
+  return (
+    request.headers.get('x-nf-client-connection-ip') ||
+    request.headers.get('client-ip') ||
+    'unknown'
+  );
 }
 
 async function verifyTurnstile(secret, token, ip) {
@@ -112,24 +102,56 @@ function totalUserChars(messages) {
   return n;
 }
 
-export const handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: cors, body: '' };
+/** Parse Anthropic SSE: split on blank lines, read data: JSON lines */
+function extractSseEvents(chunk, carry) {
+  const buf = carry + chunk;
+  const events = [];
+  let rest = buf;
+  while (true) {
+    const idx = rest.indexOf('\n\n');
+    if (idx === -1) break;
+    const block = rest.slice(0, idx);
+    rest = rest.slice(idx + 2);
+    let dataLine = null;
+    for (const line of block.split('\n')) {
+      if (line.startsWith('data:')) {
+        dataLine = line.slice(5).trim();
+        break;
+      }
+    }
+    if (dataLine) {
+      try {
+        events.push(JSON.parse(dataLine));
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  return { events, rest };
+}
+
+/**
+ * Netlify Functions 2.0: default export, Request → Response.
+ * Streams NDJSON lines: {"t":"text"} … {"d":true} or {"e":"error message"}
+ */
+export default async function (request) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: cors });
   }
 
-  if (event.httpMethod !== 'POST') {
-    return corsJson(405, { error: { message: 'Method not allowed' } });
+  if (request.method !== 'POST') {
+    return jsonResponse(405, { error: { message: 'Method not allowed' } });
   }
 
-  const ip = clientIp(event);
+  const ip = clientIp(request);
   const rl = await checkRateLimit(ip);
   if (!rl.ok) {
-    return corsJson(429, { error: { message: rl.reason } });
+    return jsonResponse(429, { error: { message: rl.reason } });
   }
 
   const key = (process.env.ANTHROPIC_API_KEY || '').trim();
   if (!key) {
-    return corsJson(500, {
+    return jsonResponse(500, {
       error: {
         message:
           'ANTHROPIC_API_KEY is not set. In Netlify: Site settings → Environment variables.',
@@ -139,22 +161,22 @@ export const handler = async (event) => {
 
   let body;
   try {
-    body = JSON.parse(event.body || '{}');
+    body = await request.json();
   } catch {
-    return corsJson(400, { error: { message: 'Invalid JSON body' } });
+    return jsonResponse(400, { error: { message: 'Invalid JSON body' } });
   }
 
   const turnstileSecret = (process.env.TURNSTILE_SECRET_KEY || '').trim();
   if (turnstileSecret) {
     const token = body.turnstileToken;
     if (!token || typeof token !== 'string') {
-      return corsJson(400, {
+      return jsonResponse(400, {
         error: { message: 'Missing verification. Please complete the check below and try again.' },
       });
     }
     const ok = await verifyTurnstile(turnstileSecret, token, ip);
     if (!ok) {
-      return corsJson(403, {
+      return jsonResponse(403, {
         error: { message: 'Verification failed. Refresh the page and try again.' },
       });
     }
@@ -162,39 +184,97 @@ export const handler = async (event) => {
 
   const { messages } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
-    return corsJson(400, { error: { message: 'Missing messages array' } });
+    return jsonResponse(400, { error: { message: 'Missing messages array' } });
   }
 
   const chars = totalUserChars(messages);
   if (chars > MAX_USER_CHARS) {
-    return corsJson(400, {
+    return jsonResponse(400, {
       error: { message: `Question too long (max ${MAX_USER_CHARS} characters).` },
     });
   }
-
   if (chars < 1) {
-    return corsJson(400, { error: { message: 'Empty question.' } });
+    return jsonResponse(400, { error: { message: 'Empty question.' } });
   }
 
-  const upstream = await fetch(ANTHROPIC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const line = (obj) => controller.enqueue(encoder.encode(`${JSON.stringify(obj)}\n`));
+
+      try {
+        const upstream = await fetch(ANTHROPIC_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: MODEL,
+            max_tokens: MAX_OUTPUT_TOKENS,
+            system: SYSTEM_PROMPT,
+            messages,
+            stream: true,
+          }),
+        });
+
+        if (!upstream.ok || !upstream.body) {
+          const errText = await upstream.text();
+          let msg = errText.slice(0, 500);
+          try {
+            const j = JSON.parse(errText);
+            if (j.error?.message) msg = j.error.message;
+          } catch {
+            /* use raw */
+          }
+          line({ e: msg });
+          line({ d: true });
+          controller.close();
+          return;
+        }
+
+        const reader = upstream.body.getReader();
+        const dec = new TextDecoder();
+        let sseCarry = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const { events, rest } = extractSseEvents(dec.decode(value, { stream: true }), sseCarry);
+          sseCarry = rest;
+          for (const evt of events) {
+            if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta' && evt.delta.text) {
+              line({ t: evt.delta.text });
+            }
+            if (evt.type === 'error' && evt.error) {
+              const em =
+                typeof evt.error === 'string'
+                  ? evt.error
+                  : evt.error.message || JSON.stringify(evt.error);
+              line({ e: em });
+            }
+          }
+        }
+
+        line({ d: true });
+        controller.close();
+      } catch (err) {
+        console.error('Stream error:', err);
+        line({ e: err.message || 'Stream failed' });
+        line({ d: true });
+        controller.close();
+      }
     },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_OUTPUT_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages,
-    }),
   });
 
-  const text = await upstream.text();
-  return {
-    statusCode: upstream.status,
-    headers: { ...cors },
-    body: text,
-  };
-};
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      ...cors,
+      'Content-Type': 'application/x-ndjson; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Accel-Buffering': 'no',
+    },
+  });
+}

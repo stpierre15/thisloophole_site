@@ -32,6 +32,10 @@ Loophole on Netlify — deploy checklist
 
 4) Redeploy after changing variables.
 
+Streaming answers
+-----------------
+The API function uses Netlify Functions 2.0 (default export) and streams the model output as NDJSON so text appears progressively. That does not change Anthropic token counts or pricing — same input + output tokens as a non-streaming call.
+
 Guardrails in place
 -------------------
 - System prompt lives only on the server (clients cannot swap model/prompt to burn credits).
