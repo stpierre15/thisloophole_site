@@ -257,6 +257,15 @@
 
   .response-content strong { font-weight: 600; color: var(--black); }
 
+  .response-content a {
+    color: var(--green);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .response-content a:hover { color: var(--green-mid); }
+
   .response-content.error {
     color: #8b2942;
     font-weight: 400;
@@ -400,12 +409,54 @@
   };
 
   function formatResponse(text) {
-    const escaped = text
+    var links = [];
+    var withTokens = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (_m, label, url) {
+      links.push({ label: label, url: url.trim() });
+      return '{{L' + (links.length - 1) + '}}';
+    });
+
+    var escaped = withTokens
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
+
+    escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    function safeAnchor(label, url) {
+      if (!/^https?:\/\//i.test(url)) {
+        return label;
+      }
+      try {
+        var u = new URL(url);
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          return label;
+        }
+      } catch (err) {
+        return label;
+      }
+      var href = url
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+      return (
+        '<a href="' +
+        href +
+        '" target="_blank" rel="noopener noreferrer">' +
+        label +
+        '</a>'
+      );
+    }
+
+    var i;
+    for (i = 0; i < links.length; i++) {
+      var lab = links[i].label
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      escaped = escaped.split('{{L' + i + '}}').join(safeAnchor(lab, links[i].url));
+    }
+
     return escaped
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>')
       .replace(/^/, '<p>')

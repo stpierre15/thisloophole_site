@@ -14,7 +14,7 @@ const cors = {
 const MODEL = (process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-20250514').trim();
 const MAX_OUTPUT_TOKENS = Math.min(
   1200,
-  Math.max(256, parseInt(process.env.ANTHROPIC_MAX_OUTPUT_TOKENS || '768', 10))
+  Math.max(256, parseInt(process.env.ANTHROPIC_MAX_OUTPUT_TOKENS || '1000', 10))
 );
 const MAX_USER_CHARS = Math.min(
   12000,
