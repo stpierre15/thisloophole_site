@@ -295,32 +295,6 @@
 
   .loading-text { font-size: 0.875rem; color: var(--gray); font-weight: 300; }
 
-  .examples {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: flex-start;
-    opacity: 0;
-    animation: fadeUp 0.6s ease 0.4s forwards;
-  }
-
-  .example-pill {
-    font-size: 0.8rem;
-    color: var(--gray);
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 99px;
-    padding: 6px 14px;
-    cursor: pointer;
-    font-family: var(--sans);
-    font-weight: 400;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-  }
-
-  .example-pill:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
-
   footer {
     text-align: center;
     padding: 2rem;
@@ -347,7 +321,6 @@
     nav { padding: 1.25rem 1rem; }
     .hero { padding: 3rem 1rem 2rem; }
     h1 { font-size: 1.95rem; }
-    .example-pill { font-size: 0.75rem; }
     .response-body { margin: 0 0.65rem 0.85rem; padding: 1rem 1.05rem 1.15rem; }
   }
 </style>
@@ -400,14 +373,6 @@
     </div>
   </div>
 
-  <div class="examples">
-    <button type="button" class="example-pill" onclick="fill('My dentist says I need a deep clean instead of a regular cleaning and quoted me $800 extra.')">Dentist upsell</button>
-    <button type="button" class="example-pill" onclick="fill('My county raised my home tax assessment by 20% but my neighborhood values went down.')">Tax assessment hike</button>
-    <button type="button" class="example-pill" onclick="fill('I was charged a $45 resort fee that wasn\'t shown when I booked.')">Hidden hotel fee</button>
-    <button type="button" class="example-pill" onclick="fill('I\'m about to buy an Apple HomePod. How do I find the best price?')">Before you buy</button>
-    <button type="button" class="example-pill" onclick="fill('A subscription kept charging me for 3 months after I cancelled.')">Subscription trap</button>
-  </div>
-
 </main>
 
 <footer>
@@ -433,11 +398,6 @@
       size: 'flexible',
     });
   };
-
-  function fill(text) {
-    document.getElementById('userInput').value = text;
-    document.getElementById('userInput').focus();
-  }
 
   function formatResponse(text) {
     const escaped = text
