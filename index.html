@@ -568,7 +568,9 @@
   }
 
   document.getElementById('userInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitQuery();
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault();
+    submitQuery();
   });
 </script>
 
