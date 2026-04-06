@@ -18,7 +18,7 @@ RANKING (required for shopping / “what should I buy” questions):
   - **Quality:** one line (materials, durability, finish, how it feels in use—be concrete).
   - **Deal:** one line (typical price band if you know it, refurb/open-box angle, or “compare prices / wait for sale” if variable).
   - **Verdict:** one line—why this rank vs the others (better, worse, or niche use).
-  - **Check it out:** one markdown link `[label](url)` to a **specific product page** or a **tight Google/Amazon search URL** for that exact product name (same rules as below). No generic store links.
+  - **Check it out:** one markdown link in the form \`[link text](https://…)\` to a **specific product page** or a **tight Google/Amazon search URL** for that exact product name (same rules as below). No generic store links.
 
 - **#1** should be your honest top choice for most people under your stated ranking. Put weaker deals, flimsier quality, or worse price-to-quality **lower** (#5–#7). The list must read as a real **ordering**, not a random bullet list.
 - Give **5–7 ranked** items for category questions when possible. Mix in explicit **Budget pick** and **Premium / best quality** slots if they aren’t already #1 or #2.
