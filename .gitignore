@@ -7,3 +7,9 @@ node_modules/
 # Removed Cloudflare worker; ignore if anything left locally
 worker/node_modules/
 worker/.wrangler/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
