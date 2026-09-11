@@ -1,0 +1,838 @@
+[
+  {
+    "id": "best-buy-match",
+    "title": "Ask Best Buy to match a lower price",
+    "slug": "best-buy-match",
+    "summary": "An identical, available new item from a qualified competitor may qualify.",
+    "category": "retail",
+    "loophole_type": "Price Match",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Best Buy"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Sold by Best Buy; identical item in stock at an approved competitor."
+    ],
+    "steps": [
+      "Show the live offer to Best Buy before checkout."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [
+      "best-buy-open-box"
+    ],
+    "exclusions": [
+      "Marketplace sellers, open box, refurbished, clearance, coupons and selected promotions."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.bestbuy.com/site/price-match-guarantee/best-buy-price-match-guarantee/pcmcat297300050000.c?id=pcmcat297300050000",
+    "primary_source_name": "Best Buy",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "best-buy-adjustment",
+    "title": "Keep a price-drop reminder",
+    "slug": "best-buy-adjustment",
+    "summary": "If Best Buy lowers its price during your return window, request the difference.",
+    "category": "retail",
+    "loophole_type": "Price Adjustment",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Best Buy"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Eligible new item; within your return period."
+    ],
+    "steps": [
+      "Save the receipt and ask for an adjustment if Best Buy’s price falls."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Marketplace, open box, refurbished and excluded promotions."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.bestbuy.com/site/price-match-guarantee/best-buy-price-match-guarantee/pcmcat297300050000.c?id=pcmcat297300050000",
+    "primary_source_name": "Best Buy",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "best-buy-open-box",
+    "title": "Check the same model open box",
+    "slug": "best-buy-open-box",
+    "summary": "Outlet inventory can offer another purchase path; price and availability need checking.",
+    "category": "retail",
+    "loophole_type": "Refurbished / Open Box",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances"
+    ],
+    "merchants": [
+      "Best Buy"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Exact model available in acceptable condition."
+    ],
+    "steps": [
+      "Compare the full delivered price and inspect condition, accessories and warranty."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [
+      "best-buy-match"
+    ],
+    "exclusions": [
+      "No price matching on open-box or clearance items. Manufacturer warranty varies."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.bestbuy.com/site/outlet-refurbished-clearance/outlet-stores-faqs/pcmcat748301999410.c",
+    "primary_source_name": "Best Buy",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": [],
+    "requires_used": true
+  },
+  {
+    "id": "best-buy-returns",
+    "title": "Check your exact return deadline",
+    "slug": "best-buy-returns",
+    "summary": "Review the item’s return window before checkout, including any restocking fee.",
+    "category": "retail",
+    "loophole_type": "Return Benefit",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Best Buy"
+    ],
+    "savings_type": "protection",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Eligible item sold by Best Buy; retain proof of purchase."
+    ],
+    "steps": [
+      "Read the item’s applicable return period and test it promptly."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Marketplace sellers and product-specific exceptions may have different terms."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.bestbuy.com/site/help-topics/return-exchange-policy/pcmcat260800050014.c",
+    "primary_source_name": "Best Buy",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "apple-refurbished",
+    "title": "Compare Apple Certified Refurbished",
+    "slug": "apple-refurbished",
+    "summary": "Apple’s own refurbished devices include a one-year limited warranty. Exact inventory and savings vary.",
+    "category": "electronics",
+    "loophole_type": "Refurbished / Open Box",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics"
+    ],
+    "merchants": [],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Matching Apple model and configuration available; refurbished acceptable."
+    ],
+    "steps": [
+      "Compare the exact model at Apple’s refurbished store, including delivered cost."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Other sellers’ refurbished products are not covered by this program."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.apple.com/shop/refurbished/about",
+    "primary_source_name": "Apple",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [
+      "apple",
+      "macbook",
+      "imac",
+      "mac mini",
+      "mac studio",
+      "iphone",
+      "ipad",
+      "airpods",
+      "homepod"
+    ],
+    "excluded_keywords": [],
+    "requires_used": true
+  },
+  {
+    "id": "apple-returns",
+    "title": "Preserve Apple’s return window",
+    "slug": "apple-returns",
+    "summary": "Direct Apple purchases generally have a 14-calendar-day return window from receipt.",
+    "category": "electronics",
+    "loophole_type": "Return Benefit",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics"
+    ],
+    "merchants": [
+      "Apple"
+    ],
+    "savings_type": "protection",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Bought directly from Apple; packaging and included items retained."
+    ],
+    "steps": [
+      "Keep the receipt and test the purchase before the deadline."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Excluded products and wireless service cancellation terms apply."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.apple.com/shop/help/returns_refund",
+    "primary_source_name": "Apple",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "apple-adjustment",
+    "title": "Watch for Apple price reductions",
+    "slug": "apple-adjustment",
+    "summary": "A qualifying Apple price drop within 14 days of receipt may earn an adjustment.",
+    "category": "electronics",
+    "loophole_type": "Price Adjustment",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics"
+    ],
+    "merchants": [
+      "Apple"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Apple-branded item purchased from Apple; timely request."
+    ],
+    "steps": [
+      "Contact Apple within 14 days of the price change."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Limited-time promotions and special sales events are excluded."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.apple.com/shop/help/returns_refund",
+    "primary_source_name": "Apple",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "apple-trade-in",
+    "title": "Get a quote for your existing device",
+    "slug": "apple-trade-in",
+    "summary": "An eligible device may have trade-in value. Compare the quote with resale before deciding.",
+    "category": "electronics",
+    "loophole_type": "Trade-In",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics"
+    ],
+    "merchants": [
+      "Apple"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "You own an eligible device; value depends on its model and condition."
+    ],
+    "steps": [
+      "Get an official quote and compare what you could receive elsewhere."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Final value depends on inspection; some devices have no trade-in value."
+    ],
+    "gotchas": [
+      "Trade-in exchanges an asset you own; it is not a free discount on the new product."
+    ],
+    "primary_source_url": "https://www.apple.com/shop/trade-in",
+    "primary_source_name": "Apple",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [
+      "iphone",
+      "ipad",
+      "macbook",
+      "imac",
+      "mac mini",
+      "apple watch"
+    ],
+    "excluded_keywords": []
+  },
+  {
+    "id": "costco-online-adjustment",
+    "title": "Monitor a Costco.com price drop",
+    "slug": "costco-online-adjustment",
+    "summary": "Eligible online purchases may receive an adjustment for a price drop within 30 days.",
+    "category": "retail",
+    "loophole_type": "Price Adjustment",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Costco"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Non-resale Costco.com purchase; request within any promotion’s active dates."
+    ],
+    "steps": [
+      "Retain the receipt and use Costco’s online price-match request."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "No competitor or warehouse-to-online matching; precious metals excluded."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://customerservice.costco.com/app/answers/answer_view/a_id/628",
+    "primary_source_name": "Costco",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [],
+    "excluded_keywords": [
+      "gold",
+      "silver bar",
+      "bullion",
+      "precious metal"
+    ],
+    "online_only": true
+  },
+  {
+    "id": "costco-warranty",
+    "title": "Check included Costco warranty coverage",
+    "slug": "costco-warranty",
+    "summary": "Costco extends manufacturer coverage to up to two years on certain products.",
+    "category": "retail",
+    "loophole_type": "Warranty",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances"
+    ],
+    "merchants": [
+      "Costco"
+    ],
+    "savings_type": "protection",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Eligible television, projector, computer or major appliance purchased at Costco."
+    ],
+    "steps": [
+      "Compare included coverage before paying for a separate plan."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Touchscreen tablets excluded; coverage follows manufacturer terms."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://techsupport.costco.com/app/answers/detail/a_id/1001211/loc/en_US",
+    "primary_source_name": "Costco",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [
+      "television",
+      "tv",
+      "projector",
+      "laptop",
+      "computer",
+      "macbook",
+      "imac",
+      "refrigerator",
+      "washer",
+      "dryer",
+      "dishwasher",
+      "freezer",
+      "cooktop",
+      "water heater"
+    ],
+    "excluded_keywords": [
+      "ipad",
+      "tablet"
+    ]
+  },
+  {
+    "id": "target-adjustment",
+    "title": "Check Target’s own lower price",
+    "slug": "target-adjustment",
+    "summary": "Eligible Target purchases can be matched to qualifying Target prices within 14 days.",
+    "category": "retail",
+    "loophole_type": "Price Adjustment",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Target"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Identical item; valid lower Target price and receipt."
+    ],
+    "steps": [
+      "Check Target.com and applicable local pricing; request at Guest Services or online."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [
+      "target-card"
+    ],
+    "exclusions": [
+      "Other retailers, clearance, used goods, gift-card promotions and many coupon combinations are excluded. Alaska/Hawaii restrictions apply."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.target.com/help/articles/policies-guidelines/price-match-guarantee?redirect=true",
+    "primary_source_name": "Target",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": [
+      "gift card",
+      "giftcard",
+      "pharmacy",
+      "prescription",
+      "membership"
+    ]
+  },
+  {
+    "id": "target-card",
+    "title": "Use an existing eligible Target Circle Card",
+    "slug": "target-card",
+    "summary": "Eligible purchases paid with a Target Circle Card receive 5% off the qualifying subtotal.",
+    "category": "retail",
+    "loophole_type": "Loyalty Benefit",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "electronics",
+      "appliances",
+      "home",
+      "outdoors",
+      "clothing",
+      "other"
+    ],
+    "merchants": [
+      "Target"
+    ],
+    "savings_type": "percentage",
+    "estimated_savings_min": 5,
+    "estimated_savings_max": 5,
+    "requirements": [
+      "Already hold the card; confirm eligibility and whether the entered price includes the discount."
+    ],
+    "steps": [
+      "Check the final eligible subtotal and discount at checkout."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [
+      "target-adjustment"
+    ],
+    "exclusions": [
+      "Gift cards, pharmacy, membership fees, taxes, shipping and other exceptions apply."
+    ],
+    "gotchas": [
+      "No need to open a credit account. Interest or fees can outweigh a discount; we do not recommend borrowing.",
+      "Discount base is reduced by other discounts and promotional gift cards."
+    ],
+    "primary_source_url": "https://www.target.com/c/target-circle-card-program-rules/-/N-4tgj0",
+    "primary_source_name": "Target",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": [
+      "gift card",
+      "giftcard",
+      "pharmacy",
+      "prescription",
+      "alcohol",
+      "membership",
+      "prepaid",
+      "clinic",
+      "deposit"
+    ],
+    "rate": 0.05
+  },
+  {
+    "id": "rei-reward",
+    "title": "Factor in an existing REI membership",
+    "slug": "rei-reward",
+    "summary": "Eligible full-price purchases may earn an annual member reward, typically 10% but not guaranteed.",
+    "category": "retail",
+    "loophole_type": "Loyalty Benefit",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "outdoors",
+      "clothing"
+    ],
+    "merchants": [
+      "REI"
+    ],
+    "savings_type": "conditional",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Existing membership and eligible full-price purchase."
+    ],
+    "steps": [
+      "Confirm eligibility and compare the actual checkout price first."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Sale, Outlet, used gear, gift cards, fees and other exclusions apply."
+    ],
+    "gotchas": [
+      "A future reward is not cash off today. We do not add it to immediate savings."
+    ],
+    "primary_source_url": "https://www.rei.com/membership/co-op-member-reward",
+    "primary_source_name": "REI",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  },
+  {
+    "id": "rei-returns",
+    "title": "Know REI’s satisfaction-return terms",
+    "slug": "rei-returns",
+    "summary": "Review REI’s satisfaction guarantee before buying outdoor gear.",
+    "category": "retail",
+    "loophole_type": "Return Benefit",
+    "trigger": "Considering a qualifying purchase",
+    "purchase_stage": [
+      "before_purchase"
+    ],
+    "product_categories": [
+      "outdoors",
+      "clothing"
+    ],
+    "merchants": [
+      "REI"
+    ],
+    "savings_type": "protection",
+    "estimated_savings_min": null,
+    "estimated_savings_max": null,
+    "requirements": [
+      "Proof of purchase and an eligible return reason."
+    ],
+    "steps": [
+      "Check the deadline for your membership and item type."
+    ],
+    "difficulty": "Easy",
+    "time_required": "5–15 minutes",
+    "stackable": false,
+    "stackable_with": [],
+    "conflicts_with": [],
+    "exclusions": [
+      "Ordinary wear, improper use and accidents are excluded; final-sale and item-specific rules apply."
+    ],
+    "gotchas": [
+      "Confirm current terms and your exact item’s eligibility before paying."
+    ],
+    "primary_source_url": "https://www.rei.com/help/returns",
+    "primary_source_name": "REI",
+    "verification_status": "VERIFIED",
+    "last_verified": "2026-09-10",
+    "confidence_score": 90,
+    "status": "Active",
+    "created_at": "2026-09-10T00:00:00Z",
+    "updated_at": "2026-09-10T00:00:00Z",
+    "conditions": [
+      "new",
+      "used",
+      "open_box",
+      "refurbished"
+    ],
+    "keywords": [],
+    "excluded_keywords": []
+  }
+]

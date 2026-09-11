@@ -1,8 +1,12 @@
 .DS_Store
 .env
 .env.*
+!.env.example
 .netlify/
 node_modules/
+dist/
+.local-data/
+.artifacts/
 
 # Removed Cloudflare worker; ignore if anything left locally
 worker/node_modules/

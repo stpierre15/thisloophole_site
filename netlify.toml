@@ -1,7 +1,29 @@
 [build]
-  publish = "."
+  command = "npm run build"
+  publish = "dist"
 
-# Pretty URL for the function (same-origin fetch from index.html)
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/api/check-purchase"
+  to = "/.netlify/functions/check-purchase"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/outcome"
+  to = "/.netlify/functions/outcome"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/metrics"
+  to = "/.netlify/functions/metrics"
+  status = 200
+  force = true
+
+# Previous chat clients receive an explicit retirement response.
 [[redirects]]
   from = "/api/loophole"
   to = "/.netlify/functions/anthropic-proxy"
@@ -11,3 +33,37 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/tools"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/tools.html"
+  to = "/"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
+
+[[redirects]]
+  from = "/api/inspect-product"
+  to = "/.netlify/functions/inspect-product"
+  status = 200
+  force = true

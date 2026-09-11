@@ -1,53 +1,81 @@
-Loophole on Netlify — deploy checklist
-=======================================
+Loophole MVP — deploy to the EXISTING Netlify site
+================================================
 
-1) Connect the repo (or drag-and-drop this folder).
+Repository: https://github.com/stpierre15/thisloophole_site
+Local checkout: /Users/cecilstpierre/Desktop/loophole/loophole_v4
+Production: https://thisloophole.com
 
-2) Build: Netlify runs `npm install` (see netlify.toml) so the API function can use @netlify/blobs for rate limits.
+Published 2026-09-11 to the existing Netlify project thisloophole. Production: https://thisloophole.com
+Production deploy: 6aa39898ef7ff82f4cdae36f
+Tested draft: 6aa3979579462c605dfc95af (purchase, useful vote and wait outcome all saved).
+The pre-MVP GitHub main resolved to 37cc4bedd845b54869f16c0647be271dadf1c45b.
+GitHub rejected the saved credential during a dry-run push; no remote changes were made.
+Netlify CLI authorization now works and .netlify/state.json links this checkout to the existing project. The earlier GitHub credential failure is separate: source must still be pushed before relying on automatic Git deploys. The production deployment above used the local checkout via Netlify CLI.
 
-3) Environment variables (Netlify → Site configuration → Environment variables).
-   Use scope that includes Functions for all secrets.
+1. From this existing checkout:
 
-   Required:
-   - ANTHROPIC_API_KEY — from https://console.anthropic.com/
+   cd /Users/cecilstpierre/Desktop/loophole/loophole_v4
+   npm ci
+   npm test
+   npm run build
+   npx netlify-cli build --offline
 
-   Strongly recommended (stops bots / scripted abuse):
-   - TURNSTILE_SECRET_KEY — from https://dash.cloudflare.com → Turnstile → your widget → Secret key
+2. This checkout is already linked. For another machine, authenticate and link the existing project:
 
-   In index.html, set the matching public site key (same Turnstile widget):
-   - const TURNSTILE_SITE_KEY = '0x...';   // line near the top of the second <script> block
+   npx netlify-cli login
+   npx netlify-cli link
 
-   Cloudflare “always passes” test keys (local / staging only):
-   - Site key: 1x00000000000000000000AA
-   - Secret:    1x0000000000000000000000000000000AA
-   https://developers.cloudflare.com/turnstile/troubleshooting/testing-keys/
+   Choose the existing Netlify project whose domain is thisloophole.com.
+   Do NOT create a project. Inspect Project configuration > Domain management
+   and confirm the domain before publishing. No DNS changes are needed.
 
-   Optional tuning (all optional):
-   - ANTHROPIC_MODEL — default claude-sonnet-4-20250514
-   - ANTHROPIC_MAX_OUTPUT_TOKENS — cap model output (default 768, max 1200)
-   - LOOPHOLE_MAX_QUESTION_CHARS — max question length (default 6000)
-   - RATE_LIMIT_WINDOW_MS — sliding window in ms (default 900000 = 15 min)
-   - RATE_LIMIT_MAX_REQUESTS — max requests per IP per window (default 10)
-   - RATE_LIMIT_DAILY_MAX — max requests per IP per calendar day (default 40)
+3. Confirm deployment settings (already specified in netlify.toml):
 
-4) Redeploy after changing variables.
+   Base directory: repository root (the folder containing this file)
+   Build command: npm run build
+   Publish directory: dist
+   Functions directory: netlify/functions
+   Node version: 22
 
-Streaming answers
------------------
-The API function uses Netlify Functions 2.0 (default export) and streams the model output as NDJSON so text appears progressively. That does not change Anthropic token counts or pricing — same input + output tokens as a non-streaming call.
+   Core purchase checks do not require API keys. Netlify Blobs is configured
+   by the Netlify Functions runtime. Production data lives in
+   loophole-v1-production; preview data uses a separate deploy namespace.
+   The retired chatbot files are in legacy/ and incur no model API calls.
 
-Guardrails in place
--------------------
-- System prompt lives only on the server (clients cannot swap model/prompt to burn credits).
-- Output tokens and question length are capped.
-- Per-IP rate limits (Netlify Blobs).
-- Optional Cloudflare Turnstile before each API call.
+4. Optional: configure LOOPHOLE_ADMIN_TOKEN in the Netlify Functions scope
+   for founder metrics. Use a fresh long random secret. Never put it in
+   frontend code or Git. No admin token is needed for consumer checks.
 
-Also set spending / usage alerts in the Anthropic console so you get notified if something spikes.
+5. Make an unpublished deployment first:
 
-Local test
-----------
-  npm install
-  npx netlify-cli login
-  npx netlify-cli dev
-Use a root `.env` with ANTHROPIC_API_KEY (and Turnstile test keys if you enable the widget).
+   npx netlify-cli deploy --build
+
+   Open the returned draft URL. Submit a purchase, then useful feedback and
+   a bought/wait outcome. Verify data exists in Netlify > Blobs and the
+   functions log has no runtime errors. Draft deployment does not change
+   thisloophole.com; its records do not mix with production records.
+
+6. Publish to that SAME linked site:
+
+   npx netlify-cli deploy --build --prod
+
+   Verify https://thisloophole.com shows 'Before you buy it, Loophole it.'
+   Check the purchase form and feedback again on the domain. Production
+   function configuration and actual Blobs authorization require this
+   hosted smoke test; an offline build cannot prove them.
+
+7. Preserve the implementation in the existing GitHub repository. Review
+   git diff and git status before committing because this checkout already
+   contained local edits. The old edited chatbot source is retained in
+   legacy/. Once the final source is committed and pushed, confirm Netlify's
+   Git integration points at this repository and main. Future builds must
+   use npm run build and dist, not publish the repository root.
+
+   If a CLI deploy succeeds before Git is updated, an older Git deploy can
+   overwrite it. Update the repository before the next automated deploy.
+
+Rollback: in Netlify > Deploys, select the prior successful production
+version and use Publish deploy. Site-wide production purchase and outcome
+records survive rollback. Do not delete the Blobs store or change DNS.
+
+Do not use drag-and-drop of dist alone: the site needs bundled Functions.
