@@ -34,11 +34,13 @@ Purchase → validated structured record → merchant/category/condition/keyword
 
 ## Evidence and limitations
 
-Supported public retailer links trigger `/api/inspect-product`. It reads Schema.org Product/Offer data with an exact-host HTTPS allowlist, validated redirects, a 9-second deadline and a 2 MB response cap. Unambiguous USD offer prices, seller and condition fill untouched fields. Accessible in-stock offers on the same product page can be selected as user-confirmed comparisons. It does not perform a market-wide search. Blocked pages and missing/ambiguous structured data require manual entry; in particular the supplied Best Buy Marketplace page could not be retrieved during testing. No cached or invented price is substituted. Unknown Marketplace sellers withhold retailer-specific policies. A verified retailer policy is not a verified product price or proof of personal eligibility.
+Supported public retailer links trigger `/api/inspect-product`. The backend combines bounded direct structured-data extraction, Anthropic native cited web search/fetch, and optional Rainforest Amazon product/offer data. API keys remain server-side. Prices without retailer evidence are discarded. Amazon data validates the exact ASIN, buy-box price, actual seller and matching offer condition. A hostname never proves who sold the item. Public lookup evidence is cached for ten minutes; failed searches for one minute. Missing prices do not block displaying discovered alternatives and evidence, but no purchase recommendation or numeric score is fabricated.
+
+Required for cited search: the existing `ANTHROPIC_API_KEY`. Amazon buy-box extraction uses `RAINFOREST_API_KEY` (two requests per uncached ASIN, product + offers). Trial/account activation must be verified before calling Amazon autofill live. `LOOPHOLE_SEARCH_DIAGNOSTICS=true` temporarily stores private troubleshooting records; it is off by default.
 
 Savings are calculated only from an explicitly confirmed comparable price provided by the user, or the sourced 5% Target Circle Card rule when the user confirms an existing eligible card, an eligible subtotal, and that the discount is not already included. Other discounts, trade-ins, rewards, warranties and return policies are unpriced opportunities. Only the largest single supported saving is used; paths are never blindly stacked.
 
-Without a confirmed comparison the normal verdict is WAIT, described as a request to check missing facts, not a forecast of a sale. BUY is conditional on the user's comparison and checked purchase terms. Evidence from user-entered prices remains labeled USER_REPORTED. This version intentionally cannot promise market-wide best prices.
+Without enough supported economics, verdict is null and evaluation_status is needs_evidence or needs_price. WAIT is reserved for an actual supported reason to delay; missing data is not one. BUY is conditional on the user's comparison and checked purchase terms. Evidence from user-entered prices remains labeled USER_REPORTED. This version intentionally cannot promise market-wide best prices.
 
 Only Active records match. VERIFIED records older than 90 days remain explicitly labeled as needing re-verification and cannot affect quantified savings or trusted benefit scoring. Stacking is opt-in, requires mutual compatibility, and respects conflicts.
 
@@ -50,4 +52,4 @@ Only the public allowlist is copied into dist/: server code, policy source files
 
 The Blobs aggregate metrics scan is suitable for a small MVP; migrate aggregation to a relational store or background rollups as volume grows. Preview data is isolated by deploy ID; production data survives deploys.
 
-Scores are null (Not enough evidence) without a confirmed comparison or eligible sourced payment discount. No fixed fallback score is shown. Live market-wide search still needs a working product-data/search integration; this feature does not claim it is implemented.
+Scores are null (Not enough evidence) without a confirmed comparison or eligible sourced payment discount. No fixed fallback score is shown. Cited retailer search is connected through the existing Anthropic service. Coverage is limited; search-index prices are source-reported, not guaranteed live checkout totals.

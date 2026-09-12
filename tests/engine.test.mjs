@@ -6,8 +6,8 @@ const now = new Date('2026-09-10T15:00:00Z');
 const input = {product:'Alienware 38 inch monitor',current_price:1499,merchant:'Best Buy',condition:'new',willing_to_buy_used:true};
 const check = patch => evaluatePurchase(normalizePurchase({...input,...patch},now),records,now);
 
-test('high-priced electronics: honest WAIT without fabricated market savings', () => {
-  const result = check({}); assert.equal(result.verdict,'WAIT'); assert.equal(result.potential_savings,null);
+test('high-priced electronics: missing evidence produces no purchase advice or fabricated market savings', () => {
+  const result = check({}); assert.equal(result.verdict,null); assert.equal(result.potential_savings,null);
   assert.ok(result.loopholes.some(r=>r.id==='best-buy-match'));
   assert.ok(result.loopholes.some(r=>r.id==='best-buy-open-box'));
   assert.equal(result.score,null); assert.equal(result.score_label,'Not enough evidence'); assert.ok(result.dimensions.every(d=>d.points===null));
@@ -23,7 +23,7 @@ test('unconfirmed eligibility and already-applied discounts are not monetized', 
 });
 test('no strong loopholes for an unknown merchant and niche product', () => {
   const r=check({product:'Handmade ceramic vase',merchant:'Local studio',current_price:85});
-  assert.deepEqual(r.loopholes,[]);assert.equal(r.verdict,'WAIT');assert.equal(r.confidence,'Low');
+  assert.deepEqual(r.loopholes,[]);assert.equal(r.verdict,null);assert.equal(r.confidence,'Low');
 });
 test('used and open-box exclude new-only benefits', () => {
   for(const condition of ['used','open_box','refurbished']){
@@ -32,7 +32,7 @@ test('used and open-box exclude new-only benefits', () => {
   }
 });
 test('missing merchant is accepted but evidence gap is explained', () => {
-  const r=check({merchant:''});assert.equal(r.purchase.merchant,null);assert.equal(r.verdict,'WAIT');assert.equal(r.loopholes.length,0);
+  const r=check({merchant:''});assert.equal(r.purchase.merchant,null);assert.equal(r.verdict,null);assert.equal(r.loopholes.length,0);
   assert.ok(r.reasons.some(s=>s.includes('No merchant')));
 });
 test('product URLs infer merchants, tracking is removed, retailer mismatch rejected', () => {
@@ -62,7 +62,7 @@ test('same retailer lower price generates conditional NEGOTIATE', () => {
 });
 test('BUY requires comparable terms and checked protections', () => {
   const alt={alternative_price:1510,alternative_url:'https://example.com/monitor',alternative_confirmed:true};
-  assert.equal(check(alt).verdict,'WAIT');assert.equal(check({...alt,terms_confirmed:true}).verdict,'BUY');
+  assert.equal(check(alt).verdict,null);assert.equal(check({...alt,terms_confirmed:true}).verdict,'BUY');
 });
 test('clearly poor economics generate DON’T BUY', () => {
   assert.equal(check({alternative_price:800,alternative_url:'https://example.com/monitor',alternative_confirmed:true}).verdict,'DON’T BUY');
@@ -105,4 +105,10 @@ test('unknown condition is retained instead of silently assuming new', () => {
   const p=normalizePurchase({...input,condition:''},now);
   assert.equal(p.condition,'unknown');
   assert.ok(!evaluatePurchase(p,records,now).loopholes.some(r=>r.id==='best-buy-match'));
+});
+
+
+test('missing current price can produce an explicit research result without fake zero-dollar pricing',()=>{
+ const p=normalizePurchase({...input,current_price:''},now,true);const r=evaluatePurchase(p,records,now);
+ assert.equal(p.current_price,null);assert.equal(r.verdict,null);assert.equal(r.evaluation_status,'needs_price');assert.equal(r.score,null);assert.equal(r.potential_savings,null);
 });

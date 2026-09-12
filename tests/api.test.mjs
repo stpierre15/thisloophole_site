@@ -57,3 +57,13 @@ test('metrics locked and verification requires private evidence record',async()=
   await db.set('verifications/'+r.purchase.id,{purchase_id:r.purchase.id,verified_savings:20,evidence_reference:'private review reference',reviewer:'founder',reviewed_at:new Date().toISOString()});
   assert.equal((await summarizeMetrics(db)).verified_user_savings,20);
 });
+
+
+test('server-held lookup fills the exact purchase and provides citation-backed alternatives',async()=>{
+ const db=await newStore();const id='c19cb172-5d79-4ee6-8d79-6b1952b978f8';const url='https://www.amazon.com/dp/B0D1TX35MQ';
+ await db.set('lookups/'+id,{lookup_id:id,url,observed_at:new Date().toISOString(),product_name:'Dell U4025QW monitor',model:'U4025QW',price:2000,seller:'Actual Seller',condition:'new',search_status:'searched',message:'Sourced offers',sources:[{url,title:'Amazon offer',excerpt:'$2000.00'}],alternatives:[{url:'https://dell.com/en-us/shop/monitor',price:1800,model:'U4025QW',condition:'new',availability:'InStock',sources:[]}]});
+ const response=await checkPurchase(req({product:url,lookup_id:id,current_price:'',condition:'unknown'}),{},db);
+ const storedLookup=await db.get('lookups/'+id);assert.equal(storedLookup.product_name,'Dell U4025QW monitor');
+ const r=await response.json();assert.equal(response.status,201);assert.equal(r.purchase.current_price,2000);assert.equal(r.purchase.seller,'Actual Seller');assert.equal(r.verdict,'SWITCH');assert.equal(r.better_option.source_type,'SOURCE_REPORTED');assert.equal(r.market_evidence.alternatives.length,1);
+ assert.equal(r.purchase.category,'electronics');
+});

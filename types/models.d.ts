@@ -19,12 +19,12 @@ export interface Loophole {
 }
 export interface Purchase {
   id: string; product_name: string; product_url: string | null; merchant: string | null; seller: string | null; marketplace: boolean; seller_unconfirmed: boolean;
-  current_price: number; condition: Condition; category: string; location: string;
+  current_price: number | null; condition: Condition; category: string; location: string;
   purchase_stage: string; purchase_timing: 'flexible' | 'soon' | 'today'; created_at: string;
   payment_cards: string[]; memberships: string[]; employer: string | null;
   willing_to_buy_used: boolean; brand_preferences: string[];
   target_card_eligible: boolean; discount_already_applied: boolean; terms_confirmed: boolean;
-  alternative: {price: number; url: string; confirmed: boolean; source_type: 'USER_REPORTED'} | null;
+  alternative: {price: number; url: string; confirmed: boolean; source_type: 'USER_REPORTED' | 'SOURCE_REPORTED'} | null;
 }
 export interface Outcome {
   id: string; purchase_id: string; loophole_id: string | null;

@@ -21,14 +21,14 @@ form.elements.merchant.addEventListener('input', updateMerchantContext);
 form.elements.product.addEventListener('input', updateMerchantContext);
 const lookupStatus = document.querySelector('#lookup-status');
 const offersEl = document.querySelector('#listing-offers');
-let lookupVersion = 0, lookupTimer;
+let lookupVersion = 0, lookupTimer, pendingLookup = Promise.resolve(), lookupId = null, lookupFinish = null;
 const autoValues = new Map();
 const edited = new Set();
 for (const name of ['current_price','merchant','seller','condition']) {
   form.elements[name].addEventListener('input', () => { edited.add(name); autoValues.delete(name); });
 }
 function clearLookup() {
-  lookupVersion++; clearTimeout(lookupTimer);
+  lookupVersion++; lookupId=null; clearTimeout(lookupTimer); lookupFinish?.(); lookupFinish=null;
   lookupStatus.textContent = ''; offersEl.replaceChildren();
   for (const [name,value] of autoValues) if (form.elements[name].value === value) form.elements[name].value = name === 'condition' ? 'unknown' : '';
   autoValues.clear();
@@ -43,8 +43,8 @@ form.elements.product.addEventListener('input', () => {
   const merchant = retailers[url.hostname.replace(/^www\./,'')];
   if (merchant && !edited.has('merchant') && !form.elements.merchant.value) { form.elements.merchant.value = merchant; autoValues.set('merchant',merchant); updateMerchantContext(); }
   const version = lookupVersion;
-  lookupStatus.textContent = 'Reading listing details…';
-  lookupTimer = setTimeout(async () => {
+  lookupStatus.textContent = 'Finding product details and searching retailer offers… This can take up to a minute.';
+  pendingLookup = new Promise(resolve => { lookupFinish=resolve; lookupTimer = setTimeout(() => { (async () => {
     try {
       const data = await request('/api/inspect-product',{url:value});
       if (version !== lookupVersion) return;
@@ -54,11 +54,12 @@ form.elements.product.addEventListener('input', () => {
         if (el.value && !(name === 'condition' && el.value === 'unknown')) continue;
         el.value = String(value); autoValues.set(name,el.value);
       }
+      lookupId=data.lookup_id;
       updateMerchantContext();
       lookupStatus.textContent = (data.product_name ? data.product_name + '. ' : '') + data.message;
       const offers = data.alternatives || [];
       if (offers.length) {
-        offersEl.innerHTML = '<p class="field-hint">Other in-stock offers published on this product page. Check equivalent condition, delivery and warranty before comparing.</p>' + offers.map((o,i) => '<article class="panel"><strong>'+money(o.price)+'</strong><p>'+esc(o.seller || 'Seller not confirmed')+' · '+esc(conditionName(o.condition || 'unknown'))+'</p><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Review offer ↗</a> <button type="button" class="secondary" data-offer="'+i+'">Use for comparison</button></article>').join('');
+        offersEl.innerHTML = '<p class="field-hint">Offers found in retailer sources. Check the exact model, condition, stock, delivery and warranty before comparing.</p>' + offers.map((o,i) => '<article class="panel"><strong>'+money(o.price)+'</strong><p>'+esc(o.seller || 'Seller not confirmed')+' · '+esc(conditionName(o.condition || 'unknown'))+'</p><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Review offer ↗</a> <button type="button" class="secondary" data-offer="'+i+'">Use for comparison</button></article>').join('');
         for (const button of offersEl.querySelectorAll('[data-offer]')) button.addEventListener('click', () => {
           const offer = offers[Number(button.dataset.offer)];
           form.elements.alternative_price.value = offer.price;
@@ -69,16 +70,16 @@ form.elements.product.addEventListener('input', () => {
           lookupStatus.textContent = 'Comparison added. Confirm its model, condition, availability, shipping and warranty below.';
         });
       } else if (data.status !== 'unavailable') {
-        lookupStatus.textContent += ' No other readable in-stock offers were published in this page’s structured data. The wider market has not been searched.';
+        lookupStatus.textContent += ' No additional source-supported prices were found in this search.';
       }
     } catch (error) {
       if (version === lookupVersion) lookupStatus.textContent = error.message + ' You can enter the listing details manually.';
     }
-  },650);
+  })().finally(resolve); },900); });
 });
 
 async function request(path, payload, token) {
-  const response = await fetch(path, {method:'POST',headers:{'Content-Type':'application/json',...(token ? {Authorization:'Bearer '+token} : {})},body:JSON.stringify(payload),signal:AbortSignal.timeout(25000)});
+  const response = await fetch(path, {method:'POST',headers:{'Content-Type':'application/json',...(token ? {Authorization:'Bearer '+token} : {})},body:JSON.stringify(payload),signal:AbortSignal.timeout(65000)});
   const data = await response.json().catch(() => null);
   if (!response.ok || !data) {
     const message = response.status === 429 ? 'A few too many requests. Please wait a minute and try again.' : data?.error || 'The check is unavailable right now. Please try again shortly.';
@@ -90,14 +91,16 @@ form.addEventListener('submit', async event => {
   event.preventDefault(); if (submitBtn.disabled) return;
   errorEl.hidden = true; submitBtn.disabled = true; form.setAttribute('aria-busy','true');
   submitBtn.firstElementChild.textContent = 'Checking your purchase…'; statusEl.textContent = 'Checking your purchase and relevant policies.';
+  await pendingLookup;
   const payload = Object.fromEntries(new FormData(form));
+  payload.lookup_id=lookupId;
   for (const checkbox of form.querySelectorAll('input[type=checkbox]')) payload[checkbox.name] = checkbox.checked;
   payload.anonymous_id = anonymousId();
   try {
     currentResult = await request('/api/check-purchase',payload);
     renderResult(currentResult); intro.hidden = true; resultEl.hidden = false;
     resultEl.focus({preventScroll:true}); resultEl.scrollIntoView({behavior:'instant',block:'start'});
-    statusEl.textContent = 'Your verdict is '+currentResult.verdict+'. '+(currentResult.score === null ? 'Not enough evidence for a score.' : 'Loophole Score '+currentResult.score+' out of 100.');
+    statusEl.textContent = (currentResult.verdict ? 'Your verdict is '+currentResult.verdict+'. ' : 'Unable to evaluate this purchase yet. ')+(currentResult.score === null ? 'Not enough evidence for a score.' : 'Loophole Score '+currentResult.score+' out of 100.');
   } catch (error) {
     errorEl.textContent = error.name === 'TimeoutError' ? 'The check took too long. Your details are still here; please try again.' : error.message === 'Failed to fetch' ? 'Could not connect. Check your connection and try again.' : error.message;
     errorEl.hidden = false; if (error.field) document.getElementById(error.field)?.focus(); statusEl.textContent = errorEl.textContent;
@@ -111,15 +114,16 @@ function renderResult(r) {
   const p = r.purchase;
   const better = r.better_option;
   resultEl.innerHTML = '<div class="result-top"><div><span class="step-label">02 / YOUR PURCHASE CHECK</span><h2 id="result-title">'+esc(p.product_name)+'</h2><div class="result-meta">'+esc(p.merchant || 'Merchant not provided')+(p.seller ? ' · Sold by '+esc(p.seller) : '')+' · '+esc(conditionName(p.condition))+' · USD</div></div><button type="button" class="text-button" id="edit-purchase">Edit details</button></div>'+
-    '<div class="verdict-card"><div><span class="verdict-label">THE VERDICT</span><h3>'+esc(r.verdict)+'</h3><p>'+esc(r.headline)+'</p><span class="confidence">'+esc(r.confidence)+' confidence · based on available evidence</span></div><div class="score"><strong>'+(r.score === null ? '—' : r.score+'<small>/100</small>')+'</strong><span>Loophole Score</span><small>'+esc(r.score_label)+'</small></div></div>'+
-    '<div class="price-grid"><div><span>Your current price</span><strong>'+money(p.current_price)+'</strong><small>Price you entered</small></div><div><span>Potential savings</span><strong>'+(r.potential_savings !== null ? money(r.potential_savings) : 'Not established')+'</strong><small>'+(r.potential_savings !== null ? 'Conditional · not yet saved' : 'No amount assumed')+'</small></div><div><span>Better economic option</span><strong>'+(better ? money(better.price) : 'Not identified')+'</strong><small>'+esc(better ? better.title : 'No confirmed lower price')+'</small></div></div>'+
+    '<div class="verdict-card"><div><span class="verdict-label">THE VERDICT</span><h3>'+esc(r.verdict || 'NOT EVALUATED')+'</h3><p>'+esc(r.headline)+'</p><span class="confidence">'+esc(r.confidence)+' confidence · based on available evidence</span></div><div class="score"><strong>'+(r.score === null ? '—' : r.score+'<small>/100</small>')+'</strong><span>Loophole Score</span><small>'+esc(r.score_label)+'</small></div></div>'+
+    '<div class="price-grid"><div><span>Your current price</span><strong>'+(p.current_price==null?'Unavailable':money(p.current_price))+'</strong><small>Listing price · confirm at checkout</small></div><div><span>Potential savings</span><strong>'+(r.potential_savings !== null ? money(r.potential_savings) : 'Not established')+'</strong><small>'+(r.potential_savings !== null ? 'Conditional · not yet saved' : 'No amount assumed')+'</small></div><div><span>Better economic option</span><strong>'+(better ? money(better.price) : 'Not identified')+'</strong><small>'+esc(better ? better.title : 'No confirmed lower price')+'</small></div></div>'+
     '<p class="coverage-note">'+esc(r.savings_basis)+(better ? ' <a href="'+esc(better.url)+'" target="_blank" rel="noopener noreferrer">Review this option ↗</a>' : '')+'</p>'+
     '<div class="result-grid"><section class="panel"><h3>Why this verdict</h3><ol class="reasons">'+list(r.reasons)+'</ol></section><section class="panel"><h3>Your next move</h3><ol class="actions">'+list(r.next_actions)+'</ol></section></div>'+
+    (r.market_evidence ? '<section class="panel"><h3>Retailer evidence</h3><p>'+esc(r.market_evidence.message)+'</p>'+r.market_evidence.sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.title)+' ↗</a><br>'+esc(s.excerpt)+'</p>').join('')+r.market_evidence.alternatives.map(o=>'<article><h4>'+esc(o.product_name || 'Alternative listing')+'</h4><p>'+(o.price!=null?money(o.price):'Price not confirmed')+' · '+esc(conditionName(o.condition||'unknown'))+'</p><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">Check retailer offer ↗</a>'+ (o.sources||[]).map(s=>'<p class="field-hint">'+esc(s.excerpt)+'</p>').join('')+'</article>').join('')+'</section>' : '')+
     '<p class="coverage-note">'+esc(r.confidence_reason)+' '+esc(r.coverage)+'</p>'+
     '<div class="matched-heading"><h3>Relevant loopholes</h3><span class="small muted">'+r.loopholes.length+' matched</span></div>'+
     (r.loopholes.length ? '<div class="policy-list">'+r.loopholes.map(policyCard).join('')+'</div>' : '<div class="empty">No strong policy matches for this purchase yet. This does not mean there are no better deals. Add the merchant or an exact comparison to make the next check more useful.</div>')+
     '<details class="score-details"><summary>See how your score was calculated</summary><div class="dimensions">'+r.dimensions.map(d => '<div class="dimension"><strong>'+esc(d.name)+'</strong><span>'+(d.points === null ? 'Unscored' : d.points+'/25')+'</span><div class="bar"><i style="width:'+d.points*4+'%"></i></div><p>'+esc(d.reason)+'</p></div>').join('')+'</div><p class="coverage-note">Each dimension contributes equally, up to 25 points. A score requires comparison or eligible discount evidence. Other unresolved details can lower a supported score. This measures the current purchase opportunity, not product quality. Rules v'+esc(r.methodology_version)+'.</p></details>'+
-    '<section class="feedback" aria-label="Purchase feedback"><div><h3>Was this useful?</h3><div class="button-row"><button class="secondary usefulness" type="button" data-value="yes" aria-pressed="false">Yes</button><button class="secondary usefulness" type="button" data-value="no" aria-pressed="false">No</button></div><p id="useful-status" class="feedback-status" role="status"></p></div><div><h3>What will you do?</h3><div class="button-row"><button class="secondary decision" type="button" data-action="bought" aria-pressed="false">I bought it</button><button class="secondary decision" type="button" data-action="wait" aria-pressed="false">I’ll wait</button></div><p id="decision-status" class="feedback-status" role="status"></p></div><form id="outcome-form" hidden><label for="savings">Did Loophole save you money? <span class="muted">(optional, USD)</span></label><div class="form-row"><input type="number" inputmode="decimal" min="0" max="'+p.current_price+'" step="0.01" id="savings" placeholder="Amount saved"><button type="submit" class="secondary">Save outcome</button></div><label for="used-loophole">Which opportunity helped? <span class="muted">(optional)</span></label><select id="used-loophole"><option value="">Not sure / none of these</option>'+r.loopholes.map(l => '<option value="'+esc(l.id)+'">'+esc(l.title)+'</option>').join('')+'</select><p class="field-hint">This is recorded as self-reported savings until supporting evidence is reviewed.</p><p id="savings-status" class="feedback-status" role="status"></p></form></section><button type="button" id="new-purchase" class="text-button">Check another purchase ↗</button>';
+    '<section class="feedback" aria-label="Purchase feedback"><div><h3>Was this useful?</h3><div class="button-row"><button class="secondary usefulness" type="button" data-value="yes" aria-pressed="false">Yes</button><button class="secondary usefulness" type="button" data-value="no" aria-pressed="false">No</button></div><p id="useful-status" class="feedback-status" role="status"></p></div><div><h3>What will you do?</h3><div class="button-row"><button class="secondary decision" type="button" data-action="bought" aria-pressed="false">I bought it</button><button class="secondary decision" type="button" data-action="wait" aria-pressed="false">I’ll wait</button></div><p id="decision-status" class="feedback-status" role="status"></p></div><form id="outcome-form" hidden><label for="savings">Did Loophole save you money? <span class="muted">(optional, USD)</span></label><div class="form-row"><input type="number" inputmode="decimal" min="0" max="'+(p.current_price || 0)+'" step="0.01" id="savings" placeholder="Amount saved"><button type="submit" class="secondary">Save outcome</button></div><label for="used-loophole">Which opportunity helped? <span class="muted">(optional)</span></label><select id="used-loophole"><option value="">Not sure / none of these</option>'+r.loopholes.map(l => '<option value="'+esc(l.id)+'">'+esc(l.title)+'</option>').join('')+'</select><p class="field-hint">This is recorded as self-reported savings until supporting evidence is reviewed.</p><p id="savings-status" class="feedback-status" role="status"></p></form></section><button type="button" id="new-purchase" class="text-button">Check another purchase ↗</button>';
   document.querySelector('#edit-purchase').addEventListener('click', () => { intro.hidden = false; resultEl.hidden = true; form.elements.product.focus(); intro.scrollIntoView(); });
   document.querySelector('#new-purchase').addEventListener('click', () => { form.reset(); currentResult = null; updateMerchantContext(); intro.hidden = false; resultEl.hidden = true; form.elements.product.focus(); intro.scrollIntoView(); });
   for (const b of document.querySelectorAll('.usefulness')) b.addEventListener('click', () => sendFeedback('useful',{useful:b.dataset.value === 'yes'},b));

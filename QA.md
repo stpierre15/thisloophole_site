@@ -1,3 +1,9 @@
+## Current verification — 2026-09-12
+
+49 automated tests and production build pass. Rainforest free-trial credential configured as a production-only Netlify secret. Live Amazon ASIN B0D1TX35MQ automatically filled $1,488.95, Amazon, Technology Traders, and new condition; sourced Dell alternative $2,099.99 displayed in form and result. Prices are observations, not fixtures or guarantees. The result withholds a numeric score when equivalent condition and purchase terms are unconfirmed. Missing evidence no longer becomes WAIT. Secondary offers request failure preserves successful product data.
+
+Production was deployed directly from this existing checkout. GitHub push remains unverified; earlier saved credentials failed. The historical checks below describe earlier versions and are superseded by this entry.
+
 # MVP validation — September 11, 2026
 
 ## Automated coverage
