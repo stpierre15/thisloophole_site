@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { metrics } from '../lib/api.mjs';
 import { emailCapture, studioEvent } from '../lib/studio-api.mjs';
 import { retiredTool } from '../lib/retired-api.mjs';
+import { circularHandlers } from '../lib/circular-api.mjs';
 import { priceGapEntries } from '../assets/price-gaps.mjs';
 import { renderMonthlyPick, renderPriceBoard } from '../assets/price-gap-view.mjs';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -12,6 +13,7 @@ process.env.LOOPHOLE_LOCAL_DATA_DIR ||= resolve(root,'.local-data');
 const port = Number(process.env.PORT || 4174);
 const types = {'.html':'text/html','.css':'text/css','.mjs':'text/javascript','.svg':'image/svg+xml'};
 const routes = {'/api/inspect-product':retiredTool,'/api/check-purchase':retiredTool,'/api/outcome':retiredTool,'/api/metrics':metrics,'/api/same-thing':retiredTool,'/api/email-capture':emailCapture,'/api/studio-event':studioEvent};
+for(const name of ['search','identify','alert','outbound'])routes['/api/circular-'+name]=circularHandlers[name];
 createServer(async (req,res) => {
   try {
     const origin = 'http://127.0.0.1:'+port;
@@ -36,6 +38,8 @@ createServer(async (req,res) => {
     if (pathname === '/purchase-checker' || pathname.startsWith('/purchase-checker/')) {res.writeHead(302,{'Location':'/'});res.end();return;}
     if (!(/^\/(index\.html|privacy\.html|styles\.css)$/.test(pathname) || pathname.startsWith('/assets/') || pathname.startsWith('/playbook/') || pathname === '/samething/index.html')) { res.writeHead(404);res.end('Not found');return; }
     let file = resolve(root,'.'+pathname);
+    if(pathname.startsWith('/assets/circular/')&&!['/assets/circular/client.mjs','/assets/circular/view.mjs'].includes(pathname)){res.writeHead(404);res.end('Not found');return;}
+    if(pathname.startsWith('/assets/circular/'))file=resolve(root,'.generated/circular',pathname.slice('/assets/circular/'.length));
     if (!file.startsWith(root+sep)) { res.writeHead(404);res.end('Not found');return; }
     if ((await stat(file)).isDirectory()) file = resolve(file,'index.html');
     res.writeHead(200,{'Content-Type':types[extname(file)] || 'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});

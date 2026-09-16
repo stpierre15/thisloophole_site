@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "ES2023", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "strict": true, "skipLibCheck": true, "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "rootDir": "experiments/circular", "outDir": ".generated/circular", "declaration": true
+  },
+  "include": ["experiments/circular/**/*.mts"]
+}

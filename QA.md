@@ -1,4 +1,14 @@
-## Current verification — 2026-09-16
+## Current circular-tool verification — 2026-09-16
+
+The Same Thing now adds strict TypeScript product identification, an official eBay OAuth/Browse provider, evidence-gated variant matching, shipping-aware economics, reviewed previous-model relationships, metadata/listing caching, saved-result sharing and pending private price-alert requests. The existing minimalist theme, homepage motto, monthly feature and real top-ten board remain. Two clearly labeled fictional demos have buying disabled. Real queries never substitute demo inventory.
+
+All 77 tests, syntax validation, strict tool TypeScript checks and production build pass. Tests cover official protocol shape/token reuse, unknown shipping, conflicting identities and variants, accessory/parts exclusion, small-gap/new-wins judgments, previous-model distinction, metadata confirmation, listing cache isolation/expiry, stock and price rechecks, dead inventory suppression, private pending alerts, readable outbound errors, share privacy and the portable Node adapter.
+
+Local HTTP checks and production-context draft `6aaad13ac2e3571c1f32b2c3` checks pass for the homepage, ten static board entries, public client assets/private provider exclusion, both demos, saved-result loading, honest missing-provider response, URL/alert validation and paused purchase tools. No browser visual/interaction tests were performed. No eBay keys exist in production, so real eBay inventory is not validated or enabled. Automatic alert monitoring/email delivery is not configured. Optional Vercel compatibility source has not been deployed on Vercel.
+
+Netlify production deploy `6aaad1cf9f9f8a5fa6fd47d6` is live on `https://thisloophole.com`. The same hosted HTTP suite passes on the public domain: homepage/monthly feature, ten static board entries, public client assets and private provider exclusion, both labeled examples and correct savings/new-wins verdicts, persisted shared-result loading, honest unconfigured live search, URL and alert validation, readable disabled-buying response and paused purchase checker. Real marketplace access, delivered email alerts, Vercel deployment and browser visual testing remain the explicitly stated limits above. GitHub synchronization remains separate because its saved credential previously failed.
+
+## Earlier minimalist verification — 2026-09-16
 
 The public site now uses a minimalist white/black publication theme, a normal lowercase loophole wordmark, the motto "The economy is full of bugs", and a top loophole of the month. The Same Thing is a curated ten-product price-gap leaderboard. Thirty-nine orderable USD offers were retrieved directly from four public storefronts; all included comparisons match both manufacturer model and UPC. Search-index prices were not used. Unavailable Goldie offers were excluded. Delivery/backorder warnings and Weller's contradictory listed dimensions remain visible.
 

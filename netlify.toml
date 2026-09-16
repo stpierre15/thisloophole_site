@@ -107,4 +107,28 @@
 [[headers]]
   for = "/samething/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://i.ebayimg.com https://*.ebayimg.com data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+[[redirects]]
+  from = "/api/circular-search"
+  to = "/.netlify/functions/circular-search"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/circular-identify"
+  to = "/.netlify/functions/circular-identify"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/circular-alert"
+  to = "/.netlify/functions/circular-alert"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/circular-outbound"
+  to = "/.netlify/functions/circular-outbound"
+  status = 200
+  force = true
