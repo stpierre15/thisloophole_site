@@ -94,8 +94,15 @@
 
 [[redirects]]
   from = "/purchase-checker"
-  to = "/purchase-checker/"
-  status = 301
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/purchase-checker/*"
+  to = "/"
+  status = 302
+  force = true
 
 [[headers]]
   for = "/samething/*"

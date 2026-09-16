@@ -1,99 +1,66 @@
-# LOOPHOLE studio
+# loophole
 
 Production repository: https://github.com/stpierre15/thisloophole_site
 
-This checkout is `~/Desktop/loophole/loophole_v4`; the package and remote are named `thisloophole_site`. It is the existing production repository. Do not initialize a replacement repository.
+This is the existing production checkout at ~/Desktop/loophole/loophole_v4. Hosting remains on the existing Netlify project and thisloophole.com domain.
 
-LOOPHOLE is an experimental internet studio built around one position: **waste is a pricing error**. The homepage is the studio index. `/samething/` is Experiment 001. The original purchase checker remains at `/purchase-checker/`.
+## Current product
 
-## Run and verify
+**The economy is full of bugs.** Loophole looks for the gaps where buyers get an advantage from corporate pricing. The homepage is a minimalist publication for people who love exposing good deals, with a top loophole of the month.
+
+Experiment 001 at /samething/ is a curated ten-product price-gap leaderboard. Its inaugural furniture and lighting edition contains ten Safavieh products and 39 exact-variant offers across four stores. Manufacturer SKU, UPC, color and pack size support product identity. Prices were read directly from public US storefront records on September 16, 2026. There are no fictional products in the current public experience.
+
+## Run and validate
 
 Requires Node 22 or later.
 
-```sh
-npm ci
-npm run dev        # http://127.0.0.1:4174
-npm run lint       # syntax-check all source modules
-npm run typecheck  # TypeScript checkJs + explicit domain declarations
-npm test           # deterministic engine/API/security/storage tests
-npm run build      # validate catalog and create public dist/
-```
-
-Local API records go to `.local-data/`. Production and each deploy preview use separate strongly consistent Netlify Blob stores.
+- npm ci
+- npm run dev — http://127.0.0.1:4174
+- npm run lint — JavaScript syntax validation
+- npm run typecheck — TypeScript checkJs and domain contracts
+- npm test — ranking, identity, rendering, retirement and preserved backend tests
+- npm run build — validates data and emits only public assets to dist/
 
 ## Architecture
 
-The project intentionally keeps its small existing architecture: static HTML, CSS, and ES modules on the client; native Netlify Functions on Node 22; Netlify Blobs for durable records and caches. There is no account or auth flow. Public write routes use Netlify rate limits and same-origin JSON validation.
+The existing static HTML/CSS/ES-module frontend, Netlify Functions, Netlify Blobs and package lock are preserved. No framework, authentication or runtime dependency was added.
 
-- `index.html`, `assets/studio.*`, `assets/experiments.mjs`: studio homepage and reusable experiment index.
-- `samething/`, `assets/samething.mjs`: Experiment 001 interface, demos, results, sharing, and capture.
-- `experiments/same-thing/`: product schema, safe extraction, bounded search provider, transparent similarity engine, and orchestration/cache service.
-- `assets/same-thing-demos.mjs`: public fictional demonstration records. These are always labeled `DEMO` and make no market claims.
-- `purchase-checker/`, `assets/purchase.*`, `lib/api.mjs`: preserved purchase checker and its sourced policy engine.
-- `lib/studio-api.mjs`: Same Thing, email capture, and first-party event endpoints.
-- `netlify/functions/`: deploy wrappers and per-IP rate limits.
-- `types/` and `experiments/same-thing/schema.d.ts`: domain contracts. `tsconfig.json` type-checks the new experiment modules without forcing a framework rewrite.
-- `scripts/build.mjs`: copies only public assets into `dist/`; server code, raw records, secrets, and tests are excluded.
+- index.html and assets/studio.*: homepage and monthly feature.
+- samething/index.html and assets/samething.mjs: ranked board, native disclosure, sharing and lightweight events.
+- assets/price-gaps.mjs: reviewed public product and offer records.
+- assets/price-gap-engine.mjs: eligibility, sorting and transparent price arithmetic.
+- assets/price-gap-view.mjs: shared HTML renderer. The build embeds the entire board and monthly feature in static HTML, so the listings and retailer links work without JavaScript.
+- experiments/same-thing/price-board.d.ts: typed public contracts.
+- data/price-gap-evidence.json and data/PRICE_BOARD.md: source observations, rejected records and editorial procedure. Not published.
+- scripts/review-price-gaps.mjs: bounded editorial refresh from four allowlisted public storefronts. No keys, crawler, or automatic publication.
+- lib/studio-api.mjs and netlify/functions/studio-event.mjs: restricted first-party events stored in Blobs.
 
-The current production setup is Netlify, despite an earlier product brief referring to Vercel. `netlify.toml`, the linked project, Netlify Functions, and Blobs remain the supported deployment path.
+## Ranking and honesty
 
-## The Same Thing pipeline
+Relative premium = (highest eligible price / lowest eligible price - 1) × 100. Rankings use the unrounded ratio; display percentages are rounded. Dollar gaps preserve cents. A 100% premium means the expensive listing asks twice as much; the cheaper listing is 50% less.
 
-1. Canonicalize and validate a public HTTPS product URL against the furniture/lighting retailer allowlist.
-2. Prefer Schema.org Product data, then Open Graph metadata and server-rendered descriptions.
-3. Normalize name, brand, current USD price, category, dimensions, materials, construction, style, features, warranty, image, and source URL.
-4. Generate three non-brand queries from the most identifying supported attributes.
-5. Run one bounded provider request: at most three searches and two page fetches.
-6. Discard prices and attributes that lack provider-native retailer citations.
-7. Filter to cheaper candidates in the same supported category.
-8. Score known evidence: attributes 35%, dimensions 25%, materials/construction 20%, visual evidence 20%. Missing data is excluded from similarity and lowers confidence. Live MVP results do not invent a visual score.
-9. Produce deterministic similarities, differences, and an editorial explanation. No shared factory, manufacturer, quality, origin, or causation is inferred.
-10. Save the raw extraction separately from the public result for debugging.
+This is the top ten within our tracked selection, not a global market claim. Each eligible offer must match the entry's model and UPC, use USD, be a new retail listing and accept orders. Unsupported, unavailable, wrong-variant and same-store duplicate records cannot create a price gap. Crossed-out list prices, coupons, monthly payments and card-opening incentives are excluded.
 
-The candidate provider is isolated in `experiments/same-thing/search.mjs`; it can be replaced without changing extraction, scoring, storage, or UI.
+Orderable storefront data does not guarantee stock, delivery dates, equal returns or checkout totals. Backorder warnings and contradictory listed dimensions are visible. We do not know retailer costs or actual profit margins, so the interface calls the comparison a price premium or gap.
 
-## Cache and cost control
+## Refreshing the board
 
-Canonical URLs are SHA-256 keyed. Successful analyses are reused for 24 hours; no-match results are reused for five minutes. A cache hit skips extraction, search, scoring, and explanation. Curated demos never call an external provider. The public analysis endpoint permits three requests per IP per minute. The model defaults to the inexpensive configured search model and has hard search/fetch/token limits.
+Run node scripts/review-price-gaps.mjs /tmp/price-review.json, then manually review variant SKU, barcode, actual price, currency, availability, pack size, source URLs and delivery caveats. The script does not change the published dataset. Optional third argument limits comma-separated models; fourth argument selects comma-separated named stores.
 
-## Environment variables
+Update assets/price-gaps.mjs, source evidence, visible observation dates and editorial notes together. The monthly feature uses the largest supported relative premium in the selection. Run the checks and deploy through the existing Netlify workflow. See data/PRICE_BOARD.md.
 
-- `ANTHROPIC_API_KEY`: server-only cited retailer search for Same Thing and the purchase checker.
-- `LOOPHOLE_SEARCH_MODEL`: optional model override; defaults to `claude-haiku-4-5-20251001`.
-- `RAINFOREST_API_KEY`: optional server-only Amazon offer data for the purchase checker.
-- `LOOPHOLE_ADMIN_TOKEN`: optional protected founder metrics access.
-- `LOOPHOLE_SEARCH_DIAGNOSTICS=true`: temporary private purchase-search diagnostics. Leave off normally.
+## Paused functionality
 
-No browser bundle contains a key.
+The purchase checker and live URL-matching interface are removed from the public build. /purchase-checker and its child routes temporarily redirect home. Purchase-check, listing-inspection, outcome and live Same Thing endpoints return HTTP 410 without calling paid providers. Their source, tests, old records, credentials and infrastructure remain available for a deliberate future restoration. Old demo data and purchase assets are not copied into dist/.
 
-## Curated comparisons
+Email forms are absent from the new publication. Existing optional interest records remain private. There is no mailing integration or campaign delivery.
 
-Public demonstrations live in `assets/same-thing-demos.mjs`. Every record must include `reviewStatus: 'DEMO'` unless real product URLs, current prices, specifications, and review metadata have been manually verified. Do not convert a fictional demonstration into `CURATED` by changing a label alone.
+The retained ANTHROPIC_API_KEY, RAINFOREST_API_KEY and optional LOOPHOLE_ADMIN_TOKEN remain server-only; the current leaderboard needs no AI key and incurs no per-view analysis charge.
 
-A future verified record should retain source and alternative URLs, observed prices and date, dimensions, materials, similarities, differences, match classification, score inputs, reviewer, and review status. Stale prices should be hidden or rechecked.
+## Future experiments and limits
 
-## Adding an experiment
+Use NEXT_EXPERIMENT.md to define a useful buyer advantage and its evidence contract. assets/experiments.mjs retains experiment metadata; only the current board is promoted.
 
-1. Copy `NEXT_EXPERIMENT.md` into an issue or working note.
-2. Add one metadata entry to `assets/experiments.mjs`; the homepage renders it automatically.
-3. Put experiment-specific server logic under `experiments/<slug>/` and the public page under `<slug>/`.
-4. Reuse `assets/studio.css`, `lib/storage.mjs`, the capture/event patterns, same-origin validation, and a distinct cache prefix.
-5. Add the public folder to `scripts/build.mjs`, define Netlify redirects/functions if needed, and test the final `dist/` allowlist.
+The initial selection is one manufacturer's furniture and lighting. Broaden it with reviewed product identities, more retailers and stronger shipping comparisons. There is no automatic price feed, market-wide cheapest-price guarantee, account, community-submission workflow or dynamic social image. Dated source links are the evidence.
 
-## Stored data and analytics
-
-`email-captures/` stores email, submitted URL when present, requested experiment, and timestamp. It records interest only; there is no mailing provider. `studio-events/` accepts only the named product events and restricted scalar metadata; it excludes email and full product URLs. Same Thing raw extractions and results have separate prefixes. See `privacy.html` for user-facing disclosure.
-
-## Known MVP limits and next improvements
-
-- Retailer coverage is allowlisted and US/USD only. Bot-protected pages may expose no usable product data.
-- Live comparison is text/spec based. Visual scoring is withheld until a bounded, source-safe image comparison provider is added.
-- Search is intentionally shallow and can miss valid alternatives. An empty result is labeled a search limitation.
-- Email requests are stored but not sent. Connect an explicit opt-in mailing provider before sending campaigns.
-- The share card is screenshot-ready HTML; there is no dynamic per-result Open Graph image yet.
-- Second-life ownership math is shown only in fictional demos. Live resale estimates require a separate trustworthy data source.
-- Blob scans are suitable for an MVP. Add rollups or a relational analytics store at higher volume.
-
-The next useful steps are verified curated pairs, better furniture extraction fixtures, source-safe image comparison for only the top two candidates, a monitored provider budget, and a human review queue for requested matches.
-
-See `DEPLOY.txt` for the existing Netlify release path and `DATA.md` for purchase-policy maintenance.
+See DEPLOY.txt for the existing Netlify release workflow and QA.md for the current release checks. GitHub synchronization is separate from direct Netlify publication.

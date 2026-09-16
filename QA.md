@@ -1,4 +1,12 @@
-## Current verification — 2026-09-15
+## Current verification — 2026-09-16
+
+The public site now uses a minimalist white/black publication theme, a normal lowercase loophole wordmark, the motto "The economy is full of bugs", and a top loophole of the month. The Same Thing is a curated ten-product price-gap leaderboard. Thirty-nine orderable USD offers were retrieved directly from four public storefronts; all included comparisons match both manufacturer model and UPC. Search-index prices were not used. Unavailable Goldie offers were excluded. Delivery/backorder warnings and Weller's contradictory listed dimensions remain visible.
+
+All 62 tests, JavaScript syntax validation, TypeScript checking and the public-only production build pass. The board and monthly feature are rendered into published static HTML. The public bundle omits the old purchase checker and fictional demo assets. The former tool endpoints return 410 without paid-provider calls; the old purchase-checker route redirects home. A local preview was opened. Browser interaction/visual testing was not performed for this revision.
+
+Netlify production deploy `6aaac8126fff2f00a17f4479` was published to `https://thisloophole.com`. Hosted HTTP checks confirm the new homepage and monthly feature, ten static board entries, no purchase-checker navigation, redirects for both the retired tool and its child routes, 404 responses for the old purchase/demo assets, and 410 responses from all four paused tool endpoints. GitHub synchronization remains separate because the saved credential previously failed.
+
+## Previous verification — 2026-09-15
 
 The existing production repository now contains the LOOPHOLE studio homepage, Experiment 001 at `/samething/`, and the original purchase checker preserved at `/purchase-checker/`. The experiment has three explicitly fictional demos, a bounded live extraction/search pipeline, evidence-gated prices, transparent similarity and confidence scoring, 24-hour supported-result caching, five-minute empty-result caching, native endpoint rate limits, shareable saved results, first-party event storage, and email-interest capture.
 

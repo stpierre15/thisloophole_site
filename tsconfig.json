@@ -12,6 +12,10 @@
   },
   "include": [
     "assets/experiments.mjs",
+    "assets/price-gaps.mjs",
+    "assets/price-gap-engine.mjs",
+    "assets/price-gap-view.mjs",
+    "lib/retired-api.mjs",
     "assets/same-thing-demos.mjs",
     "experiments/same-thing/**/*.mjs",
     "experiments/same-thing/**/*.d.ts",
