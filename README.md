@@ -1,55 +1,99 @@
-# Loophole purchase-check MVP
+# LOOPHOLE studio
 
 Production repository: https://github.com/stpierre15/thisloophole_site
 
-This checkout is currently at ~/Desktop/loophole/loophole_v4 (the package and remote are named thisloophole_site). Do not initialize a new repository.
+This checkout is `~/Desktop/loophole/loophole_v4`; the package and remote are named `thisloophole_site`. It is the existing production repository. Do not initialize a replacement repository.
 
-## Run and validate
+LOOPHOLE is an experimental internet studio built around one position: **waste is a pricing error**. The homepage is the studio index. `/samething/` is Experiment 001. The original purchase checker remains at `/purchase-checker/`.
 
-Requires Node 22 or later and npm.
+## Run and verify
 
-- npm ci
-- npm run dev — http://127.0.0.1:4174, durable local-only JSON records in .local-data/
-- npm test — decision, matching, input, storage, authorization and outcome tests
-- npm run build — validates catalog and JavaScript; emits public assets into dist/
-- npx netlify-cli build --offline — validates the actual Netlify function bundles
+Requires Node 22 or later.
 
-See DEPLOY.txt for deployment to the existing Netlify site and DATA.md for catalog maintenance and founder metrics.
+```sh
+npm ci
+npm run dev        # http://127.0.0.1:4174
+npm run lint       # syntax-check all source modules
+npm run typecheck  # TypeScript checkJs + explicit domain declarations
+npm test           # deterministic engine/API/security/storage tests
+npm run build      # validate catalog and create public dist/
+```
+
+Local API records go to `.local-data/`. Production and each deploy preview use separate strongly consistent Netlify Blob stores.
 
 ## Architecture
 
-Static HTML, CSS and ES modules remain the frontend. Netlify Functions remain the server. The existing @netlify/blobs dependency provides durable site-wide storage; no new runtime dependency, database vendor, account flow, or AI key is required.
+The project intentionally keeps its small existing architecture: static HTML, CSS, and ES modules on the client; native Netlify Functions on Node 22; Netlify Blobs for durable records and caches. There is no account or auth flow. Public write routes use Netlify rate limits and same-origin JSON validation.
 
-Purchase → validated structured record → merchant/category/condition/keyword matching → sourced policy catalog → deterministic comparison and scoring → explanation → action → persisted outcome.
+- `index.html`, `assets/studio.*`, `assets/experiments.mjs`: studio homepage and reusable experiment index.
+- `samething/`, `assets/samething.mjs`: Experiment 001 interface, demos, results, sharing, and capture.
+- `experiments/same-thing/`: product schema, safe extraction, bounded search provider, transparent similarity engine, and orchestration/cache service.
+- `assets/same-thing-demos.mjs`: public fictional demonstration records. These are always labeled `DEMO` and make no market claims.
+- `purchase-checker/`, `assets/purchase.*`, `lib/api.mjs`: preserved purchase checker and its sourced policy engine.
+- `lib/studio-api.mjs`: Same Thing, email capture, and first-party event endpoints.
+- `netlify/functions/`: deploy wrappers and per-IP rate limits.
+- `types/` and `experiments/same-thing/schema.d.ts`: domain contracts. `tsconfig.json` type-checks the new experiment modules without forcing a framework rewrite.
+- `scripts/build.mjs`: copies only public assets into `dist/`; server code, raw records, secrets, and tests are excluded.
 
-- index.html and assets/purchase.*: accessible purchase form, result, score breakdown and feedback.
-- data/loopholes.json: 14 primary-source-backed US policy records, checked September 10, 2026.
-- lib/engine.mjs: validation, matching, all five verdicts, savings and four equal 25-point score dimensions.
-- lib/api.mjs: purchase checks, capability-protected feedback, authenticated metrics.
-- lib/storage.mjs: site-wide Netlify Blobs, with separate preview namespaces. Local development uses files, never silent in-memory production fallback.
-- types/models.d.ts: explicit TypeScript domain contracts for this JavaScript codebase.
-- netlify/functions/: deployable HTTP wrappers and rate limits.
-- legacy/: pre-existing locally edited chatbot source retained intact. It is not bundled or published. The old endpoint returns HTTP 410 and directs visitors to the purchase checker.
-- playbook/: existing pages retained. The formerly empty Tools page redirects home.
+The current production setup is Netlify, despite an earlier product brief referring to Vercel. `netlify.toml`, the linked project, Netlify Functions, and Blobs remain the supported deployment path.
 
-## Evidence and limitations
+## The Same Thing pipeline
 
-Supported public retailer links trigger `/api/inspect-product`. The backend combines bounded direct structured-data extraction, Anthropic native cited web search/fetch, and optional Rainforest Amazon product/offer data. API keys remain server-side. Prices without retailer evidence are discarded. Amazon data validates the exact ASIN, buy-box price, actual seller and matching offer condition. A hostname never proves who sold the item. Public lookup evidence is cached for ten minutes; failed searches for one minute. Missing prices do not block displaying discovered alternatives and evidence, but no purchase recommendation or numeric score is fabricated.
+1. Canonicalize and validate a public HTTPS product URL against the furniture/lighting retailer allowlist.
+2. Prefer Schema.org Product data, then Open Graph metadata and server-rendered descriptions.
+3. Normalize name, brand, current USD price, category, dimensions, materials, construction, style, features, warranty, image, and source URL.
+4. Generate three non-brand queries from the most identifying supported attributes.
+5. Run one bounded provider request: at most three searches and two page fetches.
+6. Discard prices and attributes that lack provider-native retailer citations.
+7. Filter to cheaper candidates in the same supported category.
+8. Score known evidence: attributes 35%, dimensions 25%, materials/construction 20%, visual evidence 20%. Missing data is excluded from similarity and lowers confidence. Live MVP results do not invent a visual score.
+9. Produce deterministic similarities, differences, and an editorial explanation. No shared factory, manufacturer, quality, origin, or causation is inferred.
+10. Save the raw extraction separately from the public result for debugging.
 
-Required for cited search: the existing `ANTHROPIC_API_KEY`. Amazon buy-box extraction uses `RAINFOREST_API_KEY` (two requests per uncached ASIN, product + offers). Trial/account activation must be verified before calling Amazon autofill live. `LOOPHOLE_SEARCH_DIAGNOSTICS=true` temporarily stores private troubleshooting records; it is off by default.
+The candidate provider is isolated in `experiments/same-thing/search.mjs`; it can be replaced without changing extraction, scoring, storage, or UI.
 
-Savings are calculated only from an explicitly confirmed comparable price provided by the user, or the sourced 5% Target Circle Card rule when the user confirms an existing eligible card, an eligible subtotal, and that the discount is not already included. Other discounts, trade-ins, rewards, warranties and return policies are unpriced opportunities. Only the largest single supported saving is used; paths are never blindly stacked.
+## Cache and cost control
 
-Without enough supported economics, verdict is null and evaluation_status is needs_evidence or needs_price. WAIT is reserved for an actual supported reason to delay; missing data is not one. BUY is conditional on the user's comparison and checked purchase terms. Evidence from user-entered prices remains labeled USER_REPORTED. This version intentionally cannot promise market-wide best prices.
+Canonical URLs are SHA-256 keyed. Successful analyses are reused for 24 hours; no-match results are reused for five minutes. A cache hit skips extraction, search, scoring, and explanation. Curated demos never call an external provider. The public analysis endpoint permits three requests per IP per minute. The model defaults to the inexpensive configured search model and has hard search/fetch/token limits.
 
-Only Active records match. VERIFIED records older than 90 days remain explicitly labeled as needing re-verification and cannot affect quantified savings or trusted benefit scoring. Stacking is opt-in, requires mutual compatibility, and respects conflicts.
+## Environment variables
 
-## Privacy and safeguards
+- `ANTHROPIC_API_KEY`: server-only cited retailer search for Same Thing and the purchase checker.
+- `LOOPHOLE_SEARCH_MODEL`: optional model override; defaults to `claude-haiku-4-5-20251001`.
+- `RAINFOREST_API_KEY`: optional server-only Amazon offer data for the purchase checker.
+- `LOOPHOLE_ADMIN_TOKEN`: optional protected founder metrics access.
+- `LOOPHOLE_SEARCH_DIAGNOSTICS=true`: temporary private purchase-search diagnostics. Leave off normally.
 
-No account, card number, receipt upload, or external AI transmission. The first-party browser identifier is random and optional if storage is unavailable. Purchase feedback requires a random 256-bit capability, stored only as a hash server-side. No public purchase-read or metrics endpoint exists. Metrics require LOOPHOLE_ADMIN_TOKEN in the Functions environment. Public outcomes cannot set verified savings.
+No browser bundle contains a key.
 
-Only the public allowlist is copied into dist/: server code, policy source files, local records, legacy code and credentials stay out. JSON requests are size-limited and validated, cross-origin browser submissions rejected, and Netlify-native rate limits applied to the write functions. The local dev server binds only to 127.0.0.1; /__layout is a local-only responsive test fixture.
+## Curated comparisons
 
-The Blobs aggregate metrics scan is suitable for a small MVP; migrate aggregation to a relational store or background rollups as volume grows. Preview data is isolated by deploy ID; production data survives deploys.
+Public demonstrations live in `assets/same-thing-demos.mjs`. Every record must include `reviewStatus: 'DEMO'` unless real product URLs, current prices, specifications, and review metadata have been manually verified. Do not convert a fictional demonstration into `CURATED` by changing a label alone.
 
-Scores are null (Not enough evidence) without a confirmed comparison or eligible sourced payment discount. No fixed fallback score is shown. Cited retailer search is connected through the existing Anthropic service. Coverage is limited; search-index prices are source-reported, not guaranteed live checkout totals.
+A future verified record should retain source and alternative URLs, observed prices and date, dimensions, materials, similarities, differences, match classification, score inputs, reviewer, and review status. Stale prices should be hidden or rechecked.
+
+## Adding an experiment
+
+1. Copy `NEXT_EXPERIMENT.md` into an issue or working note.
+2. Add one metadata entry to `assets/experiments.mjs`; the homepage renders it automatically.
+3. Put experiment-specific server logic under `experiments/<slug>/` and the public page under `<slug>/`.
+4. Reuse `assets/studio.css`, `lib/storage.mjs`, the capture/event patterns, same-origin validation, and a distinct cache prefix.
+5. Add the public folder to `scripts/build.mjs`, define Netlify redirects/functions if needed, and test the final `dist/` allowlist.
+
+## Stored data and analytics
+
+`email-captures/` stores email, submitted URL when present, requested experiment, and timestamp. It records interest only; there is no mailing provider. `studio-events/` accepts only the named product events and restricted scalar metadata; it excludes email and full product URLs. Same Thing raw extractions and results have separate prefixes. See `privacy.html` for user-facing disclosure.
+
+## Known MVP limits and next improvements
+
+- Retailer coverage is allowlisted and US/USD only. Bot-protected pages may expose no usable product data.
+- Live comparison is text/spec based. Visual scoring is withheld until a bounded, source-safe image comparison provider is added.
+- Search is intentionally shallow and can miss valid alternatives. An empty result is labeled a search limitation.
+- Email requests are stored but not sent. Connect an explicit opt-in mailing provider before sending campaigns.
+- The share card is screenshot-ready HTML; there is no dynamic per-result Open Graph image yet.
+- Second-life ownership math is shown only in fictional demos. Live resale estimates require a separate trustworthy data source.
+- Blob scans are suitable for an MVP. Add rollups or a relational analytics store at higher volume.
+
+The next useful steps are verified curated pairs, better furniture extraction fixtures, source-safe image comparison for only the top two candidates, a monitored provider budget, and a human review queue for requested matches.
+
+See `DEPLOY.txt` for the existing Netlify release path and `DATA.md` for purchase-policy maintenance.

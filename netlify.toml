@@ -51,6 +51,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
 
 [[headers]]
   for = "/"
@@ -67,3 +68,36 @@
   to = "/.netlify/functions/inspect-product"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api/same-thing"
+  to = "/.netlify/functions/same-thing"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/email-capture"
+  to = "/.netlify/functions/email-capture"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/studio-event"
+  to = "/.netlify/functions/studio-event"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/samething"
+  to = "/samething/"
+  status = 301
+
+[[redirects]]
+  from = "/purchase-checker"
+  to = "/purchase-checker/"
+  status = 301
+
+[[headers]]
+  for = "/samething/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"

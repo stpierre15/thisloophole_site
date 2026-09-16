@@ -1,4 +1,12 @@
-## Current verification — 2026-09-12
+## Current verification — 2026-09-15
+
+The existing production repository now contains the LOOPHOLE studio homepage, Experiment 001 at `/samething/`, and the original purchase checker preserved at `/purchase-checker/`. The experiment has three explicitly fictional demos, a bounded live extraction/search pipeline, evidence-gated prices, transparent similarity and confidence scoring, 24-hour supported-result caching, five-minute empty-result caching, native endpoint rate limits, shareable saved results, first-party event storage, and email-interest capture.
+
+All 57 automated tests pass. JavaScript syntax validation, TypeScript `checkJs`, the public-only production build, responsive browser checks at desktop and 390px mobile widths, all three demo flows, saved-result loading, and the preserved purchase checker pass. No horizontal overflow or application console errors were observed. A real West Elm page that blocked direct extraction recovered its product identity through cited search and returned an honest `NO_SUPPORTED_MATCH` result with no invented price, score, or alternative.
+
+Netlify production deploy `6aaa14d5c4e2b887428a39c7` was published to `https://thisloophole.com` and smoke-tested on the live domain. The homepage, Same Thing landing page, chair demo result, real West Elm bounded-search result, and preserved purchase checker all loaded without application console errors. GitHub synchronization remains separate because the saved GitHub credential previously failed.
+
+## Previous purchase-checker verification — 2026-09-12
 
 49 automated tests and production build pass. Rainforest free-trial credential configured as a production-only Netlify secret. Live Amazon ASIN B0D1TX35MQ automatically filled $1,488.95, Amazon, Technology Traders, and new condition; sourced Dell alternative $2,099.99 displayed in form and result. Prices are observations, not fixtures or guarantees. The result withholds a numeric score when equivalent condition and purchase terms are unconfirmed. Missing evidence no longer becomes WAIT. Secondary offers request failure preserves successful product data.
 
