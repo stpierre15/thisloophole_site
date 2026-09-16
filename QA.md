@@ -1,4 +1,12 @@
-## Current circular-tool verification — 2026-09-16
+## Current West Elm / lighting correction — 2026-09-16
+
+The supplied Merida lamp path and retailer SKU 7999646 exposed two implementation limits: West Elm was missing from the retailer allowlist, and lighting was excluded. A direct public metadata request returned HTTP 403 Restricted Access. West Elm is now accepted, tracking is stripped, and lighting is supported. Blocked product pages recover a clearly labeled URL-derived name suggestion for editable confirmation. Retailer SKUs remain separate from manufacturer MPN/GTIN. No price, finish, dimensions, quantity or stock is inferred. URL hints retry metadata after five minutes. Finish and quantity fields are added within the existing confirmation form and theme. Lamp-family matches cannot earn EXACT PRODUCT without a supported structured identifier and compatible variants.
+
+All 79 tests, syntax validation, strict type checks and production build pass. New regression coverage verifies the supplied path/SKU, blocked metadata recovery, short fallback-cache expiry, manual confirmation, unknown price/identifiers, lighting support, conflicting finish/pack exclusion and honest missing-provider results.
+
+Production deploy `6aaad6c06c9468a61e0e3914` is live on `https://thisloophole.com`. Hosted HTTP checks confirm the Merida Table Lamp suggestion, West Elm, lighting category, URL-derived disclosure, SKU 7999646, null price, stripped tracking, editable finish/quantity fields and the preserved ten-item board. The lamp passes product identification and reaches the explicit unconfigured-marketplace state. Real eBay alternatives still require credentials; West Elm's exact selected price was not retrieved. No browser visual/interaction test was performed.
+
+## Earlier circular-tool verification — 2026-09-16
 
 The Same Thing now adds strict TypeScript product identification, an official eBay OAuth/Browse provider, evidence-gated variant matching, shipping-aware economics, reviewed previous-model relationships, metadata/listing caching, saved-result sharing and pending private price-alert requests. The existing minimalist theme, homepage motto, monthly feature and real top-ten board remain. Two clearly labeled fictional demos have buying disabled. Real queries never substitute demo inventory.
 

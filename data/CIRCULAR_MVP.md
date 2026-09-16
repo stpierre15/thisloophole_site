@@ -37,3 +37,7 @@
 - Browser visual/interaction tests were not requested. Validation uses strict type checks, automated domain/protocol/storage/render tests and hosted HTTP checks; no mobile visual claim.
 
 See README.md for exact variables, local commands, setup and extension procedure.
+
+## West Elm correction
+
+The supplied Merida Table Lamp link is now supported. A direct public page request returned HTTP 403; the fallback is a labeled suggestion from the URL, not a retrieved inventory record. West Elm retailer SKU 7999646 remains separate from manufacturer identifiers. No selected price, finish, dimensions or pack is inferred. Lighting is now in the initial scope, with optional finish/quantity confirmation and conservative family matching. New exact-SKU and variant regressions increase the suite to 79 passing tests. Hosted checks confirm the live suggestion and explicit unconfigured eBay state. See QA.md for the release evidence.

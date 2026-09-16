@@ -2,6 +2,8 @@ import type { CandidateListing, ProductIdentity, RankedListing, ModelRelationshi
 import { normalize } from './identity.mjs';
 const cents=(n:number)=>Math.round(n*100)/100;
 const same=(a:string|null,b:string|null)=>!!a&&!!b&&normalize(a)===normalize(b);
+const brandKey=(v:string)=>normalize(v)==='westelm'?'west elm':normalize(v);
+const sameBrand=(a:string|null,b:string|null)=>!!a&&!!b&&brandKey(a)===brandKey(b);
 const modelKey=(v:string)=>{const key=normalize(v).replace(/^(apple|sony|garmin|herman miller|makita) /,'');return {'ilce 7m4':'a7 iv','ilce 7m3':'a7 iii','alpha 7 iv':'a7 iv','alpha 7 iii':'a7 iii'}[key]||key;};
 const sameGtin=(a:string|null,b:string|null)=>!!a&&!!b&&a.padStart(14,'0')===b.padStart(14,'0');
 const sameModel=(a:string|null,b:string|null)=>!!a&&!!b&&modelKey(a)===modelKey(b);
@@ -14,7 +16,7 @@ export function rankCandidates(product:ProductIdentity,listings:CandidateListing
   if(!c.available||c.currency!=='USD'||!Number.isFinite(c.price)||c.price<=0||!['used','refurbished','open_box'].includes(c.condition))continue;
   const old=c.previousModel;if(old&&!previous)continue;
   const targetModel=old?previous!.previousModel:product.model;
-  if(c.brand&&product.brand&&!same(c.brand,product.brand))continue;
+  if(c.brand&&product.brand&&!sameBrand(c.brand,product.brand))continue;
   if(c.category!=='other'&&product.category!=='other'&&c.category!==product.category)continue;
   if(!old&&product.gtin&&c.gtin&&!sameGtin(product.gtin,c.gtin))continue;
   if(!old&&product.mpn&&c.mpn&&!same(product.mpn,c.mpn))continue;
@@ -27,13 +29,13 @@ export function rankCandidates(product:ProductIdentity,listings:CandidateListing
   const model=!!targetModel&&(sameModel(targetModel,c.model)||(!c.model&&contains(c.title,targetModel)));
   // An explicit different model is a conflict, even if its title mentions ours.
   if(targetModel&&c.model&&!sameModel(targetModel,c.model)&&!identifier)continue;
-  const brand=same(product.brand,c.brand)||!!product.brand&&contains(c.title,product.brand);
+  const brand=sameBrand(product.brand,c.brand)||!!product.brand&&contains(c.title,product.brand);
   const wanted=tokens(old?previous!.brand+' '+previous!.previousModel:product.productName),actual=tokens(c.title);
   const overlap=[...wanted].filter(x=>actual.has(x)).length/Math.max(1,wanted.size);
   if(!identifier&&!(model&&brand)&&!(brand&&wanted.size>=3&&overlap>=.8&&confirmed>=1))continue;
-  const required:Record<string,string[]>={phone:['storage','lock'],camera:['kit'],chair:['size','generation'],tool:['kit'],watch:['size']};
+  const required:Record<string,string[]>={phone:['storage','lock'],camera:['kit'],chair:['size','generation'],tool:['kit'],watch:['size'],lighting:['color','pack']};
   const variantIncomplete=(required[product.category]||[]).some(k=>!product.attributes[k]);
-  const exact=!old&&(identifier||(model&&brand&&missing===0&&!variantIncomplete));
+  const exact=!old&&(identifier||(product.category!=='lighting'&&model&&brand&&missing===0&&!variantIncomplete));
   const matchLevel=old?'SIMILAR ALTERNATIVE':exact?'EXACT PRODUCT':'STRONG MATCH';
   const total=c.shippingPrice===null?null:cents(c.price+c.shippingPrice);
   const savings=total!==null&&product.newPrice!==null?cents(product.newPrice-total):null;
@@ -41,6 +43,7 @@ export function rankCandidates(product:ProductIdentity,listings:CandidateListing
   if(product.category==='phone'||product.category==='watch')tradeoffs.push('Battery health was not verified.');
   if(missing)tradeoffs.push('Some requested specifications are unconfirmed; compare the listing before buying.');
   if(variantIncomplete&&!identifier)tradeoffs.push('You have not specified every comparison-critical variant. Add storage, lock, size or kit details where relevant.');
+  if(product.category==='lighting'&&!identifier)tradeoffs.push('A matching lamp family is not proof of an identical finish, size, pack or electrical specification. These details need confirmation.');
   if(c.shippingPrice===null)tradeoffs.push('Shipping is unknown. Savings cannot be calculated yet.');
   if(old)tradeoffs.push(previous!.notes);
   ranked.push({...c,totalPrice:total,matchLevel,confidence:exact?'HIGH':'MEDIUM',matchReasons:[...(identifier?['Matching structured product identifier.']:[]),...(model?['Matching '+(old?'previous ':'')+'model.']:[]),...(brand?['Matching brand.']:[]),...(confirmed?['Requested specifications match where supplied.']:[])],savings,percentSavings:savings!==null&&product.newPrice?Math.round(savings/product.newPrice*100):null,tradeoffs});

@@ -8,7 +8,7 @@ export function identityId(p:ProductIdentity):string {
  const key=p.gtin?'gtin:'+p.gtin.padStart(14,'0'):p.mpn?'mpn:'+normalize(p.brand)+'|'+normalize(p.mpn):p.brand&&p.model?'model:'+normalize(p.brand)+'|'+normalize(p.model):'title:'+normalize(p.productName);
  return digest(key+'|'+JSON.stringify(Object.fromEntries(Object.entries(p.attributes).sort(([a],[b])=>a.localeCompare(b))))).slice(0,24);
 }
-const hosts=['amazon.com','bestbuy.com','apple.com','sony.com','electronics.sony.com','garmin.com','makitatools.com','store.hermanmiller.com','hermanmiller.com','rei.com','target.com','walmart.com','dell.com','safaviehhome.com','decormarket.com','englishelm.com','modishstore.com'];
+const hosts=['amazon.com','bestbuy.com','westelm.com','apple.com','sony.com','electronics.sony.com','garmin.com','makitatools.com','store.hermanmiller.com','hermanmiller.com','rei.com','target.com','walmart.com','dell.com','safaviehhome.com','decormarket.com','englishelm.com','modishstore.com'];
 export function productUrl(value:string):string {
  const u=new URL(value);
  if(u.protocol!=='https:'||u.port||u.username||u.password||!hosts.some(h=>u.hostname===h||u.hostname==='www.'+h)||u.pathname==='/'||/\b(account|login|signin|checkout|cart|orders|api|logout)\b/i.test(u.pathname))throw new Error('This URL is not supported for automatic extraction. Search the product name instead.');
@@ -23,17 +23,22 @@ export function attributesOf(title:string):Record<string,string> {
  if(/\bbare tool\b/i.test(title))out.kit='bare tool';
  const size=title.match(/\bsize\s+([abc])\b/i);if(size)out.size=size[1].toUpperCase();
  if(/\bremastered\b/i.test(title))out.generation='remastered';else if(/\baeron classic\b/i.test(title))out.generation='classic';
+ if(/\b(lamp|sconce|pendant|chandelier)\b/i.test(title)){
+  const color=title.match(/\b(blue|citron|black|white|green|red|silver|gold)\b/i);if(color)out.color=color[1].toLowerCase();
+  const pack=title.match(/\bset of (\d+)\b/i);if(pack)out.pack=pack[1];else if(/\bpair\b/i.test(title))out.pack='2';else if(/\b(individual|single)\b/i.test(title))out.pack='1';
+ }
  return out;
 }
 export function infer(title:string) {
- const brand=/\b(apple|iphone)\b/i.test(title)?'Apple':/\bsony\b/i.test(title)?'Sony':/herman miller/i.test(title)?'Herman Miller':/\bmakita\b/i.test(title)?'Makita':/\bgarmin\b/i.test(title)?'Garmin':null;
+ const brand=/\bwest[\s-]?elm\b/i.test(title)?'West Elm':/\b(apple|iphone)\b/i.test(title)?'Apple':/\bsony\b/i.test(title)?'Sony':/herman miller/i.test(title)?'Herman Miller':/\bmakita\b/i.test(title)?'Makita':/\bgarmin\b/i.test(title)?'Garmin':null;
  let model:string|null=null;
  const phone=title.match(/\biPhone\s+(\d{1,2})(\s+Pro\s+Max|\s+Pro|\s+Plus|\s+mini)?\b/i);if(phone)model='iPhone '+phone[1]+(phone[2]?phone[2].replace(/\s+/g,' ').replace(/pro/ig,'Pro').replace(/max/ig,'Max').replace(/plus/ig,'Plus'):'');
  const camera=title.match(/\b(?:A7|α7|Alpha 7)\s*(III|IV|II|V|[2-5])\b/i);if(camera)model='A7 '+({'2':'II','3':'III','4':'IV','5':'V'}[camera[1]]||camera[1].toUpperCase());
  if(/\baeron\b/i.test(title))model='Aeron';
  if(brand==='Makita')model=title.match(/\b(?:XFD|XPH|DDF|DHP)\d{2,3}[A-Z0-9]*\b/i)?.[0].toUpperCase()??null;
  if(brand==='Garmin')model=title.match(/\b(?:fenix|fēnix)\s+\d+[SX]?(?:\s+Pro)?\b/i)?.[0]??null;
- const category=/\biphone\b/i.test(title)?'phone':/\b(a7|camera|α7|alpha 7|ilce)\b/i.test(title)?'camera':/\b(aeron|chair)\b/i.test(title)?'chair':/\b(drill|XFD\d+|XPH\d+|DDF\d+|DHP\d+)\b/i.test(title)?'tool':/\b(watch|fenix|fēnix)\b/i.test(title)?'watch':'other';
+ if(brand==='West Elm')model=tidy(title.replace(/\bwest[\s-]?elm\b/i,'').trim().match(/^(.+?)\s+(?:(?:table|floor|desk)\s+)?lamp\b/i)?.[1],80)||null;
+ const category=/\b(lamp|sconce|pendant|chandelier|lighting)\b/i.test(title)?'lighting':/\biphone\b/i.test(title)?'phone':/\b(a7|camera|α7|alpha 7|ilce)\b/i.test(title)?'camera':/\b(aeron|chair)\b/i.test(title)?'chair':/\b(drill|XFD\d+|XPH\d+|DDF\d+|DHP\d+)\b/i.test(title)?'tool':/\b(watch|fenix|fēnix)\b/i.test(title)?'watch':'other';
  return {brand,model,category};
 }
 export function identifyQuery(input:SearchRequest,now=new Date().toISOString()):ProductIdentity {
@@ -42,9 +47,23 @@ export function identifyQuery(input:SearchRequest,now=new Date().toISOString()):
  const attributes:Record<string,string>={...attributesOf(productName)};
  for(const [k,v]of Object.entries(input.attributes||{}).slice(0,10))if(/^[a-z_]{1,30}$/.test(k)&&tidy(v,80))attributes[k]=tidy(v,80);
  const newPrice=validAmount(input.newPrice);
- const product:ProductIdentity={id:'',productName,brand,model,mpn:null,gtin:null,category:guessed.category,newPrice,currency:'USD',imageUrl:null,sourceUrl:null,attributes,priceBasis:newPrice===null?'unknown':'user',createdAt:now,updatedAt:now};product.id=identityId(product);return product;
+ const product:ProductIdentity={id:'',productName,brand,model,mpn:null,gtin:null,category:guessed.category,newPrice,currency:'USD',imageUrl:null,sourceUrl:null,attributes,priceBasis:newPrice===null?'unknown':'user',identityBasis:'user',createdAt:now,updatedAt:now};product.id=identityId(product);return product;
 }
 const typeIs=(v:any,t:string)=>[v?.['@type']].flat().some(x=>String(x).split('/').pop()===t);
+// A URL suggests a confirmable name, never a price, finish, dimensions,
+// manufacturer identifier or availability. Numeric retailer SKUs stay separate.
+export function productUrlHint(value:string,now=new Date().toISOString()):ProductIdentity|null {
+ const url=productUrl(value),u=new URL(url);
+ if(!['westelm.com','www.westelm.com'].includes(u.hostname))return null;
+ const slug=u.pathname.match(/^\/products\/([a-z0-9-]+)\/?$/i)?.[1];if(!slug)return null;
+ const name=slug.replace(/-[a-z]\d+$/i,'').split('-').filter(x=>!/^\d+$/.test(x)).join(' ');
+ if(!/\b(lamp|sconce|pendant|chandelier|chair)\b/i.test(name))return null;
+ const displayName=name.replace(/\b[a-z]/g,c=>c.toUpperCase());
+ const p=identifyQuery({query:displayName,brand:'West Elm',model:infer('West Elm '+displayName).model||undefined},now);
+ p.sourceUrl=url;p.retailerSku=u.searchParams.get('sku');p.identityBasis='url';
+ p.identificationNote='Suggested name from the West Elm URL. The page could not be read. Confirm the product, finish, quantity and new price; no price or availability was extracted.';
+ return p;
+}
 const label=(v:any)=>tidy(typeof v==='object'?v?.name:v)||null;
 const safeImage=(v:any)=>{try{const u=new URL(typeof v==='object'?v?.url:v);return u.protocol==='https:'?u.href:null}catch{return null}};
 export function parseProductPage(html:string,url:string,now=new Date().toISOString()):ProductIdentity|null {
@@ -54,11 +73,12 @@ export function parseProductPage(html:string,url:string,now=new Date().toISOStri
  const matching=products.filter(p=>{try{return productUrl(p.url)===url}catch{return false}});
  const p=matching.length===1?matching[0]:products.length===1?products[0]:null;
  const name=label(p?.name)||meta('og:title')||meta('twitter:title')||tidy(html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]);
- if(!name)return null;
+ if(!name||/\b(access denied|restricted access|robot check|captcha|verify you are human|just a moment)\b/i.test(name))return null;
  const result=identifyQuery({query:name},now);result.sourceUrl=url;result.imageUrl=safeImage([p?.image].flat()[0])||safeImage(meta('og:image'));
  result.brand=label(p?.brand)||result.brand;result.model=label(p?.model)||label(p?.mpn)||result.model;result.mpn=label(p?.mpn);
+ result.identityBasis='metadata';result.retailerSku=label(p?.sku)||new URL(url).searchParams.get('sku');
  const gtin=String(p?.gtin||p?.gtin13||p?.gtin12||p?.gtin14||p?.gtin8||'');result.gtin=/^\d{8,14}$/.test(gtin)?gtin:null;
- for(const prop of [p?.additionalProperty].flat().filter(Boolean)){const key=normalize(prop.name).replaceAll(' ','_');if(/^(storage|lock|size|kit|generation|color|screen_size)$/.test(key)&&label(prop.value))result.attributes[key]=label(prop.value)!;}
+ for(const prop of [p?.additionalProperty].flat().filter(Boolean)){const key=normalize(prop.name).replaceAll(' ','_');if(/^(storage|lock|size|kit|generation|color|pack|screen_size)$/.test(key)&&label(prop.value))result.attributes[key]=label(prop.value)!;}
  const offers=[p?.offers].flat().filter(o=>o&&typeIs(o,'Offer'));
  const offer=offers.length===1?offers[0]:offers.filter(o=>{try{return productUrl(o.url)===url}catch{return false}}).length===1?offers.find(o=>{try{return productUrl(o.url)===url}catch{return false}}):null;
  // Never use AggregateOffer.lowPrice, a variant minimum or a crossed-out price.

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { CircularProductProvider, ComparisonResult, ProductIdentity, SearchRequest, Store, CandidateListing } from './schema.mjs';
-import { digest, extractProduct, identifyQuery, productUrl, tidy, identityId } from './identity.mjs';
+import { digest, extractProduct, identifyQuery, productUrl, tidy, identityId, productUrlHint } from './identity.mjs';
 import { demoData, previousFor } from './catalog.mjs';
 import { economics, rankCandidates } from './engine.mjs';
 export interface ServiceOptions { provider:CircularProductProvider; clock?:()=>number; extractor?:(url:string)=>Promise<ProductIdentity|null>; listingTtl?:number; }
@@ -23,15 +23,16 @@ export async function identify(input:SearchRequest,db:Store,options:ServiceOptio
   const p=identifyQuery(input,new Date(now).toISOString());
   if(input.url)try{
    p.sourceUrl=productUrl(input.url);const cached=await db.get('circular-products/'+digest(p.sourceUrl));
-   if(cached?.expiresAt>now&&cached.product?.productName===p.productName&&cached.product?.brand===p.brand&&cached.product?.model===p.model){p.mpn=cached.product.mpn;p.gtin=cached.product.gtin;p.imageUrl=cached.product.imageUrl;p.category=cached.product.category;p.attributes={...cached.product.attributes,...p.attributes};p.updatedAt=cached.product.updatedAt;p.id=identityId(p);}
+   if(cached?.expiresAt>now&&cached.product?.productName===p.productName&&cached.product?.brand===p.brand&&cached.product?.model===p.model){p.mpn=cached.product.mpn;p.gtin=cached.product.gtin;p.imageUrl=cached.product.imageUrl;p.category=cached.product.category;p.attributes={...cached.product.attributes,...p.attributes};p.updatedAt=cached.product.updatedAt;p.identityBasis=cached.product.identityBasis;p.identificationNote=cached.product.identificationNote;p.retailerSku=cached.product.retailerSku;p.id=identityId(p);}
   }catch{}return p;
  }
  let url:string;try{url=productUrl(input.url);}catch{throw new InputError("WE COULDN'T CRACK THIS ONE OPEN. Search its name or confirm the details below.",422);}
  const key='circular-products/'+digest(url),cached=await db.get(key);
  if(cached?.expiresAt>now&&cached.product)return cached.product;
  let product:ProductIdentity|null=null;try{product=await (options.extractor||extractProduct)(url);}catch{}
+ if(!product)product=productUrlHint(url,new Date(now).toISOString());
  if(!product)throw new InputError("WE COULDN'T CRACK THIS ONE OPEN. Enter the product name, brand, model and new price below.",422);
- await db.set(key,{product,expiresAt:now+86400000});return product;
+ await db.set(key,{product,expiresAt:now+(product.identityBasis==='url'?300000:86400000)});return product;
 }
 export function publicResult(r:ComparisonResult):ComparisonResult { const request={...r.request};delete request.postalCode;return {...r,request}; }
 export async function search(input:SearchRequest,db:Store,options:ServiceOptions,reuseId?:string):Promise<ComparisonResult> {
@@ -43,7 +44,8 @@ export async function search(input:SearchRequest,db:Store,options:ServiceOptions
  else{
   try{product=await identify(request,db,options);}catch(e){if(e instanceof InputError)throw e;throw new InputError('Confirm the product name and model before searching.',422);}
   if(request.url)request.url=product.sourceUrl||undefined;
-  if(product.category==='other')throw new InputError('The first release compares phones, cameras, chairs, drills and watches. Add the product type and exact model to your query.',422);
+  if(product.category==='other')throw new InputError('The first release compares phones, cameras, chairs, drills, watches and lighting. Add the product type and exact model to your query.',422);
+  if(product.identificationNote)warnings.push(product.identificationNote);
   await log(db,'product_identified',{category:product.category,method:request.url?'url':'query'});
   const previous=request.includePrevious!==false?previousFor(product):null;
   if(!provider.configured){mode='unconfigured';providerStatus='NOT_CONFIGURED';warnings.push('Live marketplace search is not connected. Try a clearly labeled example below; the sourced store-price board still works.');}

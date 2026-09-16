@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { demoData, previousFor } from '../.generated/circular/catalog.mjs';
 import { normalizeEbayItem, EbayProvider, searchTerms, ebayDestination } from '../.generated/circular/ebay.mjs';
-import { identifyQuery, parseProductPage, extractProduct, productUrl } from '../.generated/circular/identity.mjs';
+import { identifyQuery, parseProductPage, extractProduct, productUrl, productUrlHint } from '../.generated/circular/identity.mjs';
 import { rankCandidates, economics } from '../.generated/circular/engine.mjs';
 import { identify, search, loadResult, verifyOutbound, saveAlert } from '../.generated/circular/service.mjs';
 import { createHandlers } from '../.generated/circular/handlers.mjs';
@@ -135,4 +135,22 @@ test('portable Node adapter handles a parsed JSON body and preserves response st
  const req={url:'/api/circular-alert',method:'POST',headers:{host:'example.com','content-type':'application/json'},body:{email:'buyer@example.com'}};
  let result;await adapter(req,{writeHead(status,headers){result={status,headers}},end(body){result.body=JSON.parse(body.toString())}});
  assert.equal(received.email,'buyer@example.com');assert.equal(result.status,201);assert.equal(result.body.saved,true);
+});
+test('the supplied West Elm lamp URL recovers a labeled name when metadata is blocked, never price or variant facts',async()=>{
+ const url='https://www.westelm.com/products/merida-table-lamp-17-f1220/?catalogId=71&sku=7999646&pickuplocation=ST:%7Bstore_code%7D&cm_ven=PLA&gad_source=1&gclid=test';
+ assert.equal(productUrl(url),'https://www.westelm.com/products/merida-table-lamp-17-f1220/?sku=7999646');
+ const hint=productUrlHint(url,stamp);assert.equal(hint.productName,'Merida Table Lamp');assert.equal(hint.brand,'West Elm');assert.equal(hint.model,'Merida');assert.equal(hint.category,'lighting');assert.equal(hint.identityBasis,'url');assert.equal(hint.newPrice,null);assert.equal(hint.mpn,null);assert.equal(hint.gtin,null);assert.equal(hint.retailerSku,'7999646');assert.deepEqual(hint.attributes,{});
+ assert.equal(parseProductPage('<title>West Elm: 403 - Restricted Access</title>',productUrl(url)),null);
+ let tries=0;const db=store(),options={...opts(provider({configured:false})),extractor:async()=>{tries++;return null}};
+ const identified=await identify({url},db,options);assert.match(identified.identificationNote,/Suggested name/);await identify({url},db,options);assert.equal(tries,1);await identify({url},db,{...options,clock:()=>now+300001});assert.equal(tries,2);
+ const r=await search({url,productName:hint.productName,brand:hint.brand,model:hint.model,newPrice:129},db,options);assert.equal(r.sourceProduct.category,'lighting');assert.equal(r.mode,'unconfigured');assert.equal(r.candidates.length,0);assert.ok(r.warnings.some(w=>w.includes('Suggested name')));assert.ok(!renderResult(r).includes('Product metadata observed'));
+ assert.equal(productUrlHint('https://www.westelm.com/products/unknown-product-x999/'),null);assert.throws(()=>productUrlHint('https://www.westelm.com.evil.example/products/merida-table-lamp-17-f1220/'));
+});
+test('lamps can match a named family without inventing exact variants; conflicting finish and pack are rejected',()=>{
+ const p=identifyQuery({query:'West Elm Merida Table Lamp blue individual',newPrice:129},stamp);
+ const candidate={...live(),title:'Westelm Merida table lamp blue individual',brand:'Westelm',model:'Merida',category:'lighting',attributes:{color:'blue',pack:'1'},price:80};
+ assert.equal(rankCandidates(p,[candidate],null)[0].matchLevel,'STRONG MATCH');
+ assert.equal(rankCandidates(p,[{...candidate,attributes:{color:'citron',pack:'1'}}],null).length,0);
+ assert.equal(rankCandidates(p,[{...candidate,attributes:{color:'blue',pack:'2'}}],null).length,0);
+ assert.equal(rankCandidates({...p,gtin:'123456789012'},[{...candidate,gtin:'123456789012'}],null)[0].matchLevel,'EXACT PRODUCT');
 });

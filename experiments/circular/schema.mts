@@ -6,6 +6,8 @@ export interface ProductIdentity {
  currency: 'USD'; imageUrl: string | null; sourceUrl: string | null;
  attributes: Record<string,string>; priceBasis: 'user' | 'retailer' | 'demo' | 'unknown';
  createdAt: string; updatedAt: string;
+ identityBasis?: 'user' | 'metadata' | 'url'; identificationNote?: string;
+ retailerSku?: string | null;
 }
 export interface CandidateListing {
  id: string; provider: string; providerListingId: string; title: string;
