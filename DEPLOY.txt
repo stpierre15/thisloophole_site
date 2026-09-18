@@ -1,3 +1,11 @@
+LATEST RELEASE — September 17, 2026
+Plain document frame, no new product functionality.
+Production: https://thisloophole.com
+Netlify deployment: 6aacae35dff4b8d130942229
+Routes: /, /experiments/, /findings/, /about/, preserved /samething/.
+See README.md and QA.md for current scope and validation.
+The older deployment instructions below describe previous releases; the purchase checker remains paused.
+
 Loophole MVP — deploy to the EXISTING Netlify site
 ================================================
 

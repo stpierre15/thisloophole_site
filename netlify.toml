@@ -132,3 +132,18 @@
   to = "/.netlify/functions/circular-outbound"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/experiments"
+  to = "/experiments/"
+  status = 301
+
+[[redirects]]
+  from = "/findings"
+  to = "/findings/"
+  status = 301
+
+[[redirects]]
+  from = "/about"
+  to = "/about/"
+  status = 301

@@ -1,3 +1,9 @@
+## Current visual frame — September 17, 2026
+
+The public frame is a plain, 760px document with Georgia text, Arial utility labels, underlined black links and thin rules. Routes: `/`, `/experiments/`, `/findings/`, `/about/`, and the preserved `/samething/` tool. `experiments/circular/frame.mts` holds the small experiment index and static list renderers; `lib/frame.mjs` derives three chronological findings from the existing reviewed price board. Build and local preview render those lists into HTML; the new pages need no JavaScript, fonts, packages, credentials or database changes. Findings remain dated snapshots, never live stock claims. CONTACT is a text placeholder until a public contact address is supplied.
+
+This revision adds no agent logic, dashboards, product features or integrations. The larger marketing blocks and homepage monthly feature were removed to follow the latest frame-only brief. Existing comparison modules, providers, result links, evidence, analytics, alerts and storage remain intact.
+
 # loophole
 
 Production repository: https://github.com/stpierre15/thisloophole_site

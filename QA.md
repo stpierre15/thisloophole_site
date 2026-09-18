@@ -1,3 +1,11 @@
+## Document-frame verification — September 17, 2026
+
+Published to the existing Netlify project, deployment `6aacae35dff4b8d130942229`. The live-domain browser confirms the new homepage and navigation. Live-domain HTTP checks also passed for all four document routes, ten board entries, public/private asset boundaries, both demos, saved-result loading, honest unconfigured search, validation, disabled demo purchasing and paused endpoints.
+
+Files changed: `index.html`, `samething/index.html`, `privacy.html`, `assets/studio.css`, `scripts/build.mjs`, `scripts/dev.mjs`, `netlify.toml`, `vercel.json`, `README.md`, `QA.md`, `DEPLOY.txt`. Files added: `about/index.html`, `experiments/index.html`, `findings/index.html`, `experiments/circular/frame.mts`, `lib/frame.mjs`. No agent scaffolding remains. No database or API contracts changed.
+
+All 79 existing tests, JavaScript lint, both TypeScript checks and the production build pass. Browser review confirms the plain homepage, findings list and preserved camera demo ($800 illustrative savings). Mobile 390px and narrow desktop 760px checks showed no horizontal overflow on the checked pages. The frame uses two system font families and introduces no public scripts, images, dependencies or product functionality. New static routes: `/experiments/`, `/findings/`, `/about/`. Existing Same Thing identifiers and ten evidence entries are preserved. CONTACT remains an explicit placeholder; eBay credentials and automated email delivery remain outside this visual-only revision.
+
 ## Current West Elm / lighting correction — 2026-09-16
 
 The supplied Merida lamp path and retailer SKU 7999646 exposed two implementation limits: West Elm was missing from the retailer allowlist, and lighting was excluded. A direct public metadata request returned HTTP 403 Restricted Access. West Elm is now accepted, tracking is stripped, and lighting is supported. Blocked product pages recover a clearly labeled URL-derived name suggestion for editable confirmation. Retailer SKUs remain separate from manufacturer MPN/GTIN. No price, finish, dimensions, quantity or stock is inferred. URL hints retry metadata after five minutes. Finish and quantity fields are added within the existing confirmation form and theme. Lamp-family matches cannot earn EXACT PRODUCT without a supported structured identifier and compatible variants.

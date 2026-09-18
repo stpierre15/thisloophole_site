@@ -7,7 +7,8 @@ import { emailCapture, studioEvent } from '../lib/studio-api.mjs';
 import { retiredTool } from '../lib/retired-api.mjs';
 import { circularHandlers } from '../lib/circular-api.mjs';
 import { priceGapEntries } from '../assets/price-gaps.mjs';
-import { renderMonthlyPick, renderPriceBoard } from '../assets/price-gap-view.mjs';
+import { renderPriceBoard } from '../assets/price-gap-view.mjs';
+import { renderFrame } from '../lib/frame.mjs';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 process.env.LOOPHOLE_LOCAL_DATA_DIR ||= resolve(root,'.local-data');
 const port = Number(process.env.PORT || 4174);
@@ -35,15 +36,16 @@ createServer(async (req,res) => {
     let pathname = decodeURIComponent(url.pathname);
     if (pathname === '/') pathname = '/index.html';
     if (pathname === '/samething' || pathname === '/samething/') pathname = '/samething/index.html';
+    for(const name of ['experiments','findings','about'])if(pathname==='/'+name||pathname==='/'+name+'/')pathname='/'+name+'/index.html';
     if (pathname === '/purchase-checker' || pathname.startsWith('/purchase-checker/')) {res.writeHead(302,{'Location':'/'});res.end();return;}
-    if (!(/^\/(index\.html|privacy\.html|styles\.css)$/.test(pathname) || pathname.startsWith('/assets/') || pathname.startsWith('/playbook/') || pathname === '/samething/index.html')) { res.writeHead(404);res.end('Not found');return; }
+    if (!(/^\/(index\.html|privacy\.html|styles\.css)$/.test(pathname) || pathname.startsWith('/assets/') || pathname.startsWith('/playbook/') || /^\/(samething|experiments|findings|about)\/index\.html$/.test(pathname))) { res.writeHead(404);res.end('Not found');return; }
     let file = resolve(root,'.'+pathname);
     if(pathname.startsWith('/assets/circular/')&&!['/assets/circular/client.mjs','/assets/circular/view.mjs'].includes(pathname)){res.writeHead(404);res.end('Not found');return;}
     if(pathname.startsWith('/assets/circular/'))file=resolve(root,'.generated/circular',pathname.slice('/assets/circular/'.length));
     if (!file.startsWith(root+sep)) { res.writeHead(404);res.end('Not found');return; }
     if ((await stat(file)).isDirectory()) file = resolve(file,'index.html');
     res.writeHead(200,{'Content-Type':types[extname(file)] || 'application/octet-stream','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
-    if(pathname==='/index.html')res.end((await readFile(file,'utf8')).replace('<div id="monthly-pick" class="monthly-pick"></div>','<div id="monthly-pick" class="monthly-pick">'+renderMonthlyPick(priceGapEntries)+'</div>'));
+    if(/^\/(index\.html|(experiments|findings|about)\/index\.html)$/.test(pathname))res.end(renderFrame(await readFile(file,'utf8')));
     else if(pathname==='/samething/index.html')res.end((await readFile(file,'utf8')).replace('<section id="price-board" aria-label="Ranked price gaps"></section>','<section id="price-board" aria-label="Ranked price gaps">'+renderPriceBoard(priceGapEntries)+'</section>').replace('<noscript><p class="noscript">Enable JavaScript to view the sourced price leaderboard.</p></noscript>',''));
     else res.end(await readFile(file));
   } catch (error) { res.writeHead(error.code === 'ENOENT' ? 404 : 500); res.end('Request unavailable'); console.error(error.message); }
