@@ -42,4 +42,8 @@ document.addEventListener('click',async e=>{
 });
 alertForm.addEventListener('submit',async e=>{e.preventDefault();if(!alertForm.reportValidity())return;const feedback=document.getElementById('alert-status')!,button=alertForm.querySelector<HTMLButtonElement>('button')!;button.disabled=true;feedback.textContent='Saving your request…';try{const response=await api('/api/circular-alert',{email:el('alert-email').value,resultId:el('alert-result-id').value,threshold:el('alert-threshold').value?Number(el('alert-threshold').value):null,company:el('alert-company').value});feedback.textContent=response.message;el('alert-email').value='';}catch(err){feedback.textContent=err instanceof Error?err.message:'Please retry.';}finally{button.disabled=false;}});
 event('samething_page_view',{mode:'CIRCULAR_SEARCH'});
-const saved=new URL(location.href).searchParams.get('result');if(saved){setBusy(true,'Rechecking the saved comparison…');api('/api/circular-search?id='+encodeURIComponent(saved)).then(render).catch(err=>status.textContent=err.message).finally(()=>setBusy(false,status.textContent==='Rechecking the saved comparison…'?'Comparison ready.':status.textContent||''));}
+const params=new URL(location.href).searchParams;
+const saved=params.get('result');
+const initialQuery=params.get('q');
+if(saved){setBusy(true,'Rechecking the saved comparison…');api('/api/circular-search?id='+encodeURIComponent(saved)).then(render).catch(err=>status.textContent=err.message).finally(()=>setBusy(false,status.textContent==='Rechecking the saved comparison…'?'Comparison ready.':status.textContent||''));}
+else if(initialQuery){query.value=initialQuery.slice(0,1500);form.requestSubmit();}
