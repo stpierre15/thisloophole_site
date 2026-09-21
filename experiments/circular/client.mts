@@ -21,8 +21,15 @@ form.addEventListener('submit',async e=>{
  if(isUrl&&urlToConfirm!==value){
   urlToConfirm=value;confirm.open=true;el('confirmed-name').value='';el('confirmed-brand').value='';el('confirmed-model').value='';el('new-price').value='';
   event('url_submitted');setBusy(true,'Reading the product listing…');
-  try{const data=await api('/api/circular-identify',{url:value});fill(data.product);status.textContent=data.product.identificationNote||'Check these details and the new price, then find the loophole.';}catch(err){status.textContent=err instanceof Error?err.message:'Enter the product details below.';}
-  finally{setBusy(false,status.textContent||'');el('confirmed-name').focus();}return;
+  let autoSearch=false;
+  try{
+   const data=await api('/api/circular-identify',{url:value}),product=data.product as ProductIdentity;fill(product);
+   if(product.identityBasis==='metadata'){
+    autoSearch=true;setBusy(false,'Product identified. Checking offers…');event('search_submitted',{method:'url'});
+    await run({url:value,productName:product.productName,brand:product.brand||undefined,model:product.model||undefined,newPrice:product.newPrice,attributes:product.attributes,postalCode:el('postal-code').value||undefined,includePrevious:el('include-previous').checked});
+   }else status.textContent=product.identificationNote||'Check these details and the new price, then find the loophole.';
+  }catch(err){status.textContent=err instanceof Error?err.message:'Enter the product details below.';}
+  finally{if(busy)setBusy(false,status.textContent||'');if(!autoSearch)el('confirmed-name').focus();}return;
  }
  if(isUrl&&!el('confirmed-name').value.trim()){status.textContent='Enter the product name below so we can search.';el('confirmed-name').focus();return;}
  const attributes:Record<string,string>={};if(el('spec-storage').value.trim())attributes.storage=el('spec-storage').value.trim();if(el('spec-lock').value.trim())attributes.lock=el('spec-lock').value.trim();const kit=(document.getElementById('spec-kit') as HTMLSelectElement).value;if(kit)attributes.kit=kit;

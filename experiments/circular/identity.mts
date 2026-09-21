@@ -8,7 +8,7 @@ export function identityId(p:ProductIdentity):string {
  const key=p.gtin?'gtin:'+p.gtin.padStart(14,'0'):p.mpn?'mpn:'+normalize(p.brand)+'|'+normalize(p.mpn):p.brand&&p.model?'model:'+normalize(p.brand)+'|'+normalize(p.model):'title:'+normalize(p.productName);
  return digest(key+'|'+JSON.stringify(Object.fromEntries(Object.entries(p.attributes).sort(([a],[b])=>a.localeCompare(b))))).slice(0,24);
 }
-const hosts=['amazon.com','bestbuy.com','westelm.com','apple.com','sony.com','electronics.sony.com','garmin.com','makitatools.com','store.hermanmiller.com','hermanmiller.com','rei.com','target.com','walmart.com','dell.com','safaviehhome.com','decormarket.com','englishelm.com','modishstore.com'];
+const hosts=['amazon.com','bestbuy.com','westelm.com','cosori.com','apple.com','sony.com','electronics.sony.com','garmin.com','makitatools.com','store.hermanmiller.com','hermanmiller.com','rei.com','target.com','walmart.com','dell.com','safaviehhome.com','decormarket.com','englishelm.com','modishstore.com'];
 export function productUrl(value:string):string {
  const u=new URL(value);
  if(u.protocol!=='https:'||u.port||u.username||u.password||!hosts.some(h=>u.hostname===h||u.hostname==='www.'+h)||u.pathname==='/'||/\b(account|login|signin|checkout|cart|orders|api|logout)\b/i.test(u.pathname))throw new Error('This URL is not supported for automatic extraction. Search the product name instead.');

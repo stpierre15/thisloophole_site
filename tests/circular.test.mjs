@@ -38,6 +38,19 @@ test('URL extraction forbids private hosts, credentials, unsafe redirects and ov
  await assert.rejects(()=>extractProduct('https://www.apple.com/iphone/x',async()=>new Response(null,{status:302,headers:{location:'http://127.0.0.1/private'}})));
  assert.equal(await extractProduct('https://www.apple.com/iphone/x',async()=>new Response('x'.repeat(1_500_001),{headers:{'content-type':'text/html'}})),null);
 });
+test('the supplied Cosori URL keeps its variant and reads exact public product metadata',()=>{
+ const supplied='https://cosori.com/products/turboblaze-air-fryer?variant=47075741335861&country=US&currency=USD&utm_source=google&gad_source=1&gclid=test';
+ const url='https://cosori.com/products/turboblaze-air-fryer?variant=47075741335861';
+ assert.equal(productUrl(supplied),url);
+ const page='<script type="application/ld+json">'+JSON.stringify({
+  '@context':'https://schema.org','@type':'Product',name:'TurboBlaze™ 6.0-Quart Air Fryer - Dark Gray',category:'Air Fryer',
+  url:'https://cosori.com/products/turboblaze-air-fryer',sku:'KAAPAFCSNUS0161A',gtin:'810123670376',brand:{'@type':'Brand',name:'COSORI'},
+  offers:{'@type':'Offer',availability:'https://schema.org/InStock',price:119.99,priceCurrency:'USD',sku:'KAAPAFCSNUS0161A',gtin:'810123670376',url}
+ })+'</script>';
+ const parsed=parseProductPage(page,url,stamp);
+ assert.equal(parsed.productName,'TurboBlaze™ 6.0-Quart Air Fryer - Dark Gray');assert.equal(parsed.brand,'COSORI');assert.equal(parsed.category,'kitchen');
+ assert.equal(parsed.newPrice,119.99);assert.equal(parsed.priceBasis,'retailer');assert.equal(parsed.gtin,'810123670376');assert.equal(parsed.retailerSku,'KAAPAFCSNUS0161A');assert.equal(parsed.identityBasis,'metadata');assert.equal(parsed.sourceUrl,url);
+});
 const rawItem=overrides=>({itemId:'v1|123|0',title:'Sony A7 IV camera body only',conditionId:'3000',condition:'Used',price:{currency:'USD',value:'1199'},itemWebUrl:'https://www.ebay.com/itm/123',buyingOptions:['FIXED_PRICE'],shippingOptions:[{shippingCostType:'FIXED',shippingCost:{currency:'USD',value:'25'}}],localizedAspects:[{name:'Brand',value:'Sony'},{name:'Model',value:'A7 IV'}],seller:{username:'camera-seller'},...overrides});
 test('eBay normalization preserves shipping and excludes auctions, parts and unsupported money',()=>{
  const p=normalizeEbayItem(rawItem(),stamp);assert.equal(p.totalPrice,1224);assert.equal(p.sellerName,'camera-seller');
@@ -82,10 +95,11 @@ test('economics uses cents and shipping; neither small gaps nor an older generat
  assert.equal(economics({...p,newPrice:null},c).verdict,'NO PRICE BASELINE');
  assert.equal(economics(p,rank(live({model:'A7 III',previousModel:true,price:500}))).bestValueOption,null);
 });
-test('metadata cache retains extracted identifiers after confirmation and expires at 24 hours',async()=>{
- const db=store(),p={...camera().product,gtin:'012345678901',mpn:'ILCE7M4',sourceUrl:'https://www.sony.com/camera/test'};let count=0;
+test('metadata cache retains extracted identifiers and retailer pricing after confirmation and expires at 24 hours',async()=>{
+ const db=store(),p={...camera().product,gtin:'012345678901',mpn:'ILCE7M4',sourceUrl:'https://www.sony.com/camera/test',priceBasis:'retailer'};let count=0;
  const options={...opts(),extractor:async()=>{count++;return p;}};const req={url:p.sourceUrl};
  await identify(req,db,options);await identify(req,db,options);assert.equal(count,1);
+ const unchanged=await identify({url:p.sourceUrl,productName:p.productName,brand:p.brand,model:p.model,newPrice:p.newPrice},db,options);assert.equal(unchanged.priceBasis,'retailer');
  const confirmed=await identify({url:p.sourceUrl,productName:p.productName,brand:p.brand,model:p.model,newPrice:1800},db,options);assert.equal(confirmed.gtin,p.gtin);assert.equal(confirmed.newPrice,1800);
  await identify(req,db,{...options,clock:()=>now+86400001});assert.equal(count,2);
 });

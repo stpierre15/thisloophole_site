@@ -23,7 +23,7 @@ export async function identify(input:SearchRequest,db:Store,options:ServiceOptio
   const p=identifyQuery(input,new Date(now).toISOString());
   if(input.url)try{
    p.sourceUrl=productUrl(input.url);const cached=await db.get('circular-products/'+digest(p.sourceUrl));
-   if(cached?.expiresAt>now&&cached.product?.productName===p.productName&&cached.product?.brand===p.brand&&cached.product?.model===p.model){p.mpn=cached.product.mpn;p.gtin=cached.product.gtin;p.imageUrl=cached.product.imageUrl;p.category=cached.product.category;p.attributes={...cached.product.attributes,...p.attributes};p.updatedAt=cached.product.updatedAt;p.identityBasis=cached.product.identityBasis;p.identificationNote=cached.product.identificationNote;p.retailerSku=cached.product.retailerSku;p.id=identityId(p);}
+   if(cached?.expiresAt>now&&cached.product?.productName===p.productName&&cached.product?.brand===p.brand&&cached.product?.model===p.model){p.mpn=cached.product.mpn;p.gtin=cached.product.gtin;p.imageUrl=cached.product.imageUrl;p.category=cached.product.category;p.attributes={...cached.product.attributes,...p.attributes};p.updatedAt=cached.product.updatedAt;p.identityBasis=cached.product.identityBasis;p.identificationNote=cached.product.identificationNote;p.retailerSku=cached.product.retailerSku;if(p.newPrice===cached.product.newPrice&&cached.product.priceBasis==='retailer')p.priceBasis='retailer';p.id=identityId(p);}
   }catch{}return p;
  }
  let url:string;try{url=productUrl(input.url);}catch{throw new InputError("WE COULDN'T CRACK THIS ONE OPEN. Search its name or confirm the details below.",422);}
