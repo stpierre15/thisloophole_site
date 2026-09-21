@@ -87,3 +87,9 @@ version and use Publish deploy. Site-wide production purchase and outcome
 records survive rollback. Do not delete the Blobs store or change DNS.
 
 Do not use drag-and-drop of dist alone: the site needs bundled Functions.
+# Loophole Auto production release
+
+Production deploy: 6ab0a6f1f08a713c8459a8c1
+URL: https://thisloophole.com
+
+The existing Netlify project now serves the Loophole Auto public build. Hosted checks passed for the homepage, demo vehicle search, dynamic vehicle route, Deal Plan demo, NHTSA VIN decoding, explicit unconfigured Stripe response, and redirect away from the retired Same Thing route. The production environment has no confirmed eBay Motors or Stripe credentials, so demo inventory is active and payment is disabled.
