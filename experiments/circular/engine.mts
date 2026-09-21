@@ -25,7 +25,8 @@ export function rankCandidates(product:ProductIdentity,listings:CandidateListing
    if(c.attributes[k]){if(attr(k,c.attributes[k])!==attr(k,v))conflict=true;else confirmed++;}else missing++;
   }
   if(conflict)continue;
-  const identifier=!old&&(sameGtin(product.gtin,c.gtin)||same(product.mpn,c.mpn));
+  const retailerIdentifier=!old&&!!product.retailerSku&&c.provider==='Amazon Product Data'&&c.providerListingId.startsWith(product.retailerSku+':');
+  const identifier=!old&&(sameGtin(product.gtin,c.gtin)||same(product.mpn,c.mpn)||retailerIdentifier);
   const model=!!targetModel&&(sameModel(targetModel,c.model)||(!c.model&&contains(c.title,targetModel)));
   // An explicit different model is a conflict, even if its title mentions ours.
   if(targetModel&&c.model&&!sameModel(targetModel,c.model)&&!identifier)continue;
@@ -46,7 +47,7 @@ export function rankCandidates(product:ProductIdentity,listings:CandidateListing
   if(product.category==='lighting'&&!identifier)tradeoffs.push('A matching lamp family is not proof of an identical finish, size, pack or electrical specification. These details need confirmation.');
   if(c.shippingPrice===null)tradeoffs.push('Shipping is unknown. Savings cannot be calculated yet.');
   if(old)tradeoffs.push(previous!.notes);
-  ranked.push({...c,totalPrice:total,matchLevel,confidence:exact?'HIGH':'MEDIUM',matchReasons:[...(identifier?['Matching structured product identifier.']:[]),...(model?['Matching '+(old?'previous ':'')+'model.']:[]),...(brand?['Matching brand.']:[]),...(confirmed?['Requested specifications match where supplied.']:[])],savings,percentSavings:savings!==null&&product.newPrice?Math.round(savings/product.newPrice*100):null,tradeoffs});
+  ranked.push({...c,totalPrice:total,matchLevel,confidence:exact?'HIGH':'MEDIUM',matchReasons:[...(retailerIdentifier?['Matching retailer catalog identifier.']:identifier?['Matching structured product identifier.']:[]),...(model?['Matching '+(old?'previous ':'')+'model.']:[]),...(brand?['Matching brand.']:[]),...(confirmed?['Requested specifications match where supplied.']:[])],savings,percentSavings:savings!==null&&product.newPrice?Math.round(savings/product.newPrice*100):null,tradeoffs});
  }
  const level=(x:RankedListing)=>x.matchLevel==='EXACT PRODUCT'?3:x.matchLevel==='STRONG MATCH'?2:1;
  return ranked.filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i).sort((a,b)=>level(b)-level(a)||(a.totalPrice===null?1:0)-(b.totalPrice===null?1:0)||(a.totalPrice??a.price)-(b.totalPrice??b.price));

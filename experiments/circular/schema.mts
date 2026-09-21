@@ -1,4 +1,4 @@
-export type Condition = 'used' | 'refurbished' | 'open_box';
+export type Condition = 'new' | 'used' | 'refurbished' | 'open_box';
 export type MatchLevel = 'EXACT PRODUCT' | 'STRONG MATCH' | 'SIMILAR ALTERNATIVE';
 export interface ProductIdentity {
  id: string; productName: string; brand: string | null; model: string | null;
@@ -30,6 +30,7 @@ export interface ModelRelationship {
 export interface ProductSearchInput { product: ProductIdentity; previous?: ModelRelationship; postalCode?: string; }
 export interface CircularProductProvider {
  id: string; configured: boolean; sandbox: boolean;
+ identify?(product: ProductIdentity): Promise<ProductIdentity | null>;
  search(input: ProductSearchInput): Promise<CandidateListing[]>;
  getListing?(id: string, postalCode?: string): Promise<CandidateListing | null>;
 }

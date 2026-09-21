@@ -44,7 +44,10 @@ export async function search(input:SearchRequest,db:Store,options:ServiceOptions
  else{
   try{product=await identify(request,db,options);}catch(e){if(e instanceof InputError)throw e;throw new InputError('Confirm the product name and model before searching.',422);}
   if(request.url)request.url=product.sourceUrl||undefined;
-  if(product.category==='other')throw new InputError('The first release compares phones, cameras, chairs, drills, watches and lighting. Add the product type and exact model to your query.',422);
+  if(provider.identify&&!request.url)try{
+   const resolved=await provider.identify(product);
+   if(resolved)product=resolved;else warnings.push('We could not resolve that search to one source-supported catalog product. Add the brand or model number for a narrower check.');
+  }catch{warnings.push('Product identification did not complete. Retry or add the exact model number.');}
   if(product.identificationNote)warnings.push(product.identificationNote);
   await log(db,'product_identified',{category:product.category,method:request.url?'url':'query'});
   const previous=request.includePrevious!==false?previousFor(product):null;
@@ -64,6 +67,14 @@ export async function search(input:SearchRequest,db:Store,options:ServiceOptions
    }
   }
  }
+ const newOffers=listings.filter(c=>c.condition==='new'&&c.available&&Number.isFinite(c.price)&&c.price>0);
+ if(product.newPrice===null&&newOffers.length){
+  const baseline=[...newOffers].sort((a,b)=>a.price-b.price)[0];
+  product={...product,newPrice:baseline.price,priceBasis:'retailer',updatedAt:baseline.fetchedAt};
+  warnings.push('New-price baseline: '+baseline.provider+' reported '+baseline.price.toLocaleString('en-US',{style:'currency',currency:'USD'})+'. Shipping, tax and checkout availability still need confirmation.');
+ }
+ if(provider.id==='amazon-data')warnings.push('Amazon product and offer data is supplied through Rainforest API. This checks one marketplace, not the whole market.');
+ listings=listings.filter(c=>c.condition!=='new');
  const liveListings:CandidateListing[]=[];
  for(const c of listings){
   const tombstone=await db.get('circular-dead-listings/'+digest(c.id));if(tombstone?.expiresAt>now)continue;

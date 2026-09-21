@@ -101,6 +101,15 @@ test('missing or failed provider never replaces a real search with fictional inv
  const demo=await search({demoId:'camera'},store(),opts());assert.equal(demo.mode,'demo');assert.ok(demo.candidates.every(c=>c.demo&&!c.destinationUrl));assert.ok(renderResult(demo).includes('FICTIONAL PRICES'));assert.ok(shareText(demo,'https://example.com').includes('DEMO'));
  const small=await search({demoId:'phone'},store(),opts());assert.equal(small.verdict,'NEW ACTUALLY WINS THIS ONE');
 });
+test('ordinary product categories can resolve through a connected catalog provider',async()=>{
+ const db=store(),p=provider({
+  id:'amazon-data',
+  async identify(product){return {...product,id:'resolved-ninja',productName:'Ninja NeverStick Waffle Maker',brand:'Ninja',category:'kitchen',sourceUrl:'https://www.amazon.com/dp/B000000001',retailerSku:'B000000001',identityBasis:'metadata'};},
+  async search(){return [live({id:'amazon-new',provider:'Amazon Product Data',providerListingId:'B000000001:new',destinationUrl:'https://www.amazon.com/dp/B000000001',title:'Ninja NeverStick Waffle Maker',brand:'Ninja',model:'BW1001',category:'other',condition:'new',conditionText:'New',price:79.99,shippingPrice:0,totalPrice:79.99}),live({id:'amazon-used',provider:'Amazon Product Data',providerListingId:'B000000001:used',destinationUrl:'https://www.amazon.com/dp/B000000001',title:'Ninja NeverStick Waffle Maker',brand:'Ninja',model:'BW1001',category:'other',condition:'used',conditionText:'Used - Very Good',price:49.99,shippingPrice:0,totalPrice:49.99})];}
+ });
+ const r=await search({query:'ninja waffle maker'},db,opts(p));
+ assert.equal(r.sourceProduct.productName,'Ninja NeverStick Waffle Maker');assert.equal(r.sourceProduct.newPrice,79.99);assert.equal(r.sourceProduct.priceBasis,'retailer');assert.equal(r.candidates.length,1);assert.equal(r.verdict,'NEW ACTUALLY WINS THIS ONE');
+});
 test('outbound rechecks live stock, price and match, removes vanished inventory and blocks demo buying',async()=>{
  const db=store(),p=provider(),options=opts(p),r=await search({query:'Sony A7 IV body',newPrice:1999,includePrevious:false},db,options);
  assert.equal(await verifyOutbound(r.id,r.candidates[0].id,db,options),'https://www.ebay.com/itm/123');

@@ -30,7 +30,7 @@ export function attributesOf(title:string):Record<string,string> {
  return out;
 }
 export function infer(title:string) {
- const brand=/\bwest[\s-]?elm\b/i.test(title)?'West Elm':/\b(apple|iphone)\b/i.test(title)?'Apple':/\bsony\b/i.test(title)?'Sony':/herman miller/i.test(title)?'Herman Miller':/\bmakita\b/i.test(title)?'Makita':/\bgarmin\b/i.test(title)?'Garmin':null;
+ const brand=/\bwest[\s-]?elm\b/i.test(title)?'West Elm':/\b(apple|iphone)\b/i.test(title)?'Apple':/\bsony\b/i.test(title)?'Sony':/herman miller/i.test(title)?'Herman Miller':/\bmakita\b/i.test(title)?'Makita':/\bgarmin\b/i.test(title)?'Garmin':/\bninja\b/i.test(title)?'Ninja':null;
  let model:string|null=null;
  const phone=title.match(/\biPhone\s+(\d{1,2})(\s+Pro\s+Max|\s+Pro|\s+Plus|\s+mini)?\b/i);if(phone)model='iPhone '+phone[1]+(phone[2]?phone[2].replace(/\s+/g,' ').replace(/pro/ig,'Pro').replace(/max/ig,'Max').replace(/plus/ig,'Plus'):'');
  const camera=title.match(/\b(?:A7|α7|Alpha 7)\s*(III|IV|II|V|[2-5])\b/i);if(camera)model='A7 '+({'2':'II','3':'III','4':'IV','5':'V'}[camera[1]]||camera[1].toUpperCase());
@@ -38,7 +38,7 @@ export function infer(title:string) {
  if(brand==='Makita')model=title.match(/\b(?:XFD|XPH|DDF|DHP)\d{2,3}[A-Z0-9]*\b/i)?.[0].toUpperCase()??null;
  if(brand==='Garmin')model=title.match(/\b(?:fenix|fēnix)\s+\d+[SX]?(?:\s+Pro)?\b/i)?.[0]??null;
  if(brand==='West Elm')model=tidy(title.replace(/\bwest[\s-]?elm\b/i,'').trim().match(/^(.+?)\s+(?:(?:table|floor|desk)\s+)?lamp\b/i)?.[1],80)||null;
- const category=/\b(lamp|sconce|pendant|chandelier|lighting)\b/i.test(title)?'lighting':/\biphone\b/i.test(title)?'phone':/\b(a7|camera|α7|alpha 7|ilce)\b/i.test(title)?'camera':/\b(aeron|chair)\b/i.test(title)?'chair':/\b(drill|XFD\d+|XPH\d+|DDF\d+|DHP\d+)\b/i.test(title)?'tool':/\b(watch|fenix|fēnix)\b/i.test(title)?'watch':'other';
+ const category=/\b(lamp|sconce|pendant|chandelier|lighting)\b/i.test(title)?'lighting':/\biphone\b/i.test(title)?'phone':/\b(a7|camera|α7|alpha 7|ilce)\b/i.test(title)?'camera':/\b(aeron|chair)\b/i.test(title)?'chair':/\b(drill|XFD\d+|XPH\d+|DDF\d+|DHP\d+)\b/i.test(title)?'tool':/\b(watch|fenix|fēnix)\b/i.test(title)?'watch':/\b(waffle maker|blender|toaster|air fryer|coffee maker|mixer)\b/i.test(title)?'kitchen':'other';
  return {brand,model,category};
 }
 export function identifyQuery(input:SearchRequest,now=new Date().toISOString()):ProductIdentity {
