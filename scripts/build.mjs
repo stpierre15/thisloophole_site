@@ -14,7 +14,7 @@ async function checkModules(dir) {
 }
 for (const dir of ['lib','assets','experiments','netlify/functions','scripts']) await checkModules(dir);
 const pages=await Promise.all(['index.html','cars/index.html','car/index.html','deal-plan/index.html'].map(f=>readFile(f,'utf8')));
-for (const [html,ids] of [[pages[0],['main']],[pages[1],['vehicle-search','search-results']],[pages[2],['vehicle-detail']],[pages[3],['deal-plan']]]) for (const id of ids) {
+for (const [html,ids] of [[pages[0],['main']],[pages[1],['vehicle-search','make-options','model-options','inventory-mode','search-results']],[pages[2],['vehicle-detail']],[pages[3],['deal-plan']]]) for (const id of ids) {
   if (!html.includes('id="'+id+'"')) throw new Error('Missing required interface element '+id);
 }
 await rm('dist',{recursive:true,force:true});
