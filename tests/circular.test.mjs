@@ -122,7 +122,7 @@ test('ordinary product categories can resolve through a connected catalog provid
   async search(){return [live({id:'amazon-new',provider:'Amazon Product Data',providerListingId:'B000000001:new',destinationUrl:'https://www.amazon.com/dp/B000000001',title:'Ninja NeverStick Waffle Maker',brand:'Ninja',model:'BW1001',category:'other',condition:'new',conditionText:'New',price:79.99,shippingPrice:0,totalPrice:79.99}),live({id:'amazon-used',provider:'Amazon Product Data',providerListingId:'B000000001:used',destinationUrl:'https://www.amazon.com/dp/B000000001',title:'Ninja NeverStick Waffle Maker',brand:'Ninja',model:'BW1001',category:'other',condition:'used',conditionText:'Used - Very Good',price:49.99,shippingPrice:0,totalPrice:49.99})];}
  });
  const r=await search({query:'ninja waffle maker'},db,opts(p));
- assert.equal(r.sourceProduct.productName,'Ninja NeverStick Waffle Maker');assert.equal(r.sourceProduct.newPrice,79.99);assert.equal(r.sourceProduct.priceBasis,'retailer');assert.equal(r.candidates.length,1);assert.equal(r.verdict,'NEW ACTUALLY WINS THIS ONE');
+ assert.equal(r.sourceProduct.productName,'Ninja NeverStick Waffle Maker');assert.equal(r.sourceProduct.newPrice,79.99);assert.equal(r.sourceProduct.priceBasis,'retailer');assert.equal(r.candidates.length,1);assert.equal(r.verdict,'NEW ACTUALLY WINS THIS ONE');assert.equal(r.providerId,'amazon-data');assert.match(renderResult(r),/SEARCH \/ AMAZON PRODUCT DATA/);
 });
 test('outbound rechecks live stock, price and match, removes vanished inventory and blocks demo buying',async()=>{
  const db=store(),p=provider(),options=opts(p),r=await search({query:'Sony A7 IV body',newPrice:1999,includePrevious:false},db,options);

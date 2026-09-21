@@ -87,7 +87,7 @@ export async function search(input:SearchRequest,db:Store,options:ServiceOptions
  if(!request.postalCode&&mode==='live')warnings.push('No ZIP code supplied. Shipping is the provider-reported estimate, not a delivery-address quote.');
  warnings.push('USD / US marketplace. Tax is excluded. New-price shipping is not included unless you entered a delivered new price. Confirm condition, delivery, returns and checkout totals.');
  const fetchedAt=listings.length?listings.reduce((old,c)=>c.fetchedAt<old?c.fetchedAt:old,stamp):stamp;
- const result:ComparisonResult={id:reuseId||randomUUID(),sourceProduct:product,candidates,...comp,mode,providerStatus,previousModel:previous,fetchedAt,expiresAt:providerExpiry,cacheHit,request,warnings};
+ const result:ComparisonResult={id:reuseId||randomUUID(),sourceProduct:product,candidates,...comp,mode,providerStatus,providerId:provider.id,previousModel:previous,fetchedAt,expiresAt:providerExpiry,cacheHit,request,warnings};
  await db.set('circular-results/'+result.id,result);return result;
 }
 export async function loadResult(id:string,db:Store,options:ServiceOptions) {

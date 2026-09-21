@@ -45,6 +45,7 @@ export interface ComparisonResult {
  bestValueOption: RankedListing | null; estimatedSavings: number | null;
  percentSavings: number | null; verdict: 'LOOPHOLE FOUND' | 'NEW ACTUALLY WINS THIS ONE' | 'COMPARE THE TERMS' | 'NO PRICE BASELINE' | 'NOTHING GOOD RIGHT NOW' | 'PROVIDER UNAVAILABLE' | 'LIVE SEARCH NOT CONNECTED';
  take: string; mode: 'live' | 'demo' | 'unconfigured' | 'sandbox'; providerStatus: string;
+ providerId?: string;
  previousModel: ModelRelationship | null; fetchedAt: string; expiresAt: number;
  cacheHit: boolean; request: SearchRequest; warnings: string[];
 }
