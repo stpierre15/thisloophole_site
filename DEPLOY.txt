@@ -93,3 +93,7 @@ Production deploy: 6ab0a74ea10b677d2391455a
 URL: https://thisloophole.com
 
 The existing Netlify project now serves the Loophole Auto public build. Hosted checks passed for the homepage, demo vehicle search, dynamic vehicle route, Deal Plan demo, NHTSA VIN decoding, explicit unconfigured Stripe response, and redirect away from the retired Same Thing route. The production environment has no confirmed eBay Motors or Stripe credentials, so demo inventory is active and payment is disabled.
+
+Usability update: 6ab0ade81e08e1ee399753d2
+
+The car search now offers make and model suggestions, clearly labels sample-inventory mode, and sends sample vehicles directly to a completed sample Deal Plan without showing the inactive checkout. The production walkthrough passed from search through the seven-section report.
