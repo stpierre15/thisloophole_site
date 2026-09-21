@@ -1,3 +1,11 @@
+# Loophole Auto release — September 2026
+
+Public build now contains only the Loophole Auto homepage, vehicle search, dynamic vehicle detail, dynamic Deal Plan, method, trust, and privacy routes. Earlier shopping experiments remain in source but are excluded from `dist/` and redirected away from public navigation.
+
+Automotive validation covers input constraints, explicitly labeled demo search, official eBay OAuth/Browse normalization, official NHTSA normalization and failure behavior, append-only price observations, two-check inactivity, deterministic comparables, stored score components, vehicle detail, Deal Plan calculations, demo report labeling, anonymous token records, and disabled Stripe behavior. A live NHTSA vPIC request successfully decoded a public example VIN. eBay production automotive inventory and Stripe payment were not claimed or tested because credentials are not configured.
+
+Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. The production build must contain no `/samething`, `/experiments`, `/findings`, `/about`, `/playbook`, or purchase-checker assets.
+
 ## Document-frame verification — September 17, 2026
 
 Published to the existing Netlify project, deployment `6aacae35dff4b8d130942229`. The live-domain browser confirms the new homepage and navigation. Live-domain HTTP checks also passed for all four document routes, ten board entries, public/private asset boundaries, both demos, saved-result loading, honest unconfigured search, validation, disabled demo purchasing and paused endpoints.

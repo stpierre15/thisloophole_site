@@ -2,13 +2,13 @@
   "name": "thisloophole_site",
   "private": true,
   "scripts": {
-    "compile:tools": "tsc -p tsconfig.circular.json",
+    "compile:tools": "tsc -p tsconfig.circular.json && tsc -p tsconfig.auto.json",
     "vercel-build": "npm run compile:tools",
     "dev": "npm run compile:tools && node scripts/dev.mjs",
     "build": "npm run compile:tools && node scripts/build.mjs",
     "test": "npm run compile:tools && node --test tests/*.test.mjs",
     "lint": "node scripts/lint.mjs",
-    "typecheck": "tsc --noEmit && tsc -p tsconfig.circular.json --noEmit",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.circular.json --noEmit && tsc -p tsconfig.auto.json --noEmit",
     "check:data": "node scripts/validate-data.mjs"
   },
   "engines": {

@@ -1,5 +1,7 @@
 # Data maintenance and founder metrics
 
+The automotive record layout and append-only price-history rules are documented in `data/AUTO_MVP.md`. Loophole Auto adds `auto/dealers`, `auto/vehicles`, `auto/listings`, `auto/observations`, `auto/comparables`, `auto/analyses`, `auto/vins`, `auto/deal-reports`, and `auto/stripe-sessions` without migrating or deleting the legacy records described below.
+
 ## Edit the catalog
 
 Edit data/loopholes.json in Git; no public admin editor is exposed. Each record follows types/models.d.ts. Run npm run check:data and npm test before a deploy. Keep IDs stable. Records describe policies and repeatable purchase paths, not invented live offers.

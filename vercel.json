@@ -1,13 +1,17 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {"api/*.mjs": {"includeFiles": ".generated/circular/**", "maxDuration": 60}},
+  "functions": {"api/*.mjs": {"includeFiles": "{.generated/circular/**,.generated/auto/**}", "maxDuration": 60}},
+  "rewrites": [
+    {"source":"/car/:id*","destination":"/car/index.html"},
+    {"source":"/deal-plan/:id*","destination":"/deal-plan/index.html"}
+  ],
   "redirects": [
     {"source":"/purchase-checker/:path*","destination":"/","permanent":false},
-    {"source":"/samething","destination":"/samething/","permanent":true},
-    {"source":"/experiments","destination":"/experiments/","permanent":true},
-    {"source":"/findings","destination":"/findings/","permanent":true},
-    {"source":"/about","destination":"/about/","permanent":true}
+    {"source":"/samething/:path*","destination":"/","permanent":false},
+    {"source":"/experiments/:path*","destination":"/","permanent":false},
+    {"source":"/findings/:path*","destination":"/","permanent":false},
+    {"source":"/about/:path*","destination":"/why-loophole/","permanent":false}
   ],
   "headers": [{"source":"/(.*)","headers":[
     {"key":"X-Content-Type-Options","value":"nosniff"},

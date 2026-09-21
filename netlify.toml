@@ -35,6 +35,46 @@
   node_bundler = "esbuild"
 
 [[redirects]]
+  from = "/api/vehicle-search"
+  to = "/.netlify/functions/vehicle-search"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/vehicle-detail"
+  to = "/.netlify/functions/vehicle-detail"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/vin-decode"
+  to = "/.netlify/functions/vin-decode"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/deal-plan-checkout"
+  to = "/.netlify/functions/deal-plan-checkout"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/deal-plan"
+  to = "/.netlify/functions/deal-plan"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/car/*"
+  to = "/car/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/deal-plan/*"
+  to = "/deal-plan/index.html"
+  status = 200
+
+[[redirects]]
   from = "/tools"
   to = "/"
   status = 301
@@ -88,9 +128,16 @@
   force = true
 
 [[redirects]]
+  from = "/samething/*"
+  to = "/"
+  status = 302
+  force = true
+
+[[redirects]]
   from = "/samething"
-  to = "/samething/"
-  status = 301
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/purchase-checker"
@@ -135,15 +182,18 @@
 
 [[redirects]]
   from = "/experiments"
-  to = "/experiments/"
-  status = 301
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/findings"
-  to = "/findings/"
-  status = 301
+  to = "/"
+  status = 302
+  force = true
 
 [[redirects]]
   from = "/about"
-  to = "/about/"
-  status = 301
+  to = "/why-loophole/"
+  status = 302
+  force = true

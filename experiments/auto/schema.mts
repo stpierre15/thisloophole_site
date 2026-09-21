@@ -1,0 +1,17 @@
+export interface Store { get(key:string):Promise<any>; set(key:string,value:unknown):Promise<void>; list?(prefix:string):Promise<any[]>; }
+export interface Dealer { id:string; name:string; address:string|null; city:string; state:string; zip:string; lat:number|null; lng:number|null; source:string; }
+export interface Vehicle { id:string; vin:string|null; year:number; make:string; model:string; trim:string|null; drivetrain:string|null; bodyClass:string|null; engine:string|null; fuelType:string|null; manufacturer:string|null; }
+export interface PriceObservation { id:string; listingId:string; observedAt:string; price:number; mileage:number|null; }
+export interface VehicleListingInput { provider:string; providerListingId:string; vehicle:Vehicle; dealer:Dealer; url:string|null; imageUrl:string|null; mileage:number|null; currentPrice:number; firstObservedAt?:string; observedAt:string; active:boolean; demo:boolean; seededObservations?:Array<{observedAt:string;price:number;mileage:number|null}>; }
+export interface VehicleListing extends VehicleListingInput { id:string; vehicleId:string; dealerId:string; firstObservedAt:string; lastObservedAt:string; missingChecks:number; }
+export interface ComparableSnapshot { id:string; listingId:string; generatedAt:string; comparableCount:number; medianPrice:number|null; averagePrice:number|null; percentile:number|null; priceDeltaFromMedian:number|null; }
+export interface ScoreComponents { pricePosition:number; timeObserved:number; priceCuts:number; localCompetition:number; depreciationContext:number; }
+export interface LoopholeAnalysis { id:string; listingId:string; generatedAt:string; score:number; components:ScoreComponents; reasons:string[]; confidence:'LOW'|'MEDIUM'|'HIGH'; disclosure:string; }
+export interface VehicleResult { listing:VehicleListing; vehicle:Vehicle; dealer:Dealer; observations:PriceObservation[]; comparable:ComparableSnapshot; analysis:LoopholeAnalysis; daysObserved:number; originalObservedPrice:number; priceCutCount:number; priceReduction:number; }
+export interface VehicleSearchInput { zip:string; make:string; model:string; radius:number; yearMin?:number; yearMax?:number; maxPrice?:number; }
+export interface VehicleSearchResponse { mode:'demo'|'live'|'unconfigured'; provider:string; disclosure:string; results:VehicleResult[]; searchedAt:string; }
+export interface VehicleInventoryProvider { id:string; configured:boolean; demo:boolean; searchVehicles(input:VehicleSearchInput):Promise<VehicleListingInput[]>; getVehicle?(id:string):Promise<VehicleListingInput|null>; }
+export interface VinIdentity { vin:string; year:number|null; make:string|null; model:string|null; trim:string|null; bodyClass:string|null; engine:string|null; fuelType:string|null; driveType:string|null; manufacturer:string|null; source:'NHTSA_VPIC'; decodedAt:string; }
+export interface VinDecoder { decode(vin:string):Promise<VinIdentity|null>; }
+export interface DealReport { id:string; token:string|null; listingId:string; email:string|null; stripePaymentId:string|null; status:'demo'|'paid'; createdAt:string; completedAt:string|null; reportData:DealPlanData; }
+export interface DealPlanData { vehicle:VehicleResult; askingPrice:number; openingTarget:number; targetLow:number; targetHigh:number; walkAwayConsideration:number; estimateDisclosure:string; reasons:string[]; process:string[]; message:string; checklist:Array<{name:string;questions:string;whenUseful:string}>; }
