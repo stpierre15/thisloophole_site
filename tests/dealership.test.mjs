@@ -39,6 +39,12 @@ test('new mainstream brands can each enter a blind finalist set',()=>{
   }
 });
 
+test('a no-budget seven-seat search can consider the Yukon XL when large vehicles are allowed',()=>{
+  const answers={...base,budget:'any',seats:'7',kids:'three',cargo:'a-lot',size:'large',priorities:['Passenger room','Cargo room','Low price']};
+  assert.ok(matchVehicles(answers).some(result=>result.car.id==='gmc-yukon-xl-gas'));
+  assert.ok(matchVehicles({...answers,size:'medium'}).every(result=>result.car.id!=='gmc-yukon-xl-gas'));
+});
+
 test('anonymous response and photos stay blind until a one-time choice is locked',async()=>{
   const dir=await mkdtemp(join(tmpdir(),'dealership-test-'));process.env.LOOPHOLE_LOCAL_DATA_DIR=dir;
   try{
