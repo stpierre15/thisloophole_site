@@ -5,6 +5,8 @@
   "rewrites": [
     {"source":"/car/:id*","destination":"/car/index.html"},
     {"source":"/deal-plan/:id*","destination":"/deal-plan/index.html"}
+    ,{"source":"/dealership/results/:id*","destination":"/dealership/results/index.html"}
+    ,{"source":"/dealership/reveal/:id*","destination":"/dealership/reveal/index.html"}
   ],
   "redirects": [
     {"source":"/purchase-checker/:path*","destination":"/","permanent":false},

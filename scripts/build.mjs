@@ -19,12 +19,13 @@ for (const [html,ids] of [[pages[0],['main']],[pages[1],['vehicle-search','make-
 }
 await rm('dist',{recursive:true,force:true});
 await mkdir('dist/assets',{recursive:true});
-for (const file of ['index.html','privacy.html','cars','car','deal-plan','how-it-works','why-loophole']) {
+for (const file of ['index.html','privacy.html','cars','car','deal-plan','how-it-works','why-loophole','dealership']) {
   await mkdir(resolve('dist/'+file,'..'),{recursive:true});
   await cp(file,'dist/'+file,{recursive:true});
 }
 await cp('assets/favicon.svg','dist/assets/favicon.svg');
 await cp('assets/auto.css','dist/assets/auto.css');
+await cp('assets/dealership','dist/assets/dealership',{recursive:true});
 await mkdir('dist/assets/auto',{recursive:true});
 await cp('.generated/auto/client.mjs','dist/assets/auto/client.mjs');
 await writeFile('dist/robots.txt','User-agent: *\nAllow: /\nDisallow: /api/\n');

@@ -34,6 +34,49 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+[functions."dealership-image"]
+  included_files = ["server-assets/dealership/revealed/**"]
+
+[[redirects]]
+  from = "/api/dealership-start"
+  to = "/.netlify/functions/dealership-start"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/dealership-session"
+  to = "/.netlify/functions/dealership-session"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/dealership-lock"
+  to = "/.netlify/functions/dealership-lock"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/dealership-decision"
+  to = "/.netlify/functions/dealership-decision"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/dealership-image"
+  to = "/.netlify/functions/dealership-image"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/dealership/results/*"
+  to = "/dealership/results/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/dealership/reveal/*"
+  to = "/dealership/reveal/index.html"
+  status = 200
+
 [[redirects]]
   from = "/api/vehicle-search"
   to = "/.netlify/functions/vehicle-search"

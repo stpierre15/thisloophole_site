@@ -15,7 +15,8 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@netlify/blobs": "^8.2.0"
+    "@netlify/blobs": "^8.2.0",
+    "dealership-blobs": "npm:@netlify/blobs@^10.5.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
