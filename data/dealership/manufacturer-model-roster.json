@@ -1,0 +1,23 @@
+[
+  {"make":"Toyota","model":"GR86","powertrain":"Gas","bodyStyle":"Coupe","sourceUrl":"https://www.toyota.com/gr86/"},
+  {"make":"Ford","model":"F-250","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.ford.com/trucks/super-duty/2026/"},
+  {"make":"Ford","model":"F-350","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.ford.com/trucks/super-duty/2026/"},
+  {"make":"Ford","model":"F-450","powertrain":"Diesel","bodyStyle":"Pickup","sourceUrl":"https://www.ford.com/trucks/super-duty/2026/"},
+  {"make":"Ford","model":"Transit Cargo","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.ford.com/trucks/transit-passenger-van-wagon/2026/"},
+  {"make":"Ford","model":"Transit Passenger","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.ford.com/trucks/transit-passenger-van-wagon/2026/"},
+  {"make":"Chevrolet","model":"Silverado 2500 HD","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.chevrolet.com/trucks/silverado/2500hd-3500hd"},
+  {"make":"Chevrolet","model":"Silverado 3500 HD","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.chevrolet.com/trucks/silverado/2500hd-3500hd"},
+  {"make":"Chevrolet","model":"Express Cargo","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.chevrolet.com/commercial/express/vans/specs-models"},
+  {"make":"Chevrolet","model":"Express Passenger","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.chevrolet.com/commercial/express/vans/specs-models"},
+  {"make":"GMC","model":"Sierra 2500 HD","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.gmc.com/help-me-find/vehicle-lineup"},
+  {"make":"GMC","model":"Sierra 3500 HD","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.gmc.com/help-me-find/vehicle-lineup"},
+  {"make":"GMC","model":"Savana Cargo","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.gmc.com/help-me-find/vehicle-lineup"},
+  {"make":"GMC","model":"Savana Passenger","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.gmc.com/help-me-find/vehicle-lineup"},
+  {"make":"GMC","model":"HUMMER EV Pickup","powertrain":"Electric","bodyStyle":"Pickup","sourceUrl":"https://www.gmc.com/electric/hummer-ev/pickup-truck"},
+  {"make":"GMC","model":"HUMMER EV SUV","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.gmc.com/electric"},
+  {"make":"Ram","model":"2500","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.ramtrucks.com/ram-2500.html"},
+  {"make":"Ram","model":"3500","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.ramtrucks.com/trucks.html"},
+  {"make":"Ram","model":"ProMaster","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.ramtrucks.com/ram-promaster.html"},
+  {"make":"Cadillac","model":"ESCALADE IQ","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.cadillac.com/electric/escalade-iq"},
+  {"make":"Cadillac","model":"ESCALADE IQL","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.cadillac.com/electric/escalade-iql"}
+]

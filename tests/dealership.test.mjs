@@ -16,6 +16,13 @@ test('the research catalog covers the requested US-market makes',()=>{
   for(const make of ['Acura','Audi','BMW','Buick','Cadillac','Chevrolet','Chrysler','Dodge','Fiat','Ford','Genesis','GMC','Honda','Hyundai','Infiniti','Jeep','Kia','Land Rover','Lexus','Lincoln','Lucid','Mazda','Mercedes-Benz','Mini','Mitsubishi','Nissan','Polestar','Porsche','Ram','Rivian','Subaru','Tesla','Toyota','Volkswagen','Volvo']) assert.ok(makes.has(make),make);
 });
 
+test('the catalog includes key models formerly omitted by a partial EPA import',()=>{
+  const models=new Set(catalog.map(car=>`${car.make}|${car.model}`));
+  for(const name of ['Toyota|Land Cruiser','Toyota|GR86','Chevrolet|Suburban','Chevrolet|Silverado EV','GMC|HUMMER EV SUV','Ford|F-150','BMW|M3','Land Rover|Range Rover Sport']) {
+    assert.ok(models.has(name),`${name} is missing from the catalog`);
+  }
+});
+
 test('hard filters preserve budget, seats, towing, powertrain, and distinct model families',()=>{
   const all=matchVehicles(base);
   assert.equal(maxFinalists,10);
