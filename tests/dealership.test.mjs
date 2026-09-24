@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { matchVehicles, maxFinalists } from '../lib/dealership-engine.mjs';
+import { filterVehicles, matchVehicles, maxFinalists, validateFilters } from '../lib/dealership-engine.mjs';
 import { catalog } from '../data/dealership/catalog.mjs';
 import { dealershipHandlers } from '../lib/dealership-api.mjs';
 const context={local:true};
@@ -63,6 +63,45 @@ test('every verified configuration has a valid path into a finalist set',()=>{
     const answers={...base,budget:'any',seats:String(Math.min(car.seats,8)),powertrain:[car.powertrain],size:'any',towing:'never'};
     assert.ok(matchVehicles(answers).some(result=>result.car.id===car.id),`${car.id} cannot surface`);
   }
+});
+
+test('needs-first filters enforce seats, cargo, drivetrain, and powertrain without entering the quiz',()=>{
+  const all=filterVehicles({});
+  assert.ok(all.length>10,'filters should not inherit the quiz finalist cap');
+  assert.ok(all.every(result=>result.car.dataStatus==='verified-eligible'));
+  assert.ok(all.some(result=>result.car.model==='Sequoia'));
+  assert.ok(!all.some(result=>result.car.model==='Land Cruiser'));
+  const family=new Set(all.map(result=>`${result.car.make}|${result.car.model}`));
+  assert.equal(family.size,all.length);
+  const roomy=filterVehicles({seats:'7',cargo:'huge'});
+  assert.deepEqual(roomy.map(result=>result.car.model),['Yukon XL']);
+  assert.ok(filterVehicles({drivetrain:'awd-standard'}).every(result=>['All-Wheel Drive','4-Wheel Drive'].includes(result.car.drivetrain)));
+  assert.ok(filterVehicles({drivetrain:'awd-capable'}).every(result=>result.car.awdAvailable===true));
+  assert.ok(filterVehicles({powertrain:'Electric'}).every(result=>result.car.powertrain==='Electric'));
+  assert.ok(filterVehicles({budget:'under25'}).every(result=>result.car.startingMSRP<25000));
+  assert.throws(()=>validateFilters({cargo:'enormous'}),/Invalid filter/);
+});
+
+test('filter preview and filtered session stay blind through selection',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'dealership-filter-test-'));process.env.LOOPHOLE_LOCAL_DATA_DIR=dir;
+  try{
+    const filters={seats:'7',cargo:'medium'};
+    const preview=await post(dealershipHandlers.filter,{filters,preview:true});
+    assert.equal(preview.status,200);
+    assert.equal((await preview.json()).count,1);
+    const started=await post(dealershipHandlers.filter,{filters});
+    assert.equal(started.status,201);
+    const {sessionId,count}=await started.json();assert.equal(count,1);
+    const blind=await get(dealershipHandlers.session,{session:sessionId});
+    const raw=await blind.text();const data=JSON.parse(raw);
+    assert.equal(data.mode,'filters');assert.equal(data.filters.seats,'7');
+    assert.equal(data.candidates.length,1);
+    assert.equal(data.candidates[0].matchPercent,null);
+    assert.doesNotMatch(raw,/Yukon|GMC|\.jpg|revealedAsset/);
+    assert.equal((await post(dealershipHandlers.lock,{sessionId,anonymousId:data.candidates[0].anonymousId})).status,201);
+    const opened=await get(dealershipHandlers.session,{session:sessionId});
+    assert.equal((await opened.json()).reveal[0].model,'Yukon XL');
+  }finally{await rm(dir,{recursive:true,force:true});delete process.env.LOOPHOLE_LOCAL_DATA_DIR;}
 });
 
 test('anonymous response and photos stay blind until a one-time choice is locked',async()=>{

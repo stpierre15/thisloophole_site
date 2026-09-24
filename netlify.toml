@@ -44,6 +44,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/dealership-filter"
+  to = "/.netlify/functions/dealership-filter"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/dealership-session"
   to = "/.netlify/functions/dealership-session"
   status = 200

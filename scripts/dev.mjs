@@ -15,7 +15,7 @@ const types = {'.html':'text/html','.css':'text/css','.mjs':'text/javascript','.
 const routes = {'/api/inspect-product':retiredTool,'/api/check-purchase':retiredTool,'/api/outcome':retiredTool,'/api/metrics':metrics,'/api/same-thing':retiredTool,'/api/email-capture':emailCapture,'/api/studio-event':studioEvent};
 for(const name of ['search','identify','alert','outbound'])routes['/api/circular-'+name]=circularHandlers[name];
 for(const [path,name] of Object.entries({'/api/vehicle-search':'search','/api/vehicle-detail':'detail','/api/vin-decode':'vin','/api/deal-plan-checkout':'checkout','/api/deal-plan':'deal'}))routes[path]=autoHandlers[name];
-for(const name of ['start','session','lock','decision','image'])routes['/api/dealership-'+name]=dealershipHandlers[name];
+for(const name of ['start','filter','session','lock','decision','image'])routes['/api/dealership-'+name]=dealershipHandlers[name];
 createServer(async (req,res) => {
   try {
     const origin = 'http://127.0.0.1:'+port;
