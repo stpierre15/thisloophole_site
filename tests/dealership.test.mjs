@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { matchVehicles } from '../lib/dealership-engine.mjs';
+import { matchVehicles, maxFinalists } from '../lib/dealership-engine.mjs';
 import { catalog } from '../data/dealership/catalog.mjs';
 import { dealershipHandlers } from '../lib/dealership-api.mjs';
 const context={local:true};
@@ -18,7 +18,8 @@ test('the research catalog covers the requested US-market makes',()=>{
 
 test('hard filters preserve budget, seats, towing, powertrain, and distinct model families',()=>{
   const all=matchVehicles(base);
-  assert.ok(all.length>0&&all.length<=3);
+  assert.equal(maxFinalists,10);
+  assert.equal(all.length,10);
   assert.equal(new Set(all.map(x=>x.car.make+'|'+x.car.model)).size,all.length);
   assert.ok(matchVehicles({...base,budget:'under25'}).every(x=>x.car.startingMSRP<25000));
   assert.ok(matchVehicles({...base,seats:'8'}).every(x=>x.car.seats>=8));
@@ -45,6 +46,18 @@ test('a no-budget seven-seat search can consider the Yukon XL when large vehicle
   assert.ok(matchVehicles({...answers,size:'medium'}).every(result=>result.car.id!=='gmc-yukon-xl-gas'));
 });
 
+test('the Sequoia can surface beside other seven-seat choices',()=>{
+  const answers={...base,budget:'any',seats:'7',kids:'three',cargo:'a-lot',size:'large',priorities:['Passenger room','Cargo room','Towing']};
+  assert.ok(matchVehicles(answers).some(result=>result.car.id==='toyota-sequoia-hybrid'));
+});
+
+test('every verified configuration has a valid path into a finalist set',()=>{
+  for(const car of catalog.filter(record=>record.dataStatus==='verified-eligible')) {
+    const answers={...base,budget:'any',seats:String(Math.min(car.seats,8)),powertrain:[car.powertrain],size:'any',towing:'never'};
+    assert.ok(matchVehicles(answers).some(result=>result.car.id===car.id),`${car.id} cannot surface`);
+  }
+});
+
 test('anonymous response and photos stay blind until a one-time choice is locked',async()=>{
   const dir=await mkdtemp(join(tmpdir(),'dealership-test-'));process.env.LOOPHOLE_LOCAL_DATA_DIR=dir;
   try{
@@ -52,8 +65,12 @@ test('anonymous response and photos stay blind until a one-time choice is locked
     const {sessionId}=await started.json();
     const blindResponse=await get(dealershipHandlers.session,{session:sessionId});
     const raw=await blindResponse.text();const blind=JSON.parse(raw);
-    assert.equal(blind.locked,false);assert.ok(blind.candidates.length>0&&blind.candidates.length<=3);
+    assert.equal(blind.locked,false);assert.ok(blind.candidates.length>0&&blind.candidates.length<=10);
     assert.doesNotMatch(raw,/Honda|Subaru|Hyundai|Ioniq|Civic|Forester|Pilot|\.jpg|sourceUrl|revealedAsset|revealedImageUrl/);
+    for(const car of catalog.filter(record=>record.dataStatus==='verified-eligible')){
+      assert.ok(!raw.includes(`"${car.make}"`),`${car.make} leaked before reveal`);
+      assert.ok(!raw.includes(`"${car.model}"`),`${car.model} leaked before reveal`);
+    }
     assert.ok(blind.candidates.every(x=>/\/anonymous\/[a-z0-9]+\.png$/.test(x.anonymousImageUrl)));
     const first=blind.candidates[0].anonymousId;
     const denied=await get(dealershipHandlers.image,{session:sessionId,car:first});assert.equal(denied.status,403);

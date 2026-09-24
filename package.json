@@ -9,7 +9,8 @@
     "test": "npm run compile:tools && node --test tests/*.test.mjs",
     "lint": "node scripts/lint.mjs",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.circular.json --noEmit && tsc -p tsconfig.auto.json --noEmit",
-    "check:data": "node scripts/validate-data.mjs"
+    "check:data": "node scripts/validate-data.mjs",
+    "check:dealership": "node scripts/dealership/audit-catalog.mjs"
   },
   "engines": {
     "node": ">=22"
