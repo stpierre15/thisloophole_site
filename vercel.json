@@ -1,24 +1,118 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {"api/*.mjs": {"includeFiles": "{.generated/circular/**,.generated/auto/**,server-assets/dealership/revealed/**}", "maxDuration": 60}},
+  "functions": {
+    "api/*.mjs": {
+      "includeFiles": "{.generated/circular/**,.generated/auto/**,server-assets/dealership/revealed/**}",
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
-    {"source":"/car/:id*","destination":"/car/index.html"},
-    {"source":"/deal-plan/:id*","destination":"/deal-plan/index.html"}
-    ,{"source":"/dealership/results/:id*","destination":"/dealership/results/index.html"}
-    ,{"source":"/dealership/reveal/:id*","destination":"/dealership/reveal/index.html"}
+    {
+      "source": "/api/dealership-start",
+      "destination": "/api/dealership?op=start"
+    },
+    {
+      "source": "/api/dealership-filter",
+      "destination": "/api/dealership?op=filter"
+    },
+    {
+      "source": "/api/dealership-session",
+      "destination": "/api/dealership?op=session"
+    },
+    {
+      "source": "/api/dealership-lock",
+      "destination": "/api/dealership?op=lock"
+    },
+    {
+      "source": "/api/dealership-decision",
+      "destination": "/api/dealership?op=decision"
+    },
+    {
+      "source": "/api/dealership-image",
+      "destination": "/api/dealership?op=image"
+    },
+    {
+      "source": "/car/:id*",
+      "destination": "/car/index.html"
+    },
+    {
+      "source": "/car/:id*/",
+      "destination": "/car/index.html"
+    },
+    {
+      "source": "/deal-plan/:id*",
+      "destination": "/deal-plan/index.html"
+    },
+    {
+      "source": "/deal-plan/:id*/",
+      "destination": "/deal-plan/index.html"
+    },
+    {
+      "source": "/dealership/results/:id*",
+      "destination": "/dealership/results/index.html"
+    },
+    {
+      "source": "/dealership/results/:id*/",
+      "destination": "/dealership/results/index.html"
+    },
+    {
+      "source": "/dealership/reveal/:id*",
+      "destination": "/dealership/reveal/index.html"
+    },
+    {
+      "source": "/dealership/reveal/:id*/",
+      "destination": "/dealership/reveal/index.html"
+    }
   ],
   "redirects": [
-    {"source":"/purchase-checker/:path*","destination":"/","permanent":false},
-    {"source":"/samething/:path*","destination":"/","permanent":false},
-    {"source":"/experiments/:path*","destination":"/","permanent":false},
-    {"source":"/findings/:path*","destination":"/","permanent":false},
-    {"source":"/about/:path*","destination":"/why-loophole/","permanent":false}
+    {
+      "source": "/purchase-checker/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/samething/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/experiments/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/findings/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/about/:path*",
+      "destination": "/why-loophole/",
+      "permanent": false
+    }
   ],
-  "headers": [{"source":"/(.*)","headers":[
-    {"key":"X-Content-Type-Options","value":"nosniff"},
-    {"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},
-    {"key":"X-Frame-Options","value":"DENY"},
-    {"key":"Content-Security-Policy","value":"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://*.ebayimg.com data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"}
-  ]}]
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://*.ebayimg.com data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        }
+      ]
+    }
+  ]
 }
