@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { catalog } from '../../data/dealership/catalog.mjs';
-import { matchVehicles } from '../../lib/dealership-engine.mjs';
+import { seatingEvidence, seatingVariantEvidence } from '../../data/dealership/seating-evidence.mjs';
+import { filterVehicles, matchVehicles } from '../../lib/dealership-engine.mjs';
 
 const errors=[];
 // Pinned fields from the US EPA 2026 fuel-economy CSV, indexed by EPA vehicle ID.
@@ -19,7 +20,7 @@ for(const car of catalog){
   const groupKey=[car.make,car.model,car.powertrain].join('|');
   if(coveredGroups.has(groupKey))errors.push(`${car.id}: duplicate model/powertrain group with ${coveredGroups.get(groupKey)}`);
   coveredGroups.set(groupKey,car.id);
-  if(!car.id||!car.make||!car.model||car.year!==2026||!/^https:\/\//.test(car.sourceUrl??''))errors.push(`${car.id}: missing identity, 2026 year, or source URL`);
+  if(!car.id||!car.make||!car.model||!(car.year===2026||(car.year===2027&&car.epaId==null))||!/^https:\/\//.test(car.sourceUrl??''))errors.push(`${car.id}: missing identity, supported model year, or source URL`);
   const rated=car.epaId==null?null:epa[car.epaId];
   if(car.epaId!=null&&!rated)errors.push(`${car.id}: EPA source row missing`);
   if(car.epaId==null&&car.dataStatus!=='manufacturer-listed; configuration unverified')errors.push(`${car.id}: EPA id missing outside manufacturer roster`);
@@ -51,6 +52,15 @@ for(const car of catalog){
 const makes=new Set(catalog.map(car=>car.make));
 const models=new Set(catalog.map(car=>`${car.make}|${car.model}`));
 const eligibleModels=new Set(verified.map(car=>`${car.make}|${car.model}`));
+const sevenSeatMatches=new Set(filterVehicles({seats:'7'}).map(result=>`${result.car.make}|${result.car.model}`));
+for(const [family,evidence] of seatingEvidence){
+  if(!models.has(family))errors.push(`${family}: seating source has no catalog model`);
+  if(!/^https:\/\//.test(evidence.url)||!Number.isInteger(evidence.maxSeats)||evidence.maxSeats<7)errors.push(`${family}: invalid manufacturer seating evidence`);
+  if(!sevenSeatMatches.has(family))errors.push(`${family}: verified 7-seat configuration cannot enter filter results`);
+}
+for(const [id,evidence] of seatingVariantEvidence){
+  if(!seenIds.has(id)||!/^https:\/\//.test(evidence.url))errors.push(`${id}: invalid variant seating evidence`);
+}
 const blockedMakes=[...makes].filter(make=>!verified.some(car=>car.make===make)).sort();
 for(const entry of roster){
   const key=[entry.make,entry.model,entry.powertrain].join('|');
@@ -62,12 +72,13 @@ for(const entry of manufacturerRoster){
   const key=[entry.make,entry.model,entry.powertrain].join('|');
   const car=catalog.find(record=>[record.make,record.model,record.powertrain].join('|')===key);
   if(!car)errors.push(`Manufacturer-listed model absent from catalog: ${key}`);
-  else if(car.epaId!=null||car.sourceUrl!==entry.sourceUrl||car.dataStatus!=='manufacturer-listed; configuration unverified')errors.push(`${car.id}: manufacturer source or status mismatch`);
+  else if(car.epaId!=null||car.year!==(entry.year??2026)||car.sourceUrl!==entry.sourceUrl||car.dataStatus!=='manufacturer-listed; configuration unverified')errors.push(`${car.id}: manufacturer source, year, or status mismatch`);
 }
 if(coveredGroups.size!==roster.length+manufacturerRoster.length)errors.push(`Catalog and source roster group counts differ: ${coveredGroups.size} vs ${roster.length+manufacturerRoster.length}`);
-console.log(`${catalog.length} records, ${models.size} models, ${makes.size} makes. ${verified.length} verified records / ${eligibleModels.size} models can be matched; ${research.length} research-only records cannot yet be matched.`);
+console.log(`${catalog.length} records, ${models.size} models, ${makes.size} makes. ${verified.length} fully verified records / ${eligibleModels.size} model families enter the quiz; ${research.length} partial records remain available to the needs-first catalog filter with clear evidence gaps.`);
 console.log(`Pinned 2026 EPA roster: ${roster.length} model/powertrain groups covered.`);
-console.log(`Manufacturer-only roster: ${manufacturerRoster.length} additional 2026 models covered.`);
-console.log(`Makes without a selectable model (${blockedMakes.length}): ${blockedMakes.join(', ')}`);
+console.log(`Manufacturer-only roster: ${manufacturerRoster.length} additional current models covered.`);
+console.log(`Seating audit: ${seatingEvidence.size} sourced 7+ seat families; ${sevenSeatMatches.size} distinct 7+ seat filter matches.`);
+console.log(`Makes without a quiz-eligible model (${blockedMakes.length}): ${blockedMakes.join(', ')}`);
 if(errors.length){for(const error of errors)console.error(error);process.exitCode=1;}
 else console.log('Verified records have valid assets and a path into the results.');

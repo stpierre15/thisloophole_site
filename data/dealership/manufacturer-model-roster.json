@@ -19,5 +19,7 @@
   {"make":"Ram","model":"3500","powertrain":"Gas","bodyStyle":"Pickup","sourceUrl":"https://www.ramtrucks.com/trucks.html"},
   {"make":"Ram","model":"ProMaster","powertrain":"Gas","bodyStyle":"Van","sourceUrl":"https://www.ramtrucks.com/ram-promaster.html"},
   {"make":"Cadillac","model":"ESCALADE IQ","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.cadillac.com/electric/escalade-iq"},
-  {"make":"Cadillac","model":"ESCALADE IQL","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.cadillac.com/electric/escalade-iql"}
+  {"make":"Cadillac","model":"ESCALADE IQL","powertrain":"Electric","bodyStyle":"SUV","sourceUrl":"https://www.cadillac.com/electric/escalade-iql"},
+  {"make":"Kia","model":"Telluride","year":2027,"powertrain":"Gas","bodyStyle":"SUV","sourceUrl":"https://www.kia.com/us/en/telluride/specs-compare"},
+  {"make":"Kia","model":"Telluride","year":2027,"powertrain":"Hybrid","bodyStyle":"SUV","sourceUrl":"https://www.kia.com/us/en/telluride-hybrid"}
 ]

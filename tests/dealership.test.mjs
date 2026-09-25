@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { filterVehicles, matchVehicles, maxFinalists, validateFilters } from '../lib/dealership-engine.mjs';
 import { catalog } from '../data/dealership/catalog.mjs';
+import { seatingEvidence } from '../data/dealership/seating-evidence.mjs';
 import { dealershipHandlers } from '../lib/dealership-api.mjs';
 const context={local:true};
 const base={budget:'any',seats:'5',kids:'no',dogs:'no',cargo:'normal',powertrain:['Gas','Hybrid','Plug-in hybrid','Electric'],daily:'20-50',trips:'few',camping:'never',offroad:'never',weather:'no',towing:'never',size:'any',priorities:['Low price','Fuel economy','Cargo room']};
@@ -67,19 +68,34 @@ test('every verified configuration has a valid path into a finalist set',()=>{
 
 test('needs-first filters enforce seats, cargo, drivetrain, and powertrain without entering the quiz',()=>{
   const all=filterVehicles({});
-  assert.ok(all.length>10,'filters should not inherit the quiz finalist cap');
-  assert.ok(all.every(result=>result.car.dataStatus==='verified-eligible'));
+  assert.equal(all.length,new Set(catalog.map(car=>`${car.make}|${car.model}`)).size,'every catalog model needs an unfiltered path');
   assert.ok(all.some(result=>result.car.model==='Sequoia'));
-  assert.ok(!all.some(result=>result.car.model==='Land Cruiser'));
+  assert.ok(all.some(result=>result.car.model==='Land Cruiser'));
   const family=new Set(all.map(result=>`${result.car.make}|${result.car.model}`));
   assert.equal(family.size,all.length);
   const roomy=filterVehicles({seats:'7',cargo:'huge'});
-  assert.deepEqual(roomy.map(result=>result.car.model),['Yukon XL']);
-  assert.ok(filterVehicles({drivetrain:'awd-standard'}).every(result=>['All-Wheel Drive','4-Wheel Drive'].includes(result.car.drivetrain)));
-  assert.ok(filterVehicles({drivetrain:'awd-capable'}).every(result=>result.car.awdAvailable===true));
+  assert.deepEqual(roomy.filter(result=>!result.verificationNeeded.length).map(result=>result.car.model),['Yukon XL']);
+  assert.ok(filterVehicles({drivetrain:'awd-standard'}).every(result=>['All-Wheel Drive','4-Wheel Drive'].includes(result.car.drivetrain)||result.verificationNeeded.includes('Drivetrain')));
+  assert.ok(filterVehicles({drivetrain:'awd-capable'}).every(result=>result.car.awdAvailable===true||result.verificationNeeded.includes('AWD/4WD availability')));
   assert.ok(filterVehicles({powertrain:'Electric'}).every(result=>result.car.powertrain==='Electric'));
-  assert.ok(filterVehicles({budget:'under25'}).every(result=>result.car.startingMSRP<25000));
+  assert.ok(filterVehicles({budget:'under25'}).every(result=>result.car.startingMSRP==null?result.verificationNeeded.includes('Starting price'):result.car.startingMSRP<25000));
   assert.throws(()=>validateFilters({cargo:'enormous'}),/Invalid filter/);
+});
+
+test('manufacturer-backed seven-seat options are findable without fabricated specs',()=>{
+  const seven=filterVehicles({seats:'7'});
+  const names=new Set(seven.map(result=>`${result.car.make}|${result.car.model}`));
+  assert.ok(seven.length>=50,`Only ${seven.length} seven-seat models surfaced`);
+  for(const family of seatingEvidence.keys())assert.ok(names.has(family),`${family} has seating evidence but no filter path`);
+  for(const family of ['GMC|Yukon XL','Toyota|Sequoia','Toyota|Grand Highlander','Lexus|GX','Volkswagen|Atlas','Tesla|Model Y','Rivian|R1S','Kia|Telluride'])assert.ok(names.has(family),family);
+  assert.ok(!names.has('Toyota|Land Cruiser'));
+  assert.ok(!filterVehicles({seats:'7',powertrain:'Hybrid'}).some(result=>result.car.id==='lexus-tx-hybrid'));
+  assert.ok(!filterVehicles({seats:'7',powertrain:'Plug-in hybrid'}).some(result=>result.car.id==='kia-sorento-plug-in-hybrid'));
+  assert.ok(filterVehicles({seats:'7',powertrain:'Plug-in hybrid'}).some(result=>result.car.id==='mazda-cx-90-plug-in-hybrid'));
+  assert.ok(filterVehicles({seats:'7',powertrain:'Hybrid'}).some(result=>result.car.id==='kia-telluride-hybrid'));
+  assert.ok(seven.some(result=>result.car.startingMSRP==null),'unknown price should not hide a seating match');
+  assert.ok(filterVehicles({seats:'7',budget:'80-120'}).every(result=>result.car.startingMSRP==null?result.verificationNeeded.includes('Starting price'):result.car.startingMSRP<=120000));
+  assert.ok(filterVehicles({seats:'7',size:'medium'}).every(result=>result.car.length==null||result.car.width==null?result.verificationNeeded.includes('Exterior dimensions'):true));
 });
 
 test('filter preview and filtered session stay blind through selection',async()=>{
@@ -88,14 +104,14 @@ test('filter preview and filtered session stay blind through selection',async()=
     const filters={seats:'7',cargo:'medium'};
     const preview=await post(dealershipHandlers.filter,{filters,preview:true});
     assert.equal(preview.status,200);
-    assert.equal((await preview.json()).count,1);
+    const previewData=await preview.json();assert.ok(previewData.count>=50);assert.equal(previewData.confirmedCount,1);
     const started=await post(dealershipHandlers.filter,{filters});
     assert.equal(started.status,201);
-    const {sessionId,count}=await started.json();assert.equal(count,1);
+    const {sessionId,count}=await started.json();assert.equal(count,previewData.count);
     const blind=await get(dealershipHandlers.session,{session:sessionId});
     const raw=await blind.text();const data=JSON.parse(raw);
     assert.equal(data.mode,'filters');assert.equal(data.filters.seats,'7');
-    assert.equal(data.candidates.length,1);
+    assert.equal(data.candidates.length,count);assert.equal(data.confirmedCount,1);
     assert.equal(data.candidates[0].matchPercent,null);
     assert.doesNotMatch(raw,/Yukon|GMC|\.jpg|revealedAsset/);
     assert.equal((await post(dealershipHandlers.lock,{sessionId,anonymousId:data.candidates[0].anonymousId})).status,201);
