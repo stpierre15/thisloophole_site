@@ -8,8 +8,8 @@ Loophole Auto is buyer-side automotive intelligence: observable listing history,
 
 - Static HTML, CSS, and browser ES modules
 - Strict TypeScript domain modules compiled to `.generated/auto/`
-- Netlify Functions and Netlify Blobs
-- Netlify production hosting; compatibility-only Vercel adapters
+- Netlify Functions and Blobs in the current production deployment
+- Vercel function adapters and optional Upstash Redis storage for migration
 - No accounts, frontend framework, ORM, SQL database, or subscription
 
 ## Public routes
@@ -44,6 +44,7 @@ Local development uses `.local-data/`. Without inventory credentials, the comple
 - `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_ENVIRONMENT` — official eBay Browse API. Without both credentials, automotive search uses demo inventory.
 - `STRIPE_SECRET_KEY`, `STRIPE_DEAL_PLAN_PRICE_ID` — one-time Stripe Checkout price. The configured Stripe Price must be exactly USD $49.00; report fulfillment verifies the paid session amount.
 - `NETLIFY_BLOBS_SITE_ID`, `NETLIFY_BLOBS_TOKEN` — only for a Vercel deployment that continues using Netlify Blobs.
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — on Vercel, stores dealership sessions and site data independently of Netlify. Configure both in Preview and Production before deployment; keep preview and production namespaces separate.
 
 NHTSA vPIC is public and needs no key. VIN results are cached by VIN without a routine expiry because identity is not time-sensitive. An NHTSA failure never blocks inventory search.
 
