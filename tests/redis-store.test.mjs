@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { redisStore } from '../lib/redis-store.mjs';
+import { redisConfigured, redisStore } from '../lib/redis-store.mjs';
 
 test('portable storage keeps JSON records and one-time choices isolated by namespace', async () => {
   const oldUrl=process.env.UPSTASH_REDIS_REST_URL;
@@ -34,5 +34,25 @@ test('portable storage keeps JSON records and one-time choices isolated by names
   }finally{
     if(oldUrl===undefined)delete process.env.UPSTASH_REDIS_REST_URL;else process.env.UPSTASH_REDIS_REST_URL=oldUrl;
     if(oldToken===undefined)delete process.env.UPSTASH_REDIS_REST_TOKEN;else process.env.UPSTASH_REDIS_REST_TOKEN=oldToken;
+  }
+});
+
+test('Vercel Marketplace Redis variables configure the portable store', async () => {
+  const names=['UPSTASH_REDIS_REST_URL','UPSTASH_REDIS_REST_TOKEN','KV_REST_API_URL','KV_REST_API_TOKEN'];
+  const previous=Object.fromEntries(names.map(name=>[name,process.env[name]]));
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  process.env.KV_REST_API_URL='https://marketplace.upstash.io';
+  process.env.KV_REST_API_TOKEN='marketplace-token';
+  try {
+    assert.equal(redisConfigured(),true);
+    const store=redisStore('preview',async(url,init)=>{
+      assert.equal(url,'https://marketplace.upstash.io');
+      assert.equal(init.headers.Authorization,'Bearer marketplace-token');
+      return {ok:true,json:async()=>({result:null})};
+    });
+    assert.equal(await store.get('sessions/test'),null);
+  } finally {
+    for(const name of names) if(previous[name]===undefined)delete process.env[name];else process.env[name]=previous[name];
   }
 });
