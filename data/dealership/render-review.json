@@ -1,0 +1,245 @@
+{
+  "scope": "Visual review of anonymous conceptual packaging only. Manufacturer dimensions are stored in the catalog but cannot be measured from generated pixels; these are not CAD or engineering drawings.",
+  "assets": [
+    {
+      "asset": "1e65b4.png",
+      "sha256": "a0b9523d8c243f9ef98ebf8f5e2e0d3a3fa40d5d42cc2b7a85e6749be8f96c5d",
+      "carIds": [
+        "honda-civic-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "26e4aa.png",
+      "sha256": "991f9168888626b8e4fbac996dd04f41fa8b985e46f1747ca00863b696bd3c7e",
+      "carIds": [
+        "honda-cr-v-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "36c3af.png",
+      "sha256": "14d93df7301e0ebfedfad36426214ba870cdb7ceebe4bae0e2b69cd023732ef9",
+      "carIds": [
+        "subaru-forester-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "4f72a1.png",
+      "sha256": "8630e00f2ee151223964b3922581417155bcd9932e918ff18a6129d6787b8b12",
+      "carIds": [
+        "subaru-forester-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "7ce503.png",
+      "sha256": "da543f1a780ba678e658684f5a53ceeb54a319cabd580864bbe71a6b6d0f7904",
+      "carIds": [
+        "honda-civic-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "8ad3c1.png",
+      "sha256": "607c9ff7590c3f72d4b10d0f242915f5bb2b06bb2135c043514b080ebfd36fe3",
+      "carIds": [
+        "hyundai-ioniq-5-electric"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "8e4b09.png",
+      "sha256": "cf0839638bb908060b1ee4660cc6d5acb48f2ed7d7ca8a15f4ed33ce8fba32d3",
+      "carIds": [
+        "toyota-sequoia-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "9b21d3.png",
+      "sha256": "ab05a1862dd8595fcb3256ef196aedf5ee045ba734171e691ed3e18fd3042b90",
+      "carIds": [
+        "honda-cr-v-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "a629ef.png",
+      "sha256": "3bf5fa5b904d0477876e97bf6979c76829de5f4edce7a9b8c770d72ba26969a5",
+      "carIds": [
+        "honda-pilot-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "a70d4e.png",
+      "sha256": "7027f07db8f6896e32d60df30eca719e7b98119c07212440beef928dbfe5daf9",
+      "carIds": [
+        "dodge-durango-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "c6429e.png",
+      "sha256": "ff40beadb0f4002ebabfa078b12e9264792cdf3537569fef833b67e8d0b17427",
+      "carIds": [
+        "toyota-rav4-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "c6a812.png",
+      "sha256": "9df3cb033a29cb11e19e53a6b718c6a334ac7586aebfc23e4ed21f2258b6aa13",
+      "carIds": [
+        "gmc-yukon-xl-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "d92f63.png",
+      "sha256": "7bebc1a3508d1f9d7f0075b93ec44c5c61227ec1e19ba64f69bd3e8a32e2664b",
+      "carIds": [
+        "chevrolet-trax-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "e6714b.png",
+      "sha256": "0edb10056a5e51a58cf2882f57f504ce1c720b90807175e51a2a1b8a41c8638f",
+      "carIds": [
+        "gmc-terrain-gas"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    },
+    {
+      "asset": "f15c28.png",
+      "sha256": "a36526782906c8667f18d06d5af7461dfba5b2ec894622b0bc77ca272b773965",
+      "carIds": [
+        "ford-maverick-hybrid"
+      ],
+      "visualReview": "passed",
+      "reviewedAt": "2026-09-24",
+      "checks": [
+        "anonymous",
+        "body-style",
+        "seating-layout",
+        "powertrain-cues",
+        "studio-composition"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { catalog } from '../../data/dealership/catalog.mjs';
 import { seatingEvidence, seatingVariantEvidence } from '../../data/dealership/seating-evidence.mjs';
@@ -9,10 +10,12 @@ const errors=[];
 const epa=JSON.parse(readFileSync(resolve('data/dealership/epa-reference.json'),'utf8'));
 const roster=JSON.parse(readFileSync(resolve('data/dealership/epa-model-roster.json'),'utf8'));
 const manufacturerRoster=JSON.parse(readFileSync(resolve('data/dealership/manufacturer-model-roster.json'),'utf8'));
+const renderReview=JSON.parse(readFileSync(resolve('data/dealership/render-review.json'),'utf8'));
 const seenIds=new Set();
 const coveredGroups=new Map();
 const verified=[];
 const research=[];
+const activeImages=new Map();
 const base={budget:'any',seats:'5',kids:'no',dogs:'no',cargo:'normal',powertrain:['Gas'],daily:'20-50',trips:'few',camping:'never',offroad:'never',weather:'no',towing:'never',size:'any',priorities:['Low price','Fuel economy','Cargo room']};
 for(const car of catalog){
   if(seenIds.has(car.id))errors.push(`${car.id}: duplicate id`);
@@ -43,11 +46,31 @@ for(const car of catalog){
   verified.push(car);
   for(const key of ['startingMSRP','seats','length','width','height','wheelbase'])if(!(Number.isFinite(car[key])&&car[key]>0))errors.push(`${car.id}: missing ${key}`);
   if(!/^[a-z0-9]+\.png$/.test(car.anonymousAsset??'')||!existsSync(resolve('assets/dealership/anonymous',car.anonymousAsset??'')))errors.push(`${car.id}: anonymous asset missing or identifiable filename`);
+  else activeImages.set(car.anonymousAsset,[...(activeImages.get(car.anonymousAsset)||[]),car.id]);
   if(!/^[a-z0-9-]+\.jpg$/.test(car.revealedAsset??'')||!existsSync(resolve('server-assets/dealership/revealed',car.revealedAsset??'')))errors.push(`${car.id}: reveal photo missing`);
   if(Number.isFinite(car.seats)&&car.seats>0&&car.startingMSRP!=null&&car.length!=null&&car.width!=null){
     const answers={...base,seats:String(Math.min(car.seats,8)),powertrain:[car.powertrain]};
     if(!matchVehicles(answers).some(result=>result.car.id===car.id))errors.push(`${car.id}: cannot enter a finalist set`);
   }
+}
+const reviewedImages=new Set();
+for(const review of renderReview.assets){
+  if(reviewedImages.has(review.asset))errors.push(`${review.asset}: duplicate render review`);
+  reviewedImages.add(review.asset);
+  const path=resolve('assets/dealership/anonymous',review.asset);
+  if(!/^[a-z0-9]+\.png$/.test(review.asset)||!existsSync(path)){errors.push(`${review.asset}: reviewed image is missing`);continue;}
+  const bytes=readFileSync(path);
+  const digest=createHash('sha256').update(bytes).digest('hex');
+  if(digest!==review.sha256)errors.push(`${review.asset}: render changed since visual review`);
+  if(bytes.subarray(1,4).toString()!=='PNG'||bytes.readUInt32BE(16)!==1536||bytes.readUInt32BE(20)!==1024)errors.push(`${review.asset}: render must be a 1536×1024 PNG`);
+  if(review.visualReview!=='passed'||!/^20\d\d-\d\d-\d\d$/.test(review.reviewedAt)||!['anonymous','body-style','seating-layout','powertrain-cues','studio-composition'].every(check=>review.checks?.includes(check)))errors.push(`${review.asset}: visual review incomplete`);
+  const expected=activeImages.get(review.asset)||[];
+  if(JSON.stringify([...expected].sort())!==JSON.stringify([...(review.carIds||[])].sort()))errors.push(`${review.asset}: review does not match current catalog records`);
+}
+for(const asset of activeImages.keys())if(!reviewedImages.has(asset))errors.push(`${asset}: eligible render has no visual review`);
+for(const [asset,ids] of activeImages){
+  const powertrains=new Set(verified.filter(car=>ids.includes(car.id)).map(car=>car.powertrain));
+  if(powertrains.size>1)errors.push(`${asset}: one structural render cannot represent multiple powertrains`);
 }
 const makes=new Set(catalog.map(car=>car.make));
 const models=new Set(catalog.map(car=>`${car.make}|${car.model}`));

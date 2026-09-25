@@ -2865,7 +2865,7 @@
     "sourceUrl": "https://automobiles.honda.com/2026/cr-v",
     "epaId": "49352",
     "dataStatus": "verified-eligible",
-    "anonymousAsset": "9b21d3.png",
+    "anonymousAsset": "26e4aa.png",
     "revealedAsset": "crv.jpg"
   },
   {
@@ -2990,7 +2990,7 @@
     "sourceUrl": "https://automobiles.honda.com/civic-sedan/specs-features-trim-comparison",
     "epaId": "49289",
     "dataStatus": "verified-eligible",
-    "anonymousAsset": "7ce503.png",
+    "anonymousAsset": "1e65b4.png",
     "revealedAsset": "civic.jpg"
   },
   {
@@ -3549,7 +3549,7 @@
     "sourceUrl": "https://www.hyundaiusa.com/us/en/vehicles/ioniq-5",
     "epaId": "49961",
     "dataStatus": "verified-eligible",
-    "anonymousAsset": "b83d4a.png",
+    "anonymousAsset": "8ad3c1.png",
     "revealedAsset": "ioniq5.jpg"
   },
   {
@@ -7337,7 +7337,7 @@
     "sourceUrl": "https://www.subaru.com/services/vehicles/pdf/trimComparison/2026/FOR",
     "epaId": "50131",
     "dataStatus": "verified-eligible",
-    "anonymousAsset": "4f72a1.png",
+    "anonymousAsset": "36c3af.png",
     "revealedAsset": "forester.jpg"
   },
   {
@@ -7857,7 +7857,7 @@
       "22 MPG combined hybrid"
     ],
     "shortWeaknesses": [
-      "11.5\u201322.3 cu ft cargo behind sliding third row",
+      "11.5–22.3 cu ft cargo behind sliding third row",
       "208.1 in long parking footprint"
     ],
     "sourceUrl": "https://www.toyota.com/sequoia/features/",

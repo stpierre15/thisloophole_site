@@ -1,7 +1,7 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "functions": {"api/*.mjs": {"includeFiles": "{.generated/circular/**,.generated/auto/**}", "maxDuration": 60}},
+  "functions": {"api/*.mjs": {"includeFiles": "{.generated/circular/**,.generated/auto/**,server-assets/dealership/revealed/**}", "maxDuration": 60}},
   "rewrites": [
     {"source":"/car/:id*","destination":"/car/index.html"},
     {"source":"/deal-plan/:id*","destination":"/deal-plan/index.html"}
