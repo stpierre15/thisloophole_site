@@ -46,6 +46,8 @@ Local development uses `.local-data/`. Without inventory credentials, the comple
 - `NETLIFY_BLOBS_SITE_ID`, `NETLIFY_BLOBS_TOKEN` — only for a Vercel deployment that continues using Netlify Blobs.
 - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — on Vercel, stores dealership sessions and site data independently of Netlify. Configure both in Preview and Production before deployment; keep preview and production namespaces separate.
 
+Before changing DNS, run `node scripts/migrate-netlify-to-redis.mjs` once with both Netlify Blobs and Upstash credentials in the local environment. The script copies production records without deleting the source. Run it again just before cutover to capture records created during testing; a final brief write freeze is needed for exact continuity.
+
 NHTSA vPIC is public and needs no key. VIN results are cached by VIN without a routine expiry because identity is not time-sensitive. An NHTSA failure never blocks inventory search.
 
 ## Evidence boundaries
