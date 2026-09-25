@@ -3,7 +3,6 @@
   "private": true,
   "scripts": {
     "compile:tools": "tsc -p tsconfig.circular.json && tsc -p tsconfig.auto.json",
-    "vercel-build": "npm run compile:tools",
     "dev": "npm run compile:tools && node scripts/dev.mjs",
     "build": "npm run compile:tools && node scripts/build.mjs",
     "test": "npm run compile:tools && node --test tests/*.test.mjs",
@@ -13,7 +12,7 @@
     "check:dealership": "node scripts/dealership/audit-catalog.mjs"
   },
   "engines": {
-    "node": ">=22"
+    "node": "24.x"
   },
   "dependencies": {
     "@netlify/blobs": "^8.2.0",
