@@ -3,7 +3,8 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { catalog } from '../../data/dealership/catalog.mjs';
 import { seatingEvidence, seatingVariantEvidence } from '../../data/dealership/seating-evidence.mjs';
-import { filterVehicles, matchVehicles } from '../../lib/dealership-engine.mjs';
+import { sevenSeatSpecs } from '../../data/dealership/seven-seat-specs.mjs';
+import { blindCar, filterVehicles, matchVehicles } from '../../lib/dealership-engine.mjs';
 
 const errors=[];
 // Pinned fields from the US EPA 2026 fuel-economy CSV, indexed by EPA vehicle ID.
@@ -76,6 +77,15 @@ const makes=new Set(catalog.map(car=>car.make));
 const models=new Set(catalog.map(car=>`${car.make}|${car.model}`));
 const eligibleModels=new Set(verified.map(car=>`${car.make}|${car.model}`));
 const sevenSeatMatches=new Set(filterVehicles({seats:'7'}).map(result=>`${result.car.make}|${result.car.model}`));
+for(const [family,spec] of sevenSeatSpecs){
+  if(!sevenSeatMatches.has(family))errors.push(`${family}: published seven-seat specs have no filter match`);
+  if(!/^https:\/\//.test(spec.url)||!['price','cargo','tow'].some(key=>Number.isFinite(spec[key])&&spec[key]>0))errors.push(`${family}: invalid published spec evidence`);
+  for(const key of ['price','cargo','tow'])if(spec[key]!=null&&(!Number.isFinite(spec[key])||spec[key]<=0))errors.push(`${family}: invalid ${key}`);
+}
+for(const result of filterVehicles({seats:'7'})){
+  const image=blindCar(result).anonymousImageUrl;
+  if(!image?.startsWith('/assets/dealership/anonymous/')||!existsSync(resolve('assets/dealership/anonymous',image.split('/').at(-1))))errors.push(`${result.car.id}: no seven-seat result visual`);
+}
 for(const [family,evidence] of seatingEvidence){
   if(!models.has(family))errors.push(`${family}: seating source has no catalog model`);
   if(!/^https:\/\//.test(evidence.url)||!Number.isInteger(evidence.maxSeats)||evidence.maxSeats<7)errors.push(`${family}: invalid manufacturer seating evidence`);

@@ -43,7 +43,7 @@ createServer(async (req,res) => {
     if(pathname==='/car'||pathname==='/car/'||pathname.startsWith('/car/'))pathname='/car/index.html';
     if(pathname==='/deal-plan'||pathname==='/deal-plan/'||pathname.startsWith('/deal-plan/'))pathname='/deal-plan/index.html';
     if (['/purchase-checker','/samething','/experiments','/findings','/about','/playbook'].some(x=>pathname===x||pathname.startsWith(x+'/'))) {res.writeHead(302,{'Location':pathname.startsWith('/about')?'/why-loophole/':'/'});res.end();return;}
-    if (!(/^\/(index\.html|privacy\.html)$/.test(pathname) || pathname==='/assets/auto.css'||pathname==='/assets/favicon.svg'||pathname==='/assets/auto/client.mjs'||/^\/assets\/dealership\/(dealership\.(css|mjs)|anonymous\/[a-z0-9]+\.png)$/.test(pathname)||/^\/(cars|car|deal-plan|how-it-works|why-loophole|dealership(?:\/(?:quiz|results|reveal))?)\/index\.html$/.test(pathname))) { res.writeHead(404);res.end('Not found');return; }
+    if (!(/^\/(index\.html|privacy\.html)$/.test(pathname) || pathname==='/assets/auto.css'||pathname==='/assets/favicon.svg'||pathname==='/assets/auto/client.mjs'||/^\/assets\/dealership\/(dealership\.(css|mjs)|anonymous\/(?:[a-z0-9]+\.png|class-(?:suv|minivan|wagon|electric)\.svg))$/.test(pathname)||/^\/(cars|car|deal-plan|how-it-works|why-loophole|dealership(?:\/(?:quiz|results|reveal))?)\/index\.html$/.test(pathname))) { res.writeHead(404);res.end('Not found');return; }
     let file = resolve(root,'.'+pathname);
     if(pathname==='/assets/auto/client.mjs')file=resolve(root,'.generated/auto/client.mjs');
     if (!file.startsWith(root+sep)) { res.writeHead(404);res.end('Not found');return; }

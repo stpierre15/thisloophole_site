@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { filterVehicles, matchVehicles, maxFinalists, validateFilters } from '../lib/dealership-engine.mjs';
+import { blindCar, filterVehicles, matchVehicles, maxFinalists, validateFilters } from '../lib/dealership-engine.mjs';
 import { catalog } from '../data/dealership/catalog.mjs';
 import { seatingEvidence } from '../data/dealership/seating-evidence.mjs';
 import { dealershipHandlers } from '../lib/dealership-api.mjs';
@@ -74,7 +74,7 @@ test('needs-first filters enforce seats, cargo, drivetrain, and powertrain witho
   const family=new Set(all.map(result=>`${result.car.make}|${result.car.model}`));
   assert.equal(family.size,all.length);
   const roomy=filterVehicles({seats:'7',cargo:'huge'});
-  assert.deepEqual(roomy.filter(result=>!result.verificationNeeded.length).map(result=>result.car.model),['Yukon XL']);
+  assert.deepEqual(new Set(roomy.filter(result=>!result.verificationNeeded.length).map(result=>result.car.model)),new Set(['Suburban','Yukon XL','Grand Wagoneer L','Carnival']));
   assert.ok(filterVehicles({drivetrain:'awd-standard'}).every(result=>['All-Wheel Drive','4-Wheel Drive'].includes(result.car.drivetrain)||result.verificationNeeded.includes('Drivetrain')));
   assert.ok(filterVehicles({drivetrain:'awd-capable'}).every(result=>result.car.awdAvailable===true||result.verificationNeeded.includes('AWD/4WD availability')));
   assert.ok(filterVehicles({powertrain:'Electric'}).every(result=>result.car.powertrain==='Electric'));
@@ -94,6 +94,9 @@ test('manufacturer-backed seven-seat options are findable without fabricated spe
   assert.ok(filterVehicles({seats:'7',powertrain:'Plug-in hybrid'}).some(result=>result.car.id==='mazda-cx-90-plug-in-hybrid'));
   assert.ok(filterVehicles({seats:'7',powertrain:'Hybrid'}).some(result=>result.car.id==='kia-telluride-hybrid'));
   assert.ok(seven.some(result=>result.car.startingMSRP==null),'unknown price should not hide a seating match');
+  assert.ok(seven.every(result=>blindCar(result,'test').anonymousImageUrl),'every seven-seater needs an honest visual');
+  assert.equal(seven.find(result=>result.car.model==='Grand Highlander').car.cargoSpace,20.6);
+  assert.ok(filterVehicles({seats:'7',budget:'45-60'}).find(result=>result.car.model==='Grand Highlander').verificationNeeded.includes('Listed configuration price'));
   assert.ok(filterVehicles({seats:'7',budget:'80-120'}).every(result=>result.car.startingMSRP==null?result.verificationNeeded.includes('Starting price'):result.car.startingMSRP<=120000));
   assert.ok(filterVehicles({seats:'7',size:'medium'}).every(result=>result.car.length==null||result.car.width==null?result.verificationNeeded.includes('Exterior dimensions'):true));
 });
@@ -104,19 +107,19 @@ test('filter preview and filtered session stay blind through selection',async()=
     const filters={seats:'7',cargo:'medium'};
     const preview=await post(dealershipHandlers.filter,{filters,preview:true});
     assert.equal(preview.status,200);
-    const previewData=await preview.json();assert.ok(previewData.count>=50);assert.equal(previewData.confirmedCount,1);
+    const previewData=await preview.json();assert.ok(previewData.count>=30);assert.equal(previewData.confirmedCount,8);
     const started=await post(dealershipHandlers.filter,{filters});
     assert.equal(started.status,201);
     const {sessionId,count}=await started.json();assert.equal(count,previewData.count);
     const blind=await get(dealershipHandlers.session,{session:sessionId});
     const raw=await blind.text();const data=JSON.parse(raw);
     assert.equal(data.mode,'filters');assert.equal(data.filters.seats,'7');
-    assert.equal(data.candidates.length,count);assert.equal(data.confirmedCount,1);
+    assert.equal(data.candidates.length,count);assert.equal(data.confirmedCount,8);
     assert.equal(data.candidates[0].matchPercent,null);
     assert.doesNotMatch(raw,/Yukon|GMC|\.jpg|revealedAsset/);
     assert.equal((await post(dealershipHandlers.lock,{sessionId,anonymousId:data.candidates[0].anonymousId})).status,201);
     const opened=await get(dealershipHandlers.session,{session:sessionId});
-    assert.equal((await opened.json()).reveal[0].model,'Yukon XL');
+    assert.ok(['Carnival','Suburban','Yukon XL','Grand Wagoneer L'].includes((await opened.json()).reveal[0].model));
   }finally{await rm(dir,{recursive:true,force:true});delete process.env.LOOPHOLE_LOCAL_DATA_DIR;}
 });
 
