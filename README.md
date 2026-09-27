@@ -1,8 +1,8 @@
-# Loophole Auto
+# Loophole
 
 Production repository for [thisloophole.com](https://thisloophole.com).
 
-Loophole Auto is buyer-side automotive intelligence: observable listing history, deterministic comparable vehicles, an explainable experimental Loophole Score, and a one-time $49 Deal Plan.
+Loophole is an independent collection of experiments. The homepage summarizes the current public work: the needs-first Dealership and the Loophole Auto sample.
 
 ## Stack
 
@@ -14,8 +14,9 @@ Loophole Auto is buyer-side automotive intelligence: observable listing history,
 
 ## Public routes
 
-- `/` — Loophole Auto homepage
-- `/cars/` — make/model/ZIP/radius search
+- `/` — experiments overview
+- `/dealership/` — needs-first new-car finder and optional blind quiz
+- `/cars/` — Loophole Auto make/model/ZIP/radius search
 - `/car/[listingId]/` — vehicle detail, history, comparables, score
 - `/deal-plan/[listingId]/` — Stripe checkout or labeled demo report
 - `/how-it-works/` — method
