@@ -36,14 +36,14 @@ createServer(async (req,res) => {
     }
     let pathname = decodeURIComponent(url.pathname);
     if (pathname === '/') pathname = '/index.html';
-    for(const name of ['cars','how-it-works','why-loophole','dealership'])if(pathname==='/'+name||pathname==='/'+name+'/')pathname='/'+name+'/index.html';
+    for(const name of ['cars','how-it-works','why-loophole','dealership','dei'])if(pathname==='/'+name||pathname==='/'+name+'/')pathname='/'+name+'/index.html';
     if(pathname==='/dealership/quiz'||pathname==='/dealership/quiz/')pathname='/dealership/quiz/index.html';
     if(pathname.startsWith('/dealership/results/'))pathname='/dealership/results/index.html';
     if(pathname.startsWith('/dealership/reveal/'))pathname='/dealership/reveal/index.html';
     if(pathname==='/car'||pathname==='/car/'||pathname.startsWith('/car/'))pathname='/car/index.html';
     if(pathname==='/deal-plan'||pathname==='/deal-plan/'||pathname.startsWith('/deal-plan/'))pathname='/deal-plan/index.html';
     if (['/purchase-checker','/samething','/experiments','/findings','/about','/playbook'].some(x=>pathname===x||pathname.startsWith(x+'/'))) {res.writeHead(302,{'Location':pathname.startsWith('/about')?'/why-loophole/':'/'});res.end();return;}
-    if (!(/^\/(index\.html|privacy\.html)$/.test(pathname) || (pathname==='/assets/auto.css'||pathname==='/assets/home.css'||pathname==='/assets/loophole-logo.png')||pathname==='/assets/favicon.svg'||pathname==='/assets/auto/client.mjs'||/^\/assets\/dealership\/((?:dealership\.(css|mjs)|universe\.mjs)|anonymous\/(?:[a-z0-9]+\.png|class-(?:suv|minivan|wagon|electric)\.svg))$/.test(pathname)||/^\/(cars|car|deal-plan|how-it-works|why-loophole|dealership(?:\/(?:quiz|results|reveal))?)\/index\.html$/.test(pathname))) { res.writeHead(404);res.end('Not found');return; }
+    if (!(/^\/(index\.html|privacy\.html)$/.test(pathname) || (pathname==='/assets/auto.css'||pathname==='/assets/home.css'||pathname==='/assets/loophole-logo.png')||/^\/assets\/dei\/(dei\.(css|mjs)|model\.mjs|portrait\.mjs|infant\.svg)$/.test(pathname)||pathname==='/assets/favicon.svg'||pathname==='/assets/auto/client.mjs'||/^\/assets\/dealership\/((?:dealership\.(css|mjs)|universe\.mjs)|anonymous\/(?:[a-z0-9]+\.png|class-(?:suv|minivan|wagon|electric)\.svg))$/.test(pathname)||/^\/(cars|car|deal-plan|how-it-works|why-loophole|dealership(?:\/(?:quiz|results|reveal))?|dei)\/index\.html$/.test(pathname))) { res.writeHead(404);res.end('Not found');return; }
     let file = resolve(root,'.'+pathname);
     if(pathname==='/assets/auto/client.mjs')file=resolve(root,'.generated/auto/client.mjs');
     if (!file.startsWith(root+sep)) { res.writeHead(404);res.end('Not found');return; }

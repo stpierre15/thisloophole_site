@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="FAIR BABY™. Why wait until college admissions? A fictional birth allocation experiment by Loophole.">
+  <meta property="og:title" content="FAIR BABY™ — We moved equality upstream.">
+  <meta property="og:description" content="Why wait until college admissions? A fictional satirical art experiment by Loophole.">
+  <link rel="canonical" href="https://thisloophole.com/dei/">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/dei/dei.css">
+  <title>FAIR BABY™ — Loophole</title>
+  <script type="module" src="/assets/dei/dei.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/">LOOPHOLE <span>/</span> <strong>FAIR BABY</strong></a>
+    <a class="exit" href="/">EXIT EXPERIMENT ↗</a>
+  </header>
+  <div class="agency-strip"><span>SOCIAL EQUITY BIRTH ALLOCATION SYSTEM</span><span>PUBLIC BETA <span class="status-dot" aria-hidden="true"></span> SYSTEM OPERATIONAL</span></div>
+  <main id="main">
+    <section id="intro" class="screen" aria-labelledby="intro-title">
+      <div class="intro-grid">
+        <div class="intro-copy">
+          <p class="eyebrow">OFFICE OF PRENATAL EQUILIBRIUM · EST. 2026</p>
+          <h1 id="intro-title" tabindex="-1">WE FIXED<br>INEQUALITY.</h1>
+          <div class="product-line"><h2>FAIR BABY<sup>™</sup></h2><p>Why wait until college admissions?</p></div>
+          <p class="intro-body">Previous generations attempted to correct inequality through hiring, education, lending, housing, and public policy.</p>
+          <p class="inefficient">Inefficient.</p>
+          <p class="upstream">We moved the adjustment upstream.</p>
+          <p class="directive">UPLOAD TWO PARENTS.<br>ENTER YOUR SOCIOECONOMIC DATA.<br>RECEIVE THE CHILD SOCIETY REQUIRES.</p>
+          <button id="begin" class="button" type="button" disabled>BEGIN ALLOCATION <span aria-hidden="true">→</span></button>
+          <p class="fine intro-disclaimer">Fair Baby™ is a fictional art experiment. It does not provide demographic, medical, genetic, educational, or policy analysis.</p>
+          <noscript><p class="notice">Enable JavaScript to begin. This experiment runs entirely in your browser.</p></noscript>
+        </div>
+        <aside class="specimen" aria-label="Sample allocation document">
+          <div class="document-bar"><span>FORM SEBA–001</span><span>SPECIMEN / NOT VALID</span></div>
+          <div class="specimen-title"><span class="seal" aria-hidden="true">FB<br><small>SEBA</small></span><div><p class="eyebrow">DEPARTMENT OF FUTURE OUTCOMES</p><h3>PROVISIONAL<br>HUMAN ALLOCATION</h3></div></div>
+          <div class="portrait specimen-portrait"><img src="/assets/dei/infant.svg" alt="Abstract generic infant silhouette"><span class="portrait-code">SUBJECT 000000 · IDENTITY PENDING</span><i class="corner top-left"></i><i class="corner top-right"></i><i class="corner bottom-left"></i><i class="corner bottom-right"></i></div>
+          <dl class="specimen-data"><div><dt>ALLOCATION CLASS</dt><dd>HUMAN / NEW</dd></div><div><dt>HOUSEHOLD VARIANCE</dt><dd>UNDER REVIEW</dd></div><div><dt>CREDIT SCORE AT BIRTH</dt><dd>PENDING</dd></div></dl>
+          <div class="specimen-stamp">EQUALITY, IN ADVANCE.</div>
+          <div class="document-bottom"><span class="barcode" aria-hidden="true">┃│┃┃│┃││┃┃┃│┃│┃┃││┃┃│</span><span>DO NOT LAMINATE</span></div>
+        </aside>
+      </div>
+      <div class="procedure-strip"><div><span>01 / SUBMIT</span><p>Two parents. One household.</p></div><div><span>02 / NORMALIZE</span><p>Every advantage accounted for.</p></div><div><span>03 / ALLOCATE</span><p>A statistically acceptable future.</p></div></div>
+    </section>
+
+    <section id="application" class="screen workspace" hidden aria-labelledby="application-title">
+      <div class="workspace-heading"><div><p class="eyebrow">SOCIAL EQUITY BIRTH ALLOCATION SYSTEM</p><h1 id="application-title" tabindex="-1">HOUSEHOLD APPLICATION</h1></div><span class="status">APPLICATION INCOMPLETE</span></div>
+      <div class="application-meta"><span>APPLICATION <b data-application-number></b></span><span>FORM SEBA–002 / REV. 26</span><span>STORAGE: SESSION MEMORY ONLY</span></div>
+      <ol class="stepper" aria-label="Application progress"><li aria-current="step"><span>01</span> PARENT RECORDS</li><li><span>02</span> HOUSEHOLD RESOURCES</li><li><span>03</span> INSTITUTIONAL ACCESS</li></ol>
+      <form id="allocation-form" autocomplete="off">
+        <fieldset class="form-step" data-step="0">
+          <legend>01 / PARENT RECORDS</legend>
+          <p class="section-note">Provide two visual references and self-reported parent records. All fields are required; “Prefer not to answer” is available for identity.</p>
+          <p id="photo-note" class="notice">Photographs are used only as visual reference for this fictional experiment. Demographic characteristics are not inferred from photographs.</p>
+          <div class="parent-grid">
+            <section class="parent-record" aria-labelledby="parent1-heading">
+              <h2 id="parent1-heading">PARENT 01 <span>REFERENCE A</span></h2>
+              <div class="upload-record"><div class="preview"><img id="parent1-preview" alt="Parent 1 local visual reference" hidden><span id="parent1-empty" aria-hidden="true">01<br><small>PHOTOGRAPH REQUIRED</small></span></div><div class="upload-control"><label for="parent1-image">Parent 1 image upload</label><input id="parent1-image" name="parent1Image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required aria-describedby="photo-note parent1-photo-error"><p class="fine">JPEG, PNG, WebP or GIF. Maximum 10 MB.</p><p id="parent1-photo-error" class="field-error" role="status"></p></div></div>
+              <label for="parent1-education">Parent 1 education</label><select id="parent1-education" name="parent1Education" data-options="education" required></select>
+              <label for="parent1-identity">Parent 1 self-identified race / ethnicity</label><select id="parent1-identity" name="parent1Identity" data-options="identity" required></select>
+              <label for="parent1-family-education">Highest education level achieved by either of Parent 1’s parents</label><select id="parent1-family-education" name="parent1FamilyEducation" data-options="education" required></select>
+              <label for="parent1-profession">Parent 1 profession</label><select id="parent1-profession" name="parent1Profession" data-options="profession" required></select>
+            </section>
+            <section class="parent-record" aria-labelledby="parent2-heading">
+              <h2 id="parent2-heading">PARENT 02 <span>REFERENCE B</span></h2>
+              <div class="upload-record"><div class="preview"><img id="parent2-preview" alt="Parent 2 local visual reference" hidden><span id="parent2-empty" aria-hidden="true">02<br><small>PHOTOGRAPH REQUIRED</small></span></div><div class="upload-control"><label for="parent2-image">Parent 2 image upload</label><input id="parent2-image" name="parent2Image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required aria-describedby="photo-note parent2-photo-error"><p class="fine">JPEG, PNG, WebP or GIF. Maximum 10 MB.</p><p id="parent2-photo-error" class="field-error" role="status"></p></div></div>
+              <label for="parent2-education">Parent 2 education</label><select id="parent2-education" name="parent2Education" data-options="education" required></select>
+              <label for="parent2-identity">Parent 2 self-identified race / ethnicity</label><select id="parent2-identity" name="parent2Identity" data-options="identity" required></select>
+              <label for="parent2-family-education">Highest education level achieved by either of Parent 2’s parents</label><select id="parent2-family-education" name="parent2FamilyEducation" data-options="education" required></select>
+              <label for="parent2-profession">Parent 2 profession</label><select id="parent2-profession" name="parent2Profession" data-options="profession" required></select>
+            </section>
+          </div>
+        </fieldset>
+        <fieldset class="form-step" data-step="1" hidden>
+          <legend>02 / HOUSEHOLD RESOURCES</legend>
+          <p class="section-note">Report the household as it exists today. Future corrective adjustments will be handled by the department.</p>
+          <div class="field-grid">
+            <div><label for="income">Household income</label><select id="income" name="income" data-options="income" required></select></div>
+            <div><label for="wealth">Household net worth</label><select id="wealth" name="wealth" data-options="wealth" required></select></div>
+            <div><label for="zip">ZIP code</label><input id="zip" name="zip" type="text" inputmode="numeric" pattern="[0-9]{5}" minlength="5" maxlength="5" placeholder="00000" required aria-describedby="zip-note"><p id="zip-note" class="fine">Estimated Opportunity Index: a deterministic demo score. No actual census or ZIP-level socioeconomic data is used.</p></div>
+            <div><label for="ownership">Home ownership</label><select id="ownership" name="ownership" data-options="ownership" required></select></div>
+            <div class="full-field"><label for="inheritance">Approximately what share of current household wealth came from inheritance or family transfers?</label><select id="inheritance" name="inheritance" data-options="inheritance" required></select></div>
+          </div>
+          <div class="form-memo"><span>DEPARTMENTAL NOTE 02.1</span><p>Assets held by your parents remain your parents’ assets until the department finds them narratively useful.</p></div>
+        </fieldset>
+        <fieldset class="form-step" data-step="2" hidden>
+          <legend>03 / INSTITUTIONAL ACCESS</legend>
+          <p class="section-note">Some opportunities arrive before an application is submitted. Please declare those opportunities below.</p>
+          <div class="field-grid">
+            <div class="full-field"><label for="private-school">Did either parent attend private K–12 school?</label><select id="private-school" name="privateSchool" data-options="yesNo" required></select></div>
+            <div class="full-field"><label for="selective-education">Did either parent attend an Ivy League, Stanford, MIT, or similarly selective university?</label><select id="selective-education" name="selectiveEducation" data-options="yesNo" required></select></div>
+            <div class="full-field"><label for="legacy">Did either parent receive a meaningful educational or professional advantage through family connections?</label><select id="legacy" name="legacy" data-options="legacy" required></select></div>
+          </div>
+          <div class="form-memo"><span>DECLARATION / PUBLIC BETA</span><p>Submission authorizes the issuance of one scientifically meaningless allocation. All information stays in this browser session.</p></div>
+        </fieldset>
+        <p id="form-error" class="field-error" role="alert"></p>
+        <div class="form-actions"><button id="back" class="button secondary" type="button">← INTRODUCTION</button><span id="step-count" class="eyebrow">STEP 01 OF 03</span><button id="next" class="button" type="submit">CONTINUE <span aria-hidden="true">→</span></button></div>
+      </form>
+    </section>
+
+    <section id="analysis" class="screen analysis-screen" hidden aria-labelledby="analysis-title" aria-busy="true">
+      <p class="eyebrow">SEBA / ALLOCATION ENGINE / PUBLIC BETA</p><h1 id="analysis-title" tabindex="-1">ANALYZING<br>HOUSEHOLD</h1>
+      <p class="analysis-reference">APPLICATION <b data-application-number></b></p>
+      <div class="progress-heading"><span>ADJUSTMENT IN PROGRESS</span><strong id="progress-percent">0%</strong></div>
+      <progress id="analysis-progress" max="100" value="0" aria-label="Fictional allocation progress">0%</progress>
+      <p id="analysis-message" class="analysis-message" role="status" aria-live="polite">Calculating intergenerational advantage</p>
+      <div id="analysis-log" class="analysis-log" aria-hidden="true"></div>
+      <p class="fine">Simulated processing. No data is being transmitted.</p>
+    </section>
+
+    <section id="results" class="screen workspace results-screen" hidden aria-labelledby="results-title">
+      <div class="result-actions"><span class="eyebrow">YOUR ALLOCATION HAS BEEN ISSUED.</span><div><button id="print" class="button" type="button">PRINT / SAVE CERTIFICATE</button><button id="restart" class="button secondary" type="button">NEW APPLICATION</button></div></div>
+      <article id="certificate" class="certificate">
+        <div class="document-bar"><span>FAIR BABY™ / CERTIFICATE OF ALLOCATION</span><span>FORM SEBA–003</span></div>
+        <div class="certificate-heading"><div><p class="eyebrow">OFFICE OF PRENATAL EQUILIBRIUM</p><h1 id="results-title" tabindex="-1">SOCIAL EQUITY<br>BIRTH ALLOCATION</h1></div><span class="approved">APPROVED</span></div>
+        <div class="certificate-meta"><span>APPLICATION <b data-application-number></b></span><span>ISSUED <time id="issued-at"></time></span></div>
+        <div class="score-panel"><div><p class="eyebrow">HOUSEHOLD ADVANTAGE CONCENTRATION</p><strong><span id="household-score">—</span><small> / 100</small></strong><p class="score-alias">HOUSEHOLD IMBALANCE SCORE / FICTIONAL</p></div><div class="score-determination"><span>CORRECTIVE ALLOCATION REQUIRED</span><p>Estimated Opportunity Index: <b id="opportunity-score"></b> / 100</p><p class="fine">Invented demo values. No actual ZIP-level data.</p></div></div>
+        <div class="allocation-grid"><div><p class="eyebrow">ASSIGNED CHILD / SUBJECT RECORD</p><h2 id="child-name" class="child-name"></h2><dl id="profile-fields" class="profile-fields"></dl></div><aside class="portrait-record"><p class="eyebrow">CHILD PORTRAIT GENERATION</p><div id="allocated-portrait" class="portrait"><img src="/assets/dei/infant.svg" alt="Generic infant silhouette; no generated child portrait"><span class="portrait-code">VISUAL ALLOCATION / PENDING</span><i class="corner top-left"></i><i class="corner top-right"></i><i class="corner bottom-left"></i><i class="corner bottom-right"></i></div><p id="portrait-status" class="fine">Visual allocation unavailable in public beta.</p></aside></div>
+        <section class="adjustment-section" aria-labelledby="adjustments-title"><div class="section-bar"><h2 id="adjustments-title">AUTHORIZED ADJUSTMENTS</h2><span>EXECUTED / FICTIONAL</span></div><dl id="adjustments" class="adjustments"></dl></section>
+        <div class="primary-reveal"><p class="eyebrow">DEPARTMENTAL OUTCOME</p><h2>HOUSEHOLD INEQUALITY REDUCED: <span id="reduction"></span>%</h2><p class="complete">ALLOCATION COMPLETE.</p><p>Your household is now within federally acceptable fictional variance.</p><p class="fine">There is no federally acceptable fictional variance.</p></div>
+        <p id="certificate-disclaimer" class="fine certificate-disclaimer">FAIR BABY™ is a fictional satirical art experiment about algorithmic approaches to demographic and socioeconomic inequality. The calculations are invented, scientifically meaningless, and do not describe any actual DEI policy, law, admissions process, employer practice, or individual.</p>
+        <p class="fine certificate-privacy">Uploaded images remain in your browser during this session and are not used to infer race or ethnicity.</p>
+        <div class="document-bottom"><span class="barcode" aria-hidden="true">┃│┃┃│┃││┃┃┃│┃│┃┃││┃┃│</span><span>VALID NOWHERE / RETAIN FOR YOUR RECORDS</span></div>
+      </article>
+    </section>
+  </main>
+  <footer class="site-footer"><div><strong>FAIR BABY™</strong><span>A LOOPHOLE EXPERIMENT / 2026</span></div><p>FAIR BABY™ is a fictional satirical art experiment about algorithmic approaches to demographic and socioeconomic inequality. The calculations are invented, scientifically meaningless, and do not describe any actual DEI policy, law, admissions process, employer practice, or individual.</p><p>Uploaded images remain in your browser during this session and are not used to infer race or ethnicity. No form data or photos are sent to a server or saved. Refreshing clears your application.</p></footer>
+</body>
+</html>
