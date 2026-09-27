@@ -27,3 +27,24 @@
 .universe-topline button{border:0;border-bottom:1px solid #78948d;background:transparent;color:#bfd0ca;padding:0 0 .2rem;font:inherit;font-size:.6rem;font-weight:700;letter-spacing:.1em}.universe-topline button:hover,.universe-topline button:focus-visible{color:#fff;outline:1px solid #a8e3d1}
 @media(prefers-reduced-motion:reduce){#universe-pause{display:none}}
 @media(max-width:600px){.filter-intro{display:flex;flex-direction:column}.quick-filters{order:1;margin:.1rem 0 .8rem}.universe-panel{order:2}.universe-panel canvas{height:235px}.universe-shortlist-item:nth-child(n+4){display:none}.quick-filters a{font-size:.58rem}}
+/* The map uses a value axis and labeled vehicle-type rows. */
+.universe-panel canvas{height:clamp(330px,34vw,470px);cursor:default;touch-action:auto}
+.map-axis-control{display:flex;align-items:center;gap:.45rem;white-space:nowrap;color:#bfd0ca}
+.map-axis-control select{min-height:2rem;background:#172a2b;border:1px solid #78948d;color:#e7f3ef;font-size:.65rem;font-weight:700;padding:.3rem}
+.map-note{color:#b7cec5;font-size:.64rem;line-height:1.4;margin:.5rem 0 0}
+.market-list{grid-column:1/-1;border-top:1px solid var(--ink);margin-top:2rem;padding-top:1.5rem;min-width:0}
+.market-list-head{display:flex;align-items:end;justify-content:space-between;gap:1rem}
+.market-list-head h2{font-size:clamp(2rem,4vw,4rem);letter-spacing:-.06em;margin:.3rem 0}
+.market-list-head>p,.market-list-note{font-size:.72rem;color:var(--muted)}
+.market-list-note{margin:.3rem 0 1rem}
+.market-list-scroll{overflow-x:auto;border-top:1px solid var(--ink)}
+.market-list table{width:100%;min-width:870px;border-collapse:collapse;font-size:.79rem}
+.market-list th,.market-list td{padding:.8rem .55rem;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.market-list thead th{font-size:.62rem;letter-spacing:.08em}
+.market-list thead button{border:0;background:transparent;padding:0;color:inherit;font-size:inherit;font-weight:700;letter-spacing:inherit;text-align:left;white-space:nowrap}
+.market-list thead button:hover,.market-list thead button:focus-visible,.market-list tbody button:hover,.market-list tbody button:focus-visible{text-decoration:underline}
+.market-list tbody th button{border:0;background:transparent;padding:0;color:inherit;font-weight:700;font-size:.75rem}
+.market-list tbody small{color:#91611d;font-size:.58rem;font-weight:700}
+.market-list tr.market-selected{background:#dce9e3}
+#market-list-more{margin-top:1rem}
+@media(max-width:600px){.universe-panel canvas{height:380px}.map-axis-control{font-size:.55rem}.map-axis-control select{max-width:9rem;font-size:.57rem}.market-list{margin-top:.5rem}.market-list-head{align-items:start;flex-direction:column;gap:0}}
