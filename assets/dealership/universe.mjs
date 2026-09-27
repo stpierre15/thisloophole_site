@@ -41,7 +41,7 @@ export function createVehicleUniverse(canvas,tooltip,summary,onSelect=()=>{}){
   ctx.fillStyle='#b7cec5';ctx.textAlign='left';ctx.font='10px Arial';ctx.fillText(axis==='cost'?'EST. FIVE-YEAR OWNERSHIP COST →':'STARTING PRICE →',left,14);
  }
  function nearest(event){const box=canvas.getBoundingClientRect(),x=event.clientX-box.left,y=event.clientY-box.top;let found=null,distance=14;for(const spot of spots){const d=Math.hypot(x-spot.x,y-spot.y);if(d<distance){found=spot.node;distance=d;}}return found;}
- function select(node,notify=true){activeId=node?.id??null;tooltip.textContent=node?`${label(node)} · ${detail(node)}${node.confirmed?' · filter match confirmed':' · verify missing specs'}`:'Select a point or a row to inspect a model.';draw();if(node&&notify)onSelect(node.id);}
+ function select(node,notify=true){activeId=node?.id??null;tooltip.textContent=node?`${label(node)} · ${detail(node)}${node.confirmed?' · selected filters confirmed':` · check ${node.verificationNeeded?.join(', ')||'missing filter data'}`}`:'Select a point or a row to inspect a model.';draw();if(node&&notify)onSelect(node.id);}
  canvas.addEventListener('pointermove',event=>{const node=nearest(event);canvas.style.cursor=node?'pointer':'default';});
  canvas.addEventListener('click',event=>{const node=nearest(event);if(node)select(node);});
  function update(nextNodes){nodes=nextNodes;summary.textContent=`${nodes.filter(node=>node.match).length} of ${nodes.length} models match`;if(activeId!=null&&!nodes.find(node=>node.id===activeId)?.match)select(null,false);draw();}

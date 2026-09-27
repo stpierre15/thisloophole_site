@@ -116,6 +116,8 @@ test('filter preview and filtered session stay blind through selection',async()=
     assert.equal(previewData.universe.length,new Set(catalog.map(car=>`${car.make}|${car.model}`)).size);
     assert.equal(previewData.universe.filter(point=>point.match).length,previewData.count);
     assert.equal(previewData.universe.filter(point=>point.confirmed).length,previewData.confirmedCount);
+    assert.ok(previewData.universe.filter(point=>point.match).every(point=>point.confirmed===!point.verificationNeeded.length));
+    assert.ok(previewData.universe.some(point=>point.match&&point.verificationNeeded.includes('Cargo volume')));
     assert.equal(new Set(previewData.universe.map(point=>point.id)).size,previewData.universe.length);
     assert.ok(previewData.universe.every(point=>point.bodyStyle&&point.powertrain&&'rank' in point));
     assert.doesNotMatch(JSON.stringify(previewData.universe),/Yukon|GMC|Sequoia|Toyota|Land Cruiser/);
