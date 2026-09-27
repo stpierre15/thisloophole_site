@@ -26,6 +26,7 @@ for (const file of ['index.html','privacy.html','cars','car','deal-plan','how-it
 await cp('assets/favicon.svg','dist/assets/favicon.svg');
 await cp('assets/auto.css','dist/assets/auto.css');
 await cp('assets/home.css','dist/assets/home.css');
+await cp('assets/loophole-logo.png','dist/assets/loophole-logo.png');
 await cp('assets/dealership','dist/assets/dealership',{recursive:true});
 await mkdir('dist/assets/auto',{recursive:true});
 await cp('.generated/auto/client.mjs','dist/assets/auto/client.mjs');
