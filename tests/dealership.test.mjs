@@ -7,6 +7,7 @@ import { blindCar, filterVehicles, matchVehicles, maxFinalists, validateFilters 
 import { catalog } from '../data/dealership/catalog.mjs';
 import { seatingEvidence } from '../data/dealership/seating-evidence.mjs';
 import { dealershipHandlers } from '../lib/dealership-api.mjs';
+import { estimateFiveYearCost } from '../lib/dealership-cost.mjs';
 const context={local:true};
 const base={budget:'any',seats:'5',kids:'no',dogs:'no',cargo:'normal',powertrain:['Gas','Hybrid','Plug-in hybrid','Electric'],daily:'20-50',trips:'few',camping:'never',offroad:'never',weather:'no',towing:'never',size:'any',priorities:['Low price','Fuel economy','Cargo room']};
 const post=(fn,obj)=>fn(new Request('http://localhost/api/dealership',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)}),context);
@@ -79,6 +80,10 @@ test('needs-first filters enforce seats, cargo, drivetrain, and powertrain witho
   assert.ok(filterVehicles({drivetrain:'awd-capable'}).every(result=>result.car.awdAvailable===true||result.verificationNeeded.includes('AWD/4WD availability')));
   assert.ok(filterVehicles({powertrain:'Electric'}).every(result=>result.car.powertrain==='Electric'));
   assert.ok(filterVehicles({budget:'under25'}).every(result=>result.car.startingMSRP==null?result.verificationNeeded.includes('Starting price'):result.car.startingMSRP<25000));
+  const byCost=filterVehicles({sort:'cost-asc'});
+  assert.ok(byCost.every((row,index)=>!index||estimateFiveYearCost(byCost[index-1].car).total<=estimateFiveYearCost(row.car).total));
+  const bySeats=filterVehicles({seats:'7',sort:'seats-desc'});
+  assert.ok(bySeats.every((row,index)=>!index||blindCar(bySeats[index-1]).seats>=blindCar(row).seats));
   assert.throws(()=>validateFilters({cargo:'enormous'}),/Invalid filter/);
 });
 
@@ -108,6 +113,17 @@ test('filter preview and filtered session stay blind through selection',async()=
     const preview=await post(dealershipHandlers.filter,{filters,preview:true});
     assert.equal(preview.status,200);
     const previewData=await preview.json();assert.ok(previewData.count>=30);assert.equal(previewData.confirmedCount,8);
+    assert.equal(previewData.universe.length,new Set(catalog.map(car=>`${car.make}|${car.model}`)).size);
+    assert.equal(previewData.universe.filter(point=>point.match).length,previewData.count);
+    assert.equal(previewData.universe.filter(point=>point.confirmed).length,previewData.confirmedCount);
+    assert.equal(new Set(previewData.universe.map(point=>point.id)).size,previewData.universe.length);
+    assert.ok(previewData.universe.every(point=>point.bodyStyle&&point.powertrain&&'rank' in point));
+    assert.doesNotMatch(JSON.stringify(previewData.universe),/Yukon|GMC|Sequoia|Toyota|Land Cruiser/);
+    const delta=await post(dealershipHandlers.filter,{filters,preview:true,visualMode:'matches'});
+    const deltaData=await delta.json();
+    assert.equal(deltaData.matches.length,previewData.count);
+    assert.equal(deltaData.universe,undefined);
+    assert.deepEqual(new Set(deltaData.matches.map(point=>point.id)),new Set(previewData.universe.filter(point=>point.match).map(point=>point.id)));
     const started=await post(dealershipHandlers.filter,{filters});
     assert.equal(started.status,201);
     const {sessionId,count}=await started.json();assert.equal(count,previewData.count);
